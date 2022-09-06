@@ -3,7 +3,6 @@ from django.contrib.auth.base_user import BaseUserManager
 
 from django.utils import timezone
 
-
 class UserManager(BaseUserManager):
 
     def create_user(self, first_name, last_name, email, password, is_staff, is_active, is_superuser, **extra_fields):
