@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from "react";
 import { render } from "react-dom";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
-import HomePage from "./HomePage";
+import DashboardContent from "./pharmacy/Dashboard";
+import PrivateRoute from "./common/private_route";
 
 export default class App extends Component {
   constructor(props) {
@@ -16,7 +17,8 @@ export default class App extends Component {
             <Fragment>
               <div>
                 <Routes>
-                  <Route exact path="/" element={<HomePage/>}/>  
+                  <Route exact path="/" element={<PrivateRoute><DashboardContent/></PrivateRoute>} />
+                  <Route exact path="/login" element={<Login/>} /> 
                 </Routes>
               </div>
             </Fragment>
