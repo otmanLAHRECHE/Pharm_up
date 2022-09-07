@@ -1,18 +1,23 @@
 
-export default function Alert(props){
+import React,{useState} from 'react'
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
-    state = {
-        open : true
-    }
+
+export default function Alt(props){
+
+    const [open, setOpen] = useState(true)
 
     const handleClose = () => {
-        this.setState({open : false})
+        setOpen(false)
 
     }
+
+    console.log(open)
 
     
     return(
-        <Snackbar open={this.state.open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ top, center }}>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical:'top', horizontal:'center' }}>
             <Alert onClose={handleClose} severity={props.type} sx={{ width: '100%' }}>
                  {props.message}
             </Alert>

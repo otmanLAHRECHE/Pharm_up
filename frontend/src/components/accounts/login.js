@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -14,6 +15,7 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { login_api } from '../../actions/authentification';
+import Alt from '../layouts/alert';
 
 function Copyright(props) {
   return (
@@ -31,22 +33,34 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignInSide() {
-  const handleSubmit = (event) => {
+
+
+  const [alert, setAlert] = useState(false)
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     
-    state = {
-      alert : false,
+    
+    const data = new FormData(event.currentTarget);
+    var email = data.get("email")
+    var password = data.get("password")
+    var login_state = await login_api(email, password);
+    
+    
+    if (login_state == "logged"){
+      console.log("logged it is");
+    }else {
+      console.log("alert");
+      setAlert(true)
+      console.log(alert,"console")
     }
 
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-
-    
 
   };
+
+  if (localStorage.getItem("auth_token")) {
+    return <Navigate to="/" />;
+  }else{
 
   return (
 
@@ -125,8 +139,13 @@ export default function SignInSide() {
     </ThemeProvider>
 
 
-    { this.state.alert ? <Alert type = 'error' message='test' /> : null }
+
+            {alert ? <Alt type='error' message='authentification error !!' /> : null}
+
+
+    
 
     </>
   );
+}
 }
