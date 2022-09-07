@@ -18,7 +18,7 @@ function Copyright(props) {
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="https://mui.com/">
-        Your Website
+        EPSP Djanet 2022, Otman LAHRECHE
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -48,7 +48,7 @@ export default function SignInSide() {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: 'url(https://source.unsplash.com/random)',
+            backgroundImage: 'url(https://img.freepik.com/premium-photo/pharmacist-holding-medicine-box-capsule-pack-pharmacy-drugstore_67340-24.jpg?w=996)',
             backgroundRepeat: 'no-repeat',
             backgroundColor: (t) =>
               t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
