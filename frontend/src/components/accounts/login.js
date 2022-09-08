@@ -38,9 +38,10 @@ export default function SignInSide() {
   const [alert, setAlert] = useState(false)
 
   const handleSubmit = async (event) => {
+
+    setAlert(false)
+
     event.preventDefault();
-    
-    
     const data = new FormData(event.currentTarget);
     var email = data.get("email")
     var password = data.get("password")
@@ -50,20 +51,23 @@ export default function SignInSide() {
     if (login_state == "logged"){
       console.log("logged it is");
     }else {
-      console.log("alert");
       setAlert(true)
-      console.log(alert,"console")
+      console.log(alert,"alert in login")
     }
 
 
   };
 
   if (localStorage.getItem("auth_token")) {
+    console.log("navigate")
     return <Navigate to="/" />;
   }else{
 
-  return (
 
+
+    console.log("else return")
+
+  return (
     <>
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>

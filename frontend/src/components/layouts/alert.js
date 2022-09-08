@@ -10,10 +10,9 @@ export default function Alt(props){
 
     const handleClose = () => {
         setOpen(false)
-
     }
 
-    console.log(open)
+    console.log(open, "alert component")
 
     
     return(
