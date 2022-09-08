@@ -36,9 +36,13 @@ export default function SignInSide() {
 
 
   const [alert, setAlert] = useState(false)
+  const [error_email, setErrorEmail] = useState([])
+  const [error_password, setErrorPassword] = useState([])
 
   const handleSubmit = async (event) => {
-
+    
+    setErrorEmail([false,""])
+    setErrorPassword([false,""])
     setAlert(false)
 
     event.preventDefault();
@@ -46,27 +50,45 @@ export default function SignInSide() {
     var email = data.get("email")
     var password = data.get("password")
     var login_state = await login_api(email, password);
+
+    
+    
+    var validation_password = JSON.parse(login_state).password
+    var validation_email = JSON.parse(login_state).email
+
+
+    if (validation_email){
+        
+      console.log(validation_email[0])
+    }
+    if (validation_password){
+        
+      console.log(validation_password[0])
+    }
+
     
     
     if (login_state == "logged"){
       console.log("logged it is");
     }else {
       setAlert(true)
-      console.log(alert,"alert in login")
+      if (validation_email[0]){
+        setErrorEmail([true,validation_email[0]])
+      }
+      if (validation_password[0]){
+        setErrorPassword([true,validation_password[0]])
+      }
     }
 
 
   };
 
+
+
   if (localStorage.getItem("auth_token")) {
     console.log("navigate")
     return <Navigate to="/" />;
   }else{
-
-
-
-    console.log("else return")
-
   return (
     <>
     <ThemeProvider theme={theme}>
@@ -104,6 +126,7 @@ export default function SignInSide() {
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
+                error = {error_email[0]}
                 margin="normal"
                 required
                 fullWidth
@@ -112,8 +135,10 @@ export default function SignInSide() {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                helperText={error_email[1]}
               />
               <TextField
+                error = {error_password[0]}
                 margin="normal"
                 required
                 fullWidth
@@ -122,6 +147,7 @@ export default function SignInSide() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                helperText = {error_password[1]}
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}

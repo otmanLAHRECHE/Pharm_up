@@ -53,8 +53,8 @@ export const login_api = async (username, password) => {
     return "logged";
 
   } else {
-    console.log("failed", text);
-    return "not logged";
+    console.log(text);
+    return text;
 
   }
 };

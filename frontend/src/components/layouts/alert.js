@@ -12,7 +12,6 @@ export default function Alt(props){
         setOpen(false)
     }
 
-    console.log(open, "alert component")
 
     
     return(
