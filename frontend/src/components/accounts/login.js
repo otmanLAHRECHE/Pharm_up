@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useState, useRef, useEffect} from 'react';
+import {Navigate} from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,6 +14,8 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { login_api } from '../../actions/authentification';
 import Alt from '../layouts/alert';
@@ -34,25 +37,39 @@ const theme = createTheme();
 
 export default function SignInSide() {
 
-
+  const [loged, setLoged] = useState(false)
   const [alert, setAlert] = useState(false)
   const [error_email, setErrorEmail] = useState([])
   const [error_password, setErrorPassword] = useState([])
+
+  const [open, setOpen] = useState(false)
+
+
+  
 
   const handleSubmit = async (event) => {
     
     setErrorEmail([false,""])
     setErrorPassword([false,""])
     setAlert(false)
+    setOpen(true)
 
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     var email = data.get("email")
     var password = data.get("password")
     var login_state = await login_api(email, password);
+  
+    
+    if (login_state == "logged"){
+        console.log("logged it is");
+            setTimeout(()=>{
+              console.log("timeout....")
+              setLoged(true)
+            }, 2000)
+    }else {
+      setOpen(false)
 
-    
-    
     var validation_password = JSON.parse(login_state).password
     var validation_email = JSON.parse(login_state).email
 
@@ -66,11 +83,6 @@ export default function SignInSide() {
       console.log(validation_password[0])
     }
 
-    
-    
-    if (login_state == "logged"){
-      console.log("logged it is");
-    }else {
       setAlert(true)
       if (validation_email[0]){
         setErrorEmail([true,validation_email[0]])
@@ -83,11 +95,9 @@ export default function SignInSide() {
 
   };
 
-
-
-  if (localStorage.getItem("auth_token")) {
+  if (localStorage.getItem("auth_token") && loged == true) {
     console.log("navigate")
-    return <Navigate to="/" />;
+    return <Navigate to="/"/>;
   }else{
   return (
     <>
@@ -170,7 +180,15 @@ export default function SignInSide() {
 
 
 
-            {alert ? <Alt type='error' message='authentification error !!' /> : null}
+            {alert ? <Alt type='error' message='Authentification error !!' /> : null}
+            {loged ? <Alt type='success' message='Wilcome to PHARM_UP' /> : null}
+
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={open}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
 
 
     
