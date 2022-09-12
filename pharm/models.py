@@ -40,6 +40,7 @@ class Medicament(models.Model):
 class Stock(models.Model):
     id = models.AutoField(primary_key=True)
     medicament = models.ForeignKey(Medicament, on_delete=CASCADE)
+    med_sortie = models.ForeignKey(Stock, on_delete=models.CASCADE)
     date_arrived = models.DateField()
     date_expired = models.DateField()
     stock_qte = models.IntegerField()
@@ -91,7 +92,18 @@ class Commande_items(models.Model):
 class Arivage(models.Model):
     id = models.AutoField(primary_key=True)
     date = models.DateField()
-    
+    source_detail = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.id 
+
+class Arivage_items(models.Model):
+    id = models.AutoField(primary_key=True)
+    arivage = models.ForeignKey(Arivage, on_delete=CASCADE)
+    medicament = models.ForeignKey(Medicament, on_delete=CASCADE)
+    date_expired = models.DateField()
+    qnt = models.IntegerField()
+
     def __str__(self):
         return self.id 
 
