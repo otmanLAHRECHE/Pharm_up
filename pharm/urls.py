@@ -11,5 +11,8 @@ urlpatterns = [
     path('api/create_new_source/', views.createNewSource),
     path('api/update_source/', views.updateSource),
     path('api/delete_source/', views.deleteSource),
+    path('api/create_new_medicament/', views.addMedicament),
+    path('api/update_medicament/', views.updateMedicament),
+    path('api/delete_medicament/', views.deleteMedicament),
   
 ]

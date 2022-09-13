@@ -56,7 +56,6 @@ def createNewSource(request):
         service = request.data.pop('service')
 
         source = Source.objects.create(name=name, service=service)
-        print(source.id)
 
         if source.id is not None:
             return Response(status=status.HTTP_201_CREATED)
@@ -87,6 +86,59 @@ def deleteSource(request):
         id = request.data.pop("id")
         Source.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"source deleted"})
+
+
+@api_view(['POST'])
+def addMedicament(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        medic_code = request.data.pop("medic_code")
+        medic_name = request.data.pop("medic_name")
+        medic_dose = request.data.pop("medic_dose")
+        dose_unit = request.data.pop("dose_unit")
+        medic_place = request.data.pop("medic_place")
+
+        medicament = Medicament.objects.create(medic_code=medic_code, medic_name=medic_name, medic_dose=medic_dose, dose_unit=dose_unit, medic_place=medic_place)
+
+        if medicament.id is not None:
+            return Response(status=status.HTTP_201_CREATED, data={"status": "medicament created sucsusfully"}) 
+        
+        else:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def updateMedicament(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        medic_code = request.data.pop("medic_code")
+        medic_name = request.data.pop("medic_name")
+        medic_dose = request.data.pop("medic_dose")
+        dose_unit = request.data.pop("dose_unit")
+        medic_place = request.data.pop("medic_place")
+
+        medicament_to_update = Medicament.objects.get(id=id)
+        if not medicament_to_update.medic_code == medic_code:
+            medicament_to_update.medic_code = medic_code
+        if not medicament_to_update.medic_name == medic_name:
+            medicament_to_update.medic_name = medic_name
+        if not medicament_to_update.medic_dose == medic_dose:
+            medicament_to_update.medic_dose = medic_dose
+        if not medicament_to_update.dose_unit == dose_unit:
+            medicament_to_update.dose_unit = dose_unit
+        if not medicament_to_update.medic_place == medic_place:
+            medicament_to_update.medic_place = medic_place
+        
+        medicament_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"medicament updated"})
+
+
+@api_view(['DELETE'])
+def deleteMedicament(request):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        Medicament.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"Medicament deleted"})
 
     
 
