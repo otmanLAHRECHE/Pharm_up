@@ -80,6 +80,14 @@ def updateSource(request):
         
         return Response(status=status.HTTP_200_OK, data = {"status":"source updated"})
 
+
+@api_view(['DELETE'])
+def deleteSource(request):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        Source.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"source deleted"})
+
     
 
 
