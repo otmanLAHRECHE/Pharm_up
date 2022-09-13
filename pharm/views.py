@@ -62,6 +62,24 @@ def createNewSource(request):
             return Response(status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def updateSource(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        name = request.data.pop("name")
+        service = request.data.pop("service")
+        source_to_update = Source.objects.get(id=id)
+        if not source_to_update.name == name:
+            source_to_update.name = name
+        if not source_to_update.service == service:
+            source_to_update.service = service
+        
+        source_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"source updated"})
+
     
 
 
