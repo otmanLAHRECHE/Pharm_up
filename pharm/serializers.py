@@ -2,31 +2,50 @@
 
 from dataclasses import fields
 from rest_framework import serializers
-from models import *
+from .models import *
 
 
-class SortieItemsSerializer(serializers.ModelSerializer):
+
+
+
+class MedicamentSerialize(serializers.ModelSerializer):
+
     class Meta:
-        model = Sortie_items
-        fields = ['id', 'sortie_qte']
+        model = Medicament
+        fields = ['id', 'medic_code', 'medic_name', 'medic_dose', 'dose_unit', 'medic_place']
 
 class StockSerializer(serializers.ModelSerializer):
+    medicament = MedicamentSerialize()
     class Meta:
         model = Stock
-        fields = ['id', 'date_arrived', 'date_expired', 'stock_qte']
+        fields = ['id', 'date_arrived', 'date_expired', 'stock_qte', 'medicament']
 
-
-class StockBonSortieSerializer(serializers.ModelSerializer):
-    sortie_item = SortieItemsSerializer()
-
+class SortieItemsSerializer(serializers.ModelSerializer):
+    stock_item = StockSerializer()
     class Meta:
-        model = Stock
-        fields = ['id', 'date_arrived', 'date_expired', 'stock_qte', 'sortie_item']
+        model = Sortie_items
+        fields = ['id', 'sortie_qte', 'stock_item']
 
 
-class BonSortie(serializers.ModelSerializer):
-    sortie_items = 
+class SourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Source
+        fields = ['id', 'name', 'service']
+
+
+class BonSortieSerializer(serializers.ModelSerializer):
+    source = SourceSerializer()
+    sortie_items = SortieItemsSerializer(many=True)
     class Meta:
         model = Bon_sortie
-        fields = ['id', 'bon_sortie_nbr', 'date']
+        fields = ['id', 'source', 'bon_sortie_nbr', 'date', 'sortie_items']
+
+
+
+
+
+
+
+
+
 
