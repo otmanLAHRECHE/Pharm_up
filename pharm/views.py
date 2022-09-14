@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from os import stat
 from django.shortcuts import render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -166,7 +166,6 @@ def deleteMedicament(request):
 def getAllStocks(request):
     if request.method == 'GET' and request.user.is_authenticated:
         queryset = Stock.objects.all()
-        print(queryset)
 
         source_serial = StockSerializer(queryset, many=True)
 
@@ -191,8 +190,8 @@ def addStock(request):
         if date_arrived >= date_expired : 
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"error":"medicment arrived date is grater than expired date"})
         else:
-            date_arrived = datetime.date(date_arrived[0], date_arrived[1], date_arrived[2])
-            date_expired = datetime.date(date_expired[0], date_expired[1], date_expired[2])
+            date_arrived = datetime.date(int(date_arrived[0]), int(date_arrived[1]), int(date_arrived[2]))
+            date_expired = datetime.date(int(date_expired[0]), int(date_expired[1]), int(date_expired[2]))
 
             
 
@@ -200,7 +199,7 @@ def addStock(request):
 
             
             if stock.id is not None:
-                return Response(status=status.HTTP_201_CREATED, data={"status": "stock created sucsusfully for medicament :" + medicament.name}) 
+                return Response(status=status.HTTP_201_CREATED, data={"status": "stock created sucsusfully for medicament :" + medicament.medic_name}) 
             
             else:
                 return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -220,15 +219,18 @@ def updateStock(request):
         date_arrived = date_a.split("/")
         date_expired = date_b.split("/")
 
+        date_arrived = datetime.date(int(date_arrived[0]), int(date_arrived[1]), int(date_arrived[2]))
+        date_expired = datetime.date(int(date_expired[0]), int(date_expired[1]), int(date_expired[2]))
+
         if date_arrived >= date_expired : 
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"error":"medicment arrived date is grater than expired date"})
         else:
 
             stock_to_update = Stock.objects.get(id=id)
-            if not stock_to_update.date_arrived == date_a:
-                stock_to_update.date_arrived = date_a
-            if not stock_to_update.date_expired == date_b:
-                stock_to_update.date_expired = date_b
+            if not stock_to_update.date_arrived == date_arrived:
+                stock_to_update.date_arrived = date_arrived
+            if not stock_to_update.date_expired == date_expired:
+                stock_to_update.date_expired = date_expired
             if not stock_to_update.stock_qte == stock_qte:
                 stock_to_update.stock_qte = stock_qte
             
