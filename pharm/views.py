@@ -1,3 +1,4 @@
+from datetime import datetime
 from os import stat
 from django.shortcuts import render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -88,6 +89,20 @@ def deleteSource(request):
         return Response(status=status.HTTP_200_OK, data = {"status":"source deleted"})
 
 
+@api_view(['GET'])
+def getAllMedicaments(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Medicament.objects.all()
+        print(queryset)
+
+        source_serial = MedicamentSerialize(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)    
+
 @api_view(['POST'])
 def addMedicament(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -96,8 +111,9 @@ def addMedicament(request):
         medic_dose = request.data.pop("medic_dose")
         dose_unit = request.data.pop("dose_unit")
         medic_place = request.data.pop("medic_place")
+        medic_type = request.data.pop("medic_type")
 
-        medicament = Medicament.objects.create(medic_code=medic_code, medic_name=medic_name, medic_dose=medic_dose, dose_unit=dose_unit, medic_place=medic_place)
+        medicament = Medicament.objects.create(medic_code=medic_code, medic_name=medic_name, medic_dose=medic_dose, dose_unit=dose_unit, medic_place=medic_place, medic_type=medic_type)
 
         if medicament.id is not None:
             return Response(status=status.HTTP_201_CREATED, data={"status": "medicament created sucsusfully"}) 
@@ -115,6 +131,7 @@ def updateMedicament(request):
         medic_dose = request.data.pop("medic_dose")
         dose_unit = request.data.pop("dose_unit")
         medic_place = request.data.pop("medic_place")
+        medic_type = request.data.pop("medic_type")
 
         medicament_to_update = Medicament.objects.get(id=id)
         if not medicament_to_update.medic_code == medic_code:
@@ -127,6 +144,8 @@ def updateMedicament(request):
             medicament_to_update.dose_unit = dose_unit
         if not medicament_to_update.medic_place == medic_place:
             medicament_to_update.medic_place = medic_place
+        if not medicament_to_update.medic_type == medic_type:
+            medicament_to_update.medic_type = medic_type
         
         medicament_to_update.save()
         
@@ -140,6 +159,89 @@ def deleteMedicament(request):
         Medicament.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Medicament deleted"})
 
-    
 
+
+
+@api_view(['GET'])
+def getAllStocks(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Stock.objects.all()
+        print(queryset)
+
+        source_serial = StockSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)   
+    
+@api_view(['POST'])
+def addStock(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+
+        id_medic = request.data.pop("id")
+        medicament = Medicament.objects.get(id=id_medic)
+        date_a = request.data.pop("date_arrived")
+        date_b = request.data.pop("date_expired")
+        date_arrived = date_a.split("/")
+        date_expired = date_b.split("/")
+        stock_qte = request.data.pop("stock_qte")
+
+        if date_arrived >= date_expired : 
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"error":"medicment arrived date is grater than expired date"})
+        else:
+            date_arrived = datetime.date(date_arrived[0], date_arrived[1], date_arrived[2])
+            date_expired = datetime.date(date_expired[0], date_expired[1], date_expired[2])
+
+            
+
+            stock = Stock.objects.create(medicament=medicament, date_arrived=date_arrived, date_expired=date_expired, stock_qte=stock_qte)
+
+            
+            if stock.id is not None:
+                return Response(status=status.HTTP_201_CREATED, data={"status": "stock created sucsusfully for medicament :" + medicament.name}) 
+            
+            else:
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+@api_view(['POST'])
+def updateStock(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+
+        id = request.data.pop("id")
+        date_a = request.data.pop("date_arrived")
+        date_b = request.data.pop("date_expired")
+        stock_qte = request.data.pop("stock_qte")
+
+        
+        date_arrived = date_a.split("/")
+        date_expired = date_b.split("/")
+
+        if date_arrived >= date_expired : 
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"error":"medicment arrived date is grater than expired date"})
+        else:
+
+            stock_to_update = Stock.objects.get(id=id)
+            if not stock_to_update.date_arrived == date_a:
+                stock_to_update.date_arrived = date_a
+            if not stock_to_update.date_expired == date_b:
+                stock_to_update.date_expired = date_b
+            if not stock_to_update.stock_qte == stock_qte:
+                stock_to_update.stock_qte = stock_qte
+            
+            stock_to_update.save()
+            
+            return Response(status=status.HTTP_200_OK, data = {"status":"stock updated sucsusfully"})
+
+
+
+@api_view(['DELETE'])
+def deleteStock(request):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        Stock.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"Stock deleted"})
 

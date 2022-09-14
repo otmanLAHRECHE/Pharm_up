@@ -33,6 +33,7 @@ class Medicament(models.Model):
     medic_dose = models.CharField(max_length=50)
     dose_unit = models.CharField(max_length=50)
     medic_place = models.CharField(max_length=100)
+    medic_type = models.CharField(max_length=100)
 
     def __str__(self):
         return self.medic_code
