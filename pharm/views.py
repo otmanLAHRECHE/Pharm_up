@@ -315,21 +315,37 @@ def deleteBonSortie(request):
 
 
 
+@api_view(['GET'])
+def getAllBonSortieItemsForMedicament(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        
+        id = request.data.pop("id")
+        medicament = Medicament.objects.get(id=id)
+        stock = Stock.objects.get(medicament=medicament)
+        queryset = Bon_sortie.objects.filter(med_sortie=stock)
+
+        source_serial = BonSortieSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)  
+
 @api_view(['POST'])
 def addBonSortieItem(request):
     if request.method == 'POST' and request.user.is_authenticated:
 
-        bon_sortie_nbr = request.data.pop("bon_sortie_nbr")
-        id_source = request.data.pop("id")
-        date = request.data.pop("date")
-        date = date.split("/")
-        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
-        source = Source.objects.get(id=id_source)
+        id_bon_sortie = request.data.pop("id_bon_sortie")
+        id_stock_med = request.data.pop("id_stock_med")
+        sortie_qte = request.data.pop("sortie_qte")
 
-        bon_sortie = Bon_sortie.objects.create(bon_sortie_nbr=bon_sortie_nbr, source=source, date=date)
+        bon_sortie = Bon_sortie.objects.get(id=id_bon_sortie)
+        med_sortie = Stock.objects.get(id=id_stock_med)
+        
+        bon_sortie_item = Sortie_items.objects.create(bon_sortie=bon_sortie, med_sortie=med_sortie, sortie_qte=sortie_qte)
 
-        if bon_sortie.id is not None:
-            return Response(status=status.HTTP_201_CREATED, data={"status": "Bon sortie created sucsusfully"}) 
+        if bon_sortie_item.id is not None:
+            return Response(status=status.HTTP_201_CREATED, data={"status": "Bon sortie item created sucsusfully for bon sortie of nbr:"+ bon_sortie.bon_sortie_nbr}) 
         
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -339,28 +355,23 @@ def addBonSortieItem(request):
 def updateBonSortieItem(request):
     if request.method == 'POST' and request.user.is_authenticated:
         
-        bon_sortie_nbr = request.data.pop("bon_sortie_nbr")
         id = request.data.pop("id")
-        date = request.data.pop("date")
 
-        date = date.split("/")
-        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+        bon_sortie_item_to_update = Sortie_items(id=id)
 
-        bon_sortie_to_to_update = Bon_sortie.objects.get(id=id)
+        sortie_qte = request.data.pop("sortie_qte")
 
-        if not bon_sortie_to_to_update.bon_sortie_nbr == bon_sortie_nbr:
-            bon_sortie_to_to_update.bon_sortie_nbr = bon_sortie_nbr
-        if not bon_sortie_to_to_update.date == date:
-            bon_sortie_to_to_update.date = date
+        if not bon_sortie_item_to_update.sortie_qte == sortie_qte:
+            bon_sortie_item_to_update.sortie_qte = sortie_qte
         
-        bon_sortie_to_to_update.save()
+        bon_sortie_item_to_update.save()
         
-        return Response(status=status.HTTP_200_OK, data = {"status":"bon sortie updated"})
+        return Response(status=status.HTTP_200_OK, data = {"status":"bon sortie item updated"})
 
 
 @api_view(['DELETE'])
 def deleteBonSortieItem(request):
     if request.method == 'DELETE' and request.user.is_authenticated:
         id = request.data.pop("id")
-        Bon_sortie.objects.filter(id=id).delete()
-        return Response(status=status.HTTP_200_OK, data = {"status":"Bon sortie deleted"})
+        Sortie_items.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"Bon sortie item deleted"})

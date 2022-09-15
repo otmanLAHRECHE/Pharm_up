@@ -41,6 +41,18 @@ class BonSortieSerializer(serializers.ModelSerializer):
         fields = ['id', 'source', 'bon_sortie_nbr', 'date', 'sortie_items']
 
 
+class FournisseurSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Fournisseur
+        fields = ['id', 'name', 'address', 'email_adress', 'phone_nbr']
+
+
+
+
+
+
+
 
 
 
