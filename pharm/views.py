@@ -247,3 +247,120 @@ def deleteStock(request):
         Stock.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Stock deleted"})
 
+
+
+
+@api_view(['GET'])
+def getAllBonSorties(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Bon_sortie.objects.all()
+
+        source_serial = BonSortieSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)  
+
+@api_view(['POST'])
+def addBonSortie(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+
+        bon_sortie_nbr = request.data.pop("bon_sortie_nbr")
+        id_source = request.data.pop("id")
+        date = request.data.pop("date")
+        date = date.split("/")
+        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+        source = Source.objects.get(id=id_source)
+
+        bon_sortie = Bon_sortie.objects.create(bon_sortie_nbr=bon_sortie_nbr, source=source, date=date)
+
+        if bon_sortie.id is not None:
+            return Response(status=status.HTTP_201_CREATED, data={"status": "Bon sortie created sucsusfully"}) 
+        
+        else:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def updateBonSortie(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        
+        bon_sortie_nbr = request.data.pop("bon_sortie_nbr")
+        id = request.data.pop("id")
+        date = request.data.pop("date")
+
+        date = date.split("/")
+        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+
+        bon_sortie_to_to_update = Bon_sortie.objects.get(id=id)
+
+        if not bon_sortie_to_to_update.bon_sortie_nbr == bon_sortie_nbr:
+            bon_sortie_to_to_update.bon_sortie_nbr = bon_sortie_nbr
+        if not bon_sortie_to_to_update.date == date:
+            bon_sortie_to_to_update.date = date
+        
+        bon_sortie_to_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"bon sortie updated"})
+
+
+@api_view(['DELETE'])
+def deleteBonSortie(request):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        Bon_sortie.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"Bon sortie deleted"})
+
+
+
+@api_view(['POST'])
+def addBonSortieItem(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+
+        bon_sortie_nbr = request.data.pop("bon_sortie_nbr")
+        id_source = request.data.pop("id")
+        date = request.data.pop("date")
+        date = date.split("/")
+        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+        source = Source.objects.get(id=id_source)
+
+        bon_sortie = Bon_sortie.objects.create(bon_sortie_nbr=bon_sortie_nbr, source=source, date=date)
+
+        if bon_sortie.id is not None:
+            return Response(status=status.HTTP_201_CREATED, data={"status": "Bon sortie created sucsusfully"}) 
+        
+        else:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def updateBonSortieItem(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        
+        bon_sortie_nbr = request.data.pop("bon_sortie_nbr")
+        id = request.data.pop("id")
+        date = request.data.pop("date")
+
+        date = date.split("/")
+        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+
+        bon_sortie_to_to_update = Bon_sortie.objects.get(id=id)
+
+        if not bon_sortie_to_to_update.bon_sortie_nbr == bon_sortie_nbr:
+            bon_sortie_to_to_update.bon_sortie_nbr = bon_sortie_nbr
+        if not bon_sortie_to_to_update.date == date:
+            bon_sortie_to_to_update.date = date
+        
+        bon_sortie_to_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"bon sortie updated"})
+
+
+@api_view(['DELETE'])
+def deleteBonSortieItem(request):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        Bon_sortie.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"Bon sortie deleted"})

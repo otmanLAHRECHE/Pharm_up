@@ -19,5 +19,4 @@ urlpatterns = [
     path('api/add_stock/', views.addStock),
     path('api/update_stock/', views.updateStock),
     path('api/delete_stock/', views.deleteStock),
-  
 ]
