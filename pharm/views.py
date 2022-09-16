@@ -416,8 +416,245 @@ def updateFournisseur(request):
 
 
 @api_view(['DELETE'])
-def deleteSource(request):
+def deleteFournisseur(request):
     if request.method == 'DELETE' and request.user.is_authenticated:
         id = request.data.pop("id")
         Fournisseur.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Fournisseur deleted"})
+
+
+
+@api_view(['GET'])
+def getAllBonSorties(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Bon_sortie.objects.all()
+
+        source_serial = BonSortieSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)  
+
+@api_view(['POST'])
+def addBonCommande(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+
+        bon_commande_nbr = request.data.pop("bon_commande_nbr")
+        id_fournisseur = request.data.pop("id")
+        date = request.data.pop("date")
+        date = date.split("/")
+        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+        fournisseur = Fournisseur.objects.get(id=id_fournisseur)
+
+        bon_commande = Bon_commande.objects.create(bon_commande_nbr=bon_commande_nbr, fournisseur=fournisseur, date=date)
+
+        if bon_commande.id is not None:
+            return Response(status=status.HTTP_201_CREATED, data={"status": "Bon commande created sucsusfully"}) 
+        
+        else:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def updateBonCommande(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        
+        bon_commande_nbr = request.data.pop("bon_commande_nbr")
+        id = request.data.pop("id")
+        date = request.data.pop("date")
+
+        date = date.split("/")
+        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+
+        bon_commande_to_to_update = Bon_commande.objects.get(id=id)
+
+        if not bon_commande_to_to_update.bon_commande_nbr == bon_commande_nbr:
+            bon_commande_to_to_update.bon_commande_nbr = bon_commande_nbr
+        if not bon_commande_to_to_update.date == date:
+            bon_commande_to_to_update.date = date
+        
+        bon_commande_to_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"bon commande updated"})
+
+
+@api_view(['DELETE'])
+def deleteBonCommande(request):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        Bon_commande.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"Bon commande deleted"})
+
+
+@api_view(['POST'])
+def addBonCommandeItem(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+
+        id_bon_commande = request.data.pop("id_bon_commande")
+        id_med = request.data.pop("id_med")
+        commande_qte = request.data.pop("commande_qte")
+
+        bon_commande = Bon_commande.objects.get(id=id_bon_commande)
+        medicament = Medicament.objects.get(id=id_med)
+        
+        bon_commande_item = Commande_items.objects.create(bon_commande=bon_commande, medicament=medicament, commande_qte=commande_qte)
+
+        if bon_commande_item.id is not None:
+            return Response(status=status.HTTP_201_CREATED, data={"status": "Bon commande item created sucsusfully for bon commande of nbr:"+ bon_commande.bon_commande_nbr}) 
+        
+        else:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def updateBonCommandeItem(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        
+        id = request.data.pop("id")
+
+        bon_commande_item_to_update = Commande_items(id=id)
+
+        commande_qte = request.data.pop("commande_qte")
+
+        if not bon_commande_item_to_update.commande_qte == commande_qte:
+            bon_commande_item_to_update.commande_qte = commande_qte
+        
+        bon_commande_item_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"bon commande item updated"})
+
+
+@api_view(['DELETE'])
+def deleteBonCommandeItem(request):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        Commande_items.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"Bon commande item deleted"})
+
+
+
+@api_view(['GET'])
+def getAllArivage(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Arivage.objects.all()
+
+        arivage_serializer = ArivageSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=arivage_serializer.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
+
+
+
+@api_view(['POST'])
+def addArivage(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+
+        source_detail = request.data.pop("source_detail")
+        date = request.data.pop("date")
+        date = date.split("/")
+        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+
+        arivage = Arivage.objects.create(source_detail=source_detail, date=date)
+
+        if arivage.id is not None:
+            return Response(status=status.HTTP_201_CREATED, data={"status": "Arivage created sucsusfully"}) 
+        
+        else:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def updateArivage(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        
+        source_detail = request.data.pop("source_detail")
+        date = request.data.pop("date")
+
+        date = date.split("/")
+        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+
+        arivage_to_to_update = Arivage.objects.get(id=id)
+
+        if not arivage_to_to_update.source_detail == source_detail:
+            arivage_to_to_update.source_detail = source_detail
+        if not arivage_to_to_update.date == date:
+            arivage_to_to_update.date = date
+        
+        arivage_to_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"Arivage updated"})
+
+
+@api_view(['DELETE'])
+def deleteArivage(request):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        Arivage.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"Arivage deleted"})
+
+
+@api_view(['POST'])
+def addArivageItem(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+
+        id_arivage = request.data.pop("id_arivage")
+        id_medicament = request.data.pop("id_medicament")
+        date = request.data.pop("date_expired")
+        qnt = request.data.pop("qnt")
+
+        date = date.split("/")
+        date_expired = datetime.date(int(date[0], int(date[1])), int(date[2]))
+
+        arivage = Arivage.objects.get(id=id_arivage)
+        medicament = Medicament.objects.get(id=id_medicament)
+
+        arivage_item = Arivage_items.objects.create(arivage=arivage, medicament=medicament, date_expired=date_expired, qnt=qnt)
+
+        if arivage_item.id is not None:
+            return Response(status=status.HTTP_201_CREATED, data={"status": "Arivage item created sucsusfully"}) 
+        
+        else:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def updateArivageItem(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        
+        id = request.data.pop("id")
+        date = request.data.pop("date_expired")
+        qnt = request.data.pop("qnt")
+
+        date = date.split("/")
+        date_expired = datetime.date(int(date[0], int(date[1])), int(date[2]))
+
+
+        Arivage_item_to_to_update = Arivage_items.objects.get(id=id)
+
+        if not Arivage_item_to_to_update.qnt == qnt:
+            Arivage_item_to_to_update.qnt = qnt
+        if not Arivage_item_to_to_update.date_expired == date_expired:
+            Arivage_item_to_to_update.date_expired = date_expired
+        
+        Arivage_item_to_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"Arivage item updated"})
+
+
+@api_view(['DELETE'])
+def deleteArivageItem(request):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        Arivage_items.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"Arivage item deleted"})
+
+
+
+
+
+
