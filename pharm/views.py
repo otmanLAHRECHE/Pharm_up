@@ -16,23 +16,6 @@ from rest_framework import status
 
 
 
-class SourceViewSet(viewsets.ModelViewSet):
-    queryset = Source.objects.all()
-    serializer_class = SourceSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-
-        if user.is_authenticated:
-            return Source.objects.all() 
-        raise PermissionDenied()
-    
-    def perform_create(self, serializer):
-        serializer.save()
-
-    def perform_update(self, serializer):
-        serializer.save()
 
 
 @api_view(['GET'])
@@ -375,3 +358,66 @@ def deleteBonSortieItem(request):
         id = request.data.pop("id")
         Sortie_items.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Bon sortie item deleted"})
+
+
+@api_view(['GET'])
+def getAllFournisseurs(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Fournisseur.objects.all()
+        print(queryset)
+
+        source_serial = FournisseurSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)    
+
+
+@api_view(['POST'])
+def createNewFournisseur(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        name = request.data.pop('name')
+        address = request.data.pop('address')
+        email_adress = request.data.pop('email_adress')
+        phone_nbr = request.data.pop('phone_nbr')
+
+        fournisseur = Fournisseur.objects.create(name=name, address=address, email_adress=email_adress, phone_nbr=phone_nbr)
+
+        if fournisseur.id is not None:
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def updateFournisseur(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        id = request.data.get('id')
+        name = request.data.pop('name')
+        address = request.data.pop('address')
+        email_adress = request.data.pop('email_adress')
+        phone_nbr = request.data.pop('phone_nbr')
+
+        fournisseur_to_update = Fournisseur.objects.get(id=id)
+        if not fournisseur_to_update.name == name:
+            fournisseur_to_update.name = name
+        if not fournisseur_to_update.address == address:
+            fournisseur_to_update.address = address
+        if not fournisseur_to_update.email_adress == email_adress:
+            fournisseur_to_update.email_adress = email_adress
+        if not fournisseur_to_update.phone_nbr == phone_nbr:
+            fournisseur_to_update.phone_nbr = phone_nbr
+        
+        fournisseur_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"Fournisseur updated"})
+
+
+@api_view(['DELETE'])
+def deleteSource(request):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        id = request.data.pop("id")
+        Fournisseur.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"Fournisseur deleted"})
