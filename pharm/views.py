@@ -425,11 +425,11 @@ def deleteFournisseur(request):
 
 
 @api_view(['GET'])
-def getAllBonSorties(request):
+def getAllBonCommande(request):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = Bon_sortie.objects.all()
+        queryset = Bon_commande.objects.all()
 
-        source_serial = BonSortieSerializer(queryset, many=True)
+        source_serial = BonCommandeSerializer(queryset, many=True)
 
         return Response(status=status.HTTP_200_OK,data=source_serial.data)
                 
