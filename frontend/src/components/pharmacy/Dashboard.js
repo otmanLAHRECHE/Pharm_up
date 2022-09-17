@@ -11,12 +11,27 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
+import VaccinesIcon from '@mui/icons-material/Vaccines';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import PeopleIcon from '@mui/icons-material/People';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import LayersIcon from '@mui/icons-material/Layers';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import EventIcon from '@mui/icons-material/Event';
+import OutputIcon from '@mui/icons-material/Output';
+import InputIcon from '@mui/icons-material/Input';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from './listItems';
 import Dashboard_app from './Dashboard_data';
+import Medicaments from './Medicaments';
 
 
 
@@ -74,6 +89,52 @@ function DashboardContent() {
     setOpen(!open);
   };
 
+  const [toolBar,setToolBar] = React.useState("Dashboard")
+
+  const clickDashboard = () =>{
+    
+      setPage([true,false,false,false,false,false])
+      setToolBar("Dashboard")
+  };
+
+  const clickSortie= () =>{
+  
+    setPage([false,true,false,false,false,false])
+    setToolBar("Bons de sortie")
+   
+  
+  };
+
+  const clickCommande = () =>{
+  
+    setPage([false,false,true,false,false,false])
+    setToolBar("Bons de commande")
+  
+  };
+  const clickStock= () =>{
+  
+    setPage([false,false,false,true,false,false])
+    setToolBar("Stock des médicaments")
+  
+  };
+  const clickMedic= () =>{
+  
+    setPage([false,false,false,false,true,false])
+    setToolBar("Liste des médicaments")
+  
+  };
+  const clickExpired= () =>{
+  
+    setPage([false,false,false,false,false,true])
+    setToolBar("Rappel d'expiration")
+  
+  };
+
+
+  const [page, setPage] = React.useState([true,false,false,false,false,false]);
+  
+  
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
@@ -103,7 +164,7 @@ function DashboardContent() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              {toolBar}
             </Typography>
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
@@ -127,9 +188,47 @@ function DashboardContent() {
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems}
+                <ListItemButton selected = {page[0]} onClick={clickDashboard}>
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard"/>
+                </ListItemButton>
+                <ListItemButton selected={page[1]} onClick={clickSortie}>
+                  <ListItemIcon>
+                    <OutputIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Bon de sortie" />
+                </ListItemButton>
+                <ListItemButton selected={page[2]} onClick={clickCommande}>
+                  <ListItemIcon>
+                    <InputIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Bon de commande" />
+                </ListItemButton>
+                <ListItemButton selected={page[3]} onClick={clickStock}>
+                  <ListItemIcon>
+                    <InventoryIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Stock médicaments" />
+                </ListItemButton>
+                
             <Divider sx={{ my: 1 }} />
-            {secondaryListItems}
+                    <ListSubheader component="div" inset>
+                      Autre options
+                    </ListSubheader>
+                    <ListItemButton selected={page[4]} onClick={clickMedic}>
+                      <ListItemIcon>
+                        <VaccinesIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Médicaments" />
+                    </ListItemButton>
+                    <ListItemButton selected={page[5]} onClick={clickExpired}>
+                      <ListItemIcon>
+                        <EventIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="rappel d'expiration" />
+                    </ListItemButton>
           </List>
         </Drawer>
         <Box
@@ -147,8 +246,13 @@ function DashboardContent() {
         <Toolbar />
 
         
-
-        <Dashboard_app/>
+        {page[0] ? <Dashboard_app/> : null}
+        {page[1] ? <Medicaments/> : null}
+        {page[2] ? <Dashboard_app/> : null}
+        {page[3] ? <Dashboard_app/> : null}
+        {page[4] ? <Dashboard_app/> : null}
+        {page[5] ? <Dashboard_app/> : null}
+        
 
         
           
