@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 // CHECK TOKEN & LOAD USER
 export const loadUser = () => async (token) => {
+  
   const response = await fetch(
       '/accounts/auth/users/me/',
       {
@@ -48,7 +49,6 @@ export const login_api = async (username, password) => {
   const text = await response.text();
   if (response.status === 200) {
     console.log("success", JSON.parse(text).auth_token);
-    console.log("Yeah! Authenticated! and stored");
     await localStorage.setItem("auth_token", JSON.parse(text).auth_token);
     return "logged";
 

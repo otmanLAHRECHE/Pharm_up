@@ -1,5 +1,6 @@
 import datetime
 from os import stat
+from wsgiref.util import request_uri
 from django.shortcuts import render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.exceptions import PermissionDenied
@@ -76,7 +77,6 @@ def deleteSource(request):
 def getAllMedicaments(request):
     if request.method == 'GET' and request.user.is_authenticated:
         queryset = Medicament.objects.all()
-        print(queryset)
 
         source_serial = MedicamentSerialize(queryset, many=True)
 

@@ -1,8 +1,7 @@
 
 
+export async function getAllMedic(token){
 
-
-export const getAllMedicaments = () => async (token) => {
     const response = await fetch(
         '/pharm/api/get_all_medicaments/',
         {
@@ -10,7 +9,7 @@ export const getAllMedicaments = () => async (token) => {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization':`Token ${token}`,
+            'Authorization': 'Token ' +token,
           },
           body: JSON.stringify()
         }
@@ -26,4 +25,7 @@ export const getAllMedicaments = () => async (token) => {
       });
       return "no data";
     }
-  };
+
+};
+
+
