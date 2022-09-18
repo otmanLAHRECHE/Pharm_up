@@ -55,20 +55,31 @@ const columns = [
 
 export default function Medicaments(){
 
-
+    const [medicNameError, setMedicNameError] = React.useState([false, ""]);
+    const [medicCodeError, setMedicCodeError] = React.useState([false, ""]);
+    const [medicDoseError, setMedicDoseError] = React.useState([false, ""]);
+    const [unitDoseError, setUnitDoseError] = React.useState([false, ""]);
+    const [medicPlaceError, setMedicPlaceError] = React.useState([false, ""]);
+    const [medicTypeError, setMedicTypeError] = React.useState([false, ""]);
     const [data, setData] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [openUpdate, setOpenUpdate] = React.useState(false);
 
     const [unite, setUnite] = React.useState(0);
+    const [type, setType] = React.useState("")
 
+    const addMedicSave = () => {
+      
+
+    }
     const change_dose = (event) => {
       setUnite(event.target.value);
     };
 
     const addMedicOpen = () => {
       setOpen(true);
+      setUnite(0)
     };
   
     const addMedicClose = () => {
@@ -161,10 +172,12 @@ export default function Medicaments(){
                 </Grid>  
 
 
-                <Dialog open={open} onClose={addMedicClose} maxWidth="md">
+                <Dialog open={open} onClose={addMedicClose} maxWidth="md" fullWidth={true}>
                     <DialogTitle>Ajouter médicament</DialogTitle>
                         <DialogContent>
                           <TextField
+                            error={medicNameError[0]}
+                            helperText={medicNameError[1]}
                             margin="dense"
                             id="medic_name"
                             label="Nom de médicament"
@@ -172,6 +185,8 @@ export default function Medicaments(){
                             variant="standard"
                           />
                           <TextField
+                            error={medicCodeError[0]}
+                            helperText={medicCodeError[1]}
                             margin="dense"
                             id="medic_code"
                             label="Code de médicament"
@@ -183,18 +198,26 @@ export default function Medicaments(){
                           <Grid container spacing={2}>
                             <Grid item xs={8}>
                               <TextField
+                                    error={medicDoseError[0]}
+                                    helperText={medicDoseError[1]}
                                     margin="dense"
                                     id="medic_dose"
                                     label="Dose de médicament"
                                     fullWidth
                                     variant="standard"
+                                    type="number"
+                                    InputLabelProps={{
+                                      shrink: true,
+                                    }}
                               />
 
                             </Grid>
                             <Grid item xs={4}>
                                     <FormControl variant="standard" sx={{ m: 1, minWidth: 100 }}>
                                       <InputLabel id="demo-simple-select-standard-label">Unité de dose</InputLabel>
-                                      <Select
+                                      <Select                            
+                                          error={unitDoseError[0]}
+                                          helperText={unitDoseError[1]}
                                           labelId="demo-simple-select-label"
                                           id="demo-simple-select"
                                           value={unite}
@@ -212,23 +235,41 @@ export default function Medicaments(){
                           </Grid>
                           
                           <TextField
+                          
+                            error={unitDoseError[0]}
+                            helperText={unitDoseError[1]}
                             margin="dense"
                             id="medic_place"
                             label="Place de médicament"
                             fullWidth
                             variant="standard"
                           />
-                          <TextField
-                            margin="dense"
-                            id="medic_type"
-                            label="Type de médicament"
-                            fullWidth
-                            variant="standard"
-                          />
+                          
+                            <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
+                                <InputLabel htmlFor="grouped-select">Grouping</InputLabel>
+                                  <Select defaultValue="" id="grouped-select" label="Type de médicament"
+                    
+                                  error={medicTypeError[0]}
+                                  helperText={medicTypeError[1]}>
+                                    <MenuItem value="">
+                                      <em>None</em>
+                                    </MenuItem>
+                                    <ListSubheader>Category 1</ListSubheader>
+                                    <MenuItem value={1}>Option 1</MenuItem>
+                                    <MenuItem value={2}>Option 2</MenuItem>
+                                    <ListSubheader>Category 2</ListSubheader>
+                                    <MenuItem value={3}>Option 3</MenuItem>
+                                    <MenuItem value={4}>Option 4</MenuItem>
+                                    
+                                    <ListSubheader>Category 2</ListSubheader>
+                                    <MenuItem value={5}>Option 3</MenuItem>
+                                    <MenuItem value={6}>Option 4</MenuItem>
+                                  </Select>
+                              </FormControl>
                         </DialogContent>
                         <DialogActions>
                           <Button onClick={addMedicClose}>Anuller</Button>
-                          <Button >Sauvgarder</Button>
+                          <Button onClick={addMedicSave}>Sauvgarder</Button>
                         </DialogActions>
                   </Dialog>
                          
