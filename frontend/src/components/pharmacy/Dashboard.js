@@ -247,10 +247,10 @@ function DashboardContent() {
 
         
         {page[0] ? <Dashboard_app/> : null}
-        {page[1] ? <Medicaments/> : null}
+        {page[1] ? <Dashboard_app/> : null}
         {page[2] ? <Dashboard_app/> : null}
         {page[3] ? <Dashboard_app/> : null}
-        {page[4] ? <Dashboard_app/> : null}
+        {page[4] ? <Medicaments/> : null}
         {page[5] ? <Dashboard_app/> : null}
         
 
