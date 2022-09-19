@@ -61,20 +61,48 @@ export default function Medicaments(){
     const [unitDoseError, setUnitDoseError] = React.useState([false, ""]);
     const [medicPlaceError, setMedicPlaceError] = React.useState([false, ""]);
     const [medicTypeError, setMedicTypeError] = React.useState([false, ""]);
+
+    const [medicName, setMedicName] = React.useState("");
+    const [medicCode, setMedicCode] = React.useState("");
+    const [medicDose, setMedicDose] = React.useState("");
+    const [unitDose, setUnitDose] = React.useState("");
+    const [medicPlace, setMedicPlace] = React.useState("");
+    const [medicType, setMedicType] = React.useState("");
+
     const [data, setData] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [openUpdate, setOpenUpdate] = React.useState(false);
-
     const [unite, setUnite] = React.useState(0);
     const [type, setType] = React.useState("")
 
-    const addMedicSave = () => {
+
+    
+
+    const addMedicSave = async () => {
+
       
 
-    }
+      console.log()
+
+      }
+
+
     const change_dose = (event) => {
       setUnite(event.target.value);
+      if (event.target.value == 0){
+        setUnitDose("None")
+
+      }else if (event.target.value == 1){
+        setUnitDose("mg")
+
+      }else if (event.target.value == 2){
+        setUnitDose("ml")
+
+      }else if (event.target.value == 3){
+        setUnitDose("l")
+
+      }
     };
 
     const addMedicOpen = () => {
@@ -172,26 +200,31 @@ export default function Medicaments(){
                 </Grid>  
 
 
-                <Dialog open={open} onClose={addMedicClose} maxWidth="md" fullWidth={true}>
+                <Dialog open={open} onClose={addMedicClose}  maxWidth="md" fullWidth={true}>
                     <DialogTitle>Ajouter médicament</DialogTitle>
                         <DialogContent>
                           <TextField
                             error={medicNameError[0]}
                             helperText={medicNameError[1]}
+                            required
                             margin="dense"
+                            name="medic_name"
                             id="medic_name"
                             label="Nom de médicament"
                             fullWidth
                             variant="standard"
+                            onChange={(event) => {setMedicName(event.target.value)}}
                           />
                           <TextField
                             error={medicCodeError[0]}
                             helperText={medicCodeError[1]}
+                            required
                             margin="dense"
                             id="medic_code"
                             label="Code de médicament"
                             fullWidth
                             variant="standard"
+                            onChange={(event) => {setMedicName(event.target.value)}}
                           />
                           
 
@@ -214,10 +247,11 @@ export default function Medicaments(){
                             </Grid>
                             <Grid item xs={4}>
                                     <FormControl variant="standard" sx={{ m: 1, minWidth: 100 }}>
-                                      <InputLabel id="demo-simple-select-standard-label">Unité de dose</InputLabel>
+                                      <InputLabel id="demo-simple-select-standard-label"
+                                      error={unitDoseError[0]}
+                                      helperText={unitDoseError[1]}>Unité de dose</InputLabel>
                                       <Select                            
-                                          error={unitDoseError[0]}
-                                          helperText={unitDoseError[1]}
+                                          
                                           labelId="demo-simple-select-label"
                                           id="demo-simple-select"
                                           value={unite}
@@ -234,8 +268,7 @@ export default function Medicaments(){
                             </Grid>
                           </Grid>
                           
-                          <TextField
-                          
+                          <TextField           
                             error={unitDoseError[0]}
                             helperText={unitDoseError[1]}
                             margin="dense"
@@ -246,11 +279,10 @@ export default function Medicaments(){
                           />
                           
                             <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
-                                <InputLabel htmlFor="grouped-select">Grouping</InputLabel>
-                                  <Select defaultValue="" id="grouped-select" label="Type de médicament"
-                    
-                                  error={medicTypeError[0]}
-                                  helperText={medicTypeError[1]}>
+                                <InputLabel required htmlFor="grouped-select"
+                                error={medicTypeError[0]}
+                                helperText={medicTypeError[1]}>Grouping</InputLabel>
+                                  <Select defaultValue="" id="grouped-select" label="Type de médicament">
                                     <MenuItem value="">
                                       <em>None</em>
                                     </MenuItem>
