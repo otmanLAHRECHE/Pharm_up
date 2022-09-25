@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -79,18 +79,12 @@ export default function Medicaments(){
     const [openUpdate, setOpenUpdate] = React.useState(false);
     const [unite, setUnite] = React.useState(0);
     const [selectionModel, setSelectionModel] = React.useState([]);
-    const [selectionError, setSelectionError] = React.useState(false)
+    const [selectionError, setSelectionError] = React.useState(false);
+    const [typeValue, setTypeValue] = React.useState();
     
-
-
-    
-
-
     
 
     const addMedicSave = async () => {
-
-      
 
       var test = true;
 
@@ -167,7 +161,12 @@ export default function Medicaments(){
   
         }else if (event.target.value == 3){
           setMedicType("type3")
-  
+        }else if (event.target.value == 4){
+          setMedicType("type4")
+        }else if (event.target.value == 5){
+          setMedicType("type5")
+        }else if (event.target.value == 6){
+          setMedicType("type6")
         }
 
       }
@@ -227,18 +226,42 @@ export default function Medicaments(){
       setOpenUpdate(true);
       setLoadError(false);
 
+      console.log(selectionModel[0])
+
       var row = data[selectionModel[0]];
 
       console.log(row);
 
-      setUnite(0);
-      setMedicName("");
-      setMedicCode("")
-      setMedicDose("")
-      setUnitDose("")
-      setMedicPlace("")
-      setMedicType("")
-      setUnitDose("None")
+      setMedicName(row.medic_name);
+      setMedicCode(row.medic_code)
+      setMedicDose(row.medic_dose)
+      setMedicPlace(row.medic_place)
+      
+      
+      if(row.medic_type == "type1"){
+        setTypeValue(1);
+      }else if(row.medic_type == "type2"){
+        setTypeValue(2);
+      }else if(row.medic_type == "type3"){
+        setTypeValue(3);
+      }else if(row.medic_type == "type4"){
+        setTypeValue(4);
+      }else if(row.medic_type == "type5"){
+        setTypeValue(5);
+      }else if(row.medic_type == "type6"){
+        setTypeValue(6);
+      }
+
+      if(row.dose_unit == "None"){
+        setUnite(0)
+      }else if(row.dose_unit == "ml"){
+        setUnite(2)
+      }else if(row.dose_unit == "mg"){
+        setUnite(1)
+      }else if(row.dose_unit == "l"){
+        setUnite(3)
+      }
+
 
       setMedicNameError([false, ""])
       setMedicCodeError([false, ""])
@@ -300,6 +323,9 @@ export default function Medicaments(){
                   <Grid item xs={9}>
                     <div style={{ height: 700, width: '100%' }}>
                           <DataGrid
+                            components={{
+                              Toolbar: GridToolbar,
+                            }}
                               rows={data}
                               columns={columns}
                               pageSize={15}
@@ -469,6 +495,7 @@ export default function Medicaments(){
                             label="Nom de médicament"
                             fullWidth
                             variant="standard"
+                            value={medicName}
                             onChange={(event) => {setMedicName(event.target.value)}}
                           />
                           <TextField
@@ -480,6 +507,7 @@ export default function Medicaments(){
                             label="Code de médicament"
                             fullWidth
                             variant="standard"
+                            value={medicCode}
                             onChange={(event) => {setMedicCode(event.target.value)}}
                           />
                           
@@ -495,6 +523,7 @@ export default function Medicaments(){
                                     fullWidth
                                     variant="standard"
                                     type="number"
+                                    value={medicDose}
                                     InputLabelProps={{
                                       shrink: true,
                                     }}
@@ -531,6 +560,7 @@ export default function Medicaments(){
                             label="Place de médicament"
                             fullWidth
                             variant="standard"
+                            value={medicPlace}
                             onChange={(event) => {setMedicPlace(event.target.value)}}
                           />
                           
@@ -539,7 +569,8 @@ export default function Medicaments(){
                                 error={medicTypeError[0]}
                                 helperText={medicTypeError[1]}>Type de médicament</InputLabel>
                                   <Select defaultValue="" id="grouped-select" label="Type de médicament"
-                                  onChange={change_type}>
+                                  onChange={change_type}
+                                  value ={typeValue}>
                                     <MenuItem value="">
                                       <em>None</em>
                                     </MenuItem>
