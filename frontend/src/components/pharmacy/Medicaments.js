@@ -27,7 +27,7 @@ import Container from '@mui/material/Container';
 
 import Grid from '@mui/material/Grid';
 
-import { getAllMedic } from '../../actions/medicament_data';
+import { getAllMedic, addNewMedic } from '../../actions/medicament_data';
 import Alt from '../layouts/alert';
 
 const columns = [
@@ -69,13 +69,18 @@ export default function Medicaments(){
     const [medicPlace, setMedicPlace] = React.useState("");
     const [medicType, setMedicType] = React.useState("");
     const [loadError, setLoadError ] = React.useState(false);
-    const [response, setResponse] = React.useState(false);
+    const [response, setResponse] = React.useState("");
+    const [responseSuccesSignal, setResponseSuccesSignal] = React.useState(false);
+    const [responseErrorSignal, setResponseErrorSignal] = React.useState(false);
 
     const [data, setData] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [openUpdate, setOpenUpdate] = React.useState(false);
     const [unite, setUnite] = React.useState(0);
+    const [selectionModel, setSelectionModel] = React.useState([]);
+    const [selectionError, setSelectionError] = React.useState(false)
+    
 
 
     
@@ -84,6 +89,8 @@ export default function Medicaments(){
     
 
     const addMedicSave = async () => {
+
+      
 
       var test = true;
 
@@ -121,13 +128,21 @@ export default function Medicaments(){
         setOpen(false);
 
         const data = {
-          "medic_name":{medicName},
-          "medic_code":{medicName},
-          "medic_name":{medicName},
-          "medic_name":{medicName},
-          "medic_name":{medicName},
+          medic_name:medicName,
+          medic_code:medicCode,
+          medic_dose:medicDose,
+          dose_unit:unitDose,
+          medic_place:medicPlace,
+          medic_type:medicType,
+        }
 
-        } 
+        console.log("data", JSON.stringify(data));
+
+
+        const token = localStorage.getItem("auth_token");
+
+        setResponse(await addNewMedic(token, JSON.stringify(data))); 
+        
       }
       else{
         
@@ -175,6 +190,8 @@ export default function Medicaments(){
     };
 
     const addMedicOpen = () => {
+
+      
       
       setLoadError(false)
       setOpen(true);
@@ -191,6 +208,8 @@ export default function Medicaments(){
       setMedicDoseError([false, ""])
       setUnitDoseError([false, ""])
       setMedicTypeError([false, ""])
+      setResponseErrorSignal(false);
+      setResponseSuccesSignal(false);
     };
   
     const addMedicClose = () => {
@@ -198,7 +217,39 @@ export default function Medicaments(){
     };
 
     const editMedicOpen= () => {
+
+      setSelectionError(false);
+
+      if(selectionModel.length == 0){
+        setSelectionError(true);
+      }else{
+
       setOpenUpdate(true);
+      setLoadError(false);
+
+      var row = data[selectionModel[0]];
+
+      console.log(row);
+
+      setUnite(0);
+      setMedicName("");
+      setMedicCode("")
+      setMedicDose("")
+      setUnitDose("")
+      setMedicPlace("")
+      setMedicType("")
+      setUnitDose("None")
+
+      setMedicNameError([false, ""])
+      setMedicCodeError([false, ""])
+      setMedicDoseError([false, ""])
+      setUnitDoseError([false, ""])
+      setMedicTypeError([false, ""])
+      setResponseErrorSignal(false);
+      setResponseSuccesSignal(false);
+
+      }
+
     };
   
     const editMedicClose = () => {
@@ -208,9 +259,18 @@ export default function Medicaments(){
     const deleteMedic = () => {
       setOpen(true);
     };
+   
+    React.useEffect(() => {
 
-    
-  
+      console.log(response);
+
+      if (response == "error"){
+        setResponseErrorSignal(true);
+      } else if(response != "") {
+        setResponseSuccesSignal(true);
+      }
+
+    }, [response]);
 
     React.useEffect(() => {
 
@@ -228,7 +288,7 @@ export default function Medicaments(){
   
       fetchData();
 
-    }, []);
+    }, [response]);
 
     return(
 
@@ -243,9 +303,14 @@ export default function Medicaments(){
                               rows={data}
                               columns={columns}
                               pageSize={15}
-                              checkboxSelection
+                              checkboxSelection = {false}
                               loading={loading}
-                              disableSelectionOnClick
+                              disableMultipleSelection={true}
+                              onSelectionModelChange={(newSelectionModel) => {
+                                setSelectionModel(newSelectionModel);
+                              }}
+                              selectionModel={selectionModel}
+                              
                           />
                     </div>   
                   </Grid>
@@ -266,7 +331,7 @@ export default function Medicaments(){
                             </ListItemIcon>
                             <ListItemText primary="Ajouter médicament" />
                           </ListItemButton>
-                          <ListItemButton>
+                          <ListItemButton onClick={editMedicOpen}>
                             <ListItemIcon>
                               <EditIcon />
                             </ListItemIcon>
@@ -359,7 +424,7 @@ export default function Medicaments(){
                             label="Place de médicament"
                             fullWidth
                             variant="standard"
-                            onChange={(event) => {medicPlace(event.target.value)}}
+                            onChange={(event) => {setMedicPlace(event.target.value)}}
                           />
                           
                             <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
@@ -389,11 +454,121 @@ export default function Medicaments(){
                           <Button onClick={addMedicSave}>Sauvgarder</Button>
                         </DialogActions>
                   </Dialog>
+
+
+                  <Dialog open={openUpdate} onClose={editMedicClose}  maxWidth="md" fullWidth={true}>
+                    <DialogTitle>Modifier le médicament</DialogTitle>
+                        <DialogContent>
+                          <TextField
+                            error={medicNameError[0]}
+                            helperText={medicNameError[1]}
+                            required
+                            margin="dense"
+                            name="medic_name"
+                            id="medic_name"
+                            label="Nom de médicament"
+                            fullWidth
+                            variant="standard"
+                            onChange={(event) => {setMedicName(event.target.value)}}
+                          />
+                          <TextField
+                            error={medicCodeError[0]}
+                            helperText={medicCodeError[1]}
+                            required
+                            margin="dense"
+                            id="medic_code"
+                            label="Code de médicament"
+                            fullWidth
+                            variant="standard"
+                            onChange={(event) => {setMedicCode(event.target.value)}}
+                          />
+                          
+
+                          <Grid container spacing={2}>
+                            <Grid item xs={8}>
+                              <TextField
+                                    error={medicDoseError[0]}
+                                    helperText={medicDoseError[1]}
+                                    margin="dense"
+                                    id="medic_dose"
+                                    label="Dose de médicament"
+                                    fullWidth
+                                    variant="standard"
+                                    type="number"
+                                    InputLabelProps={{
+                                      shrink: true,
+                                    }}
+                                    onChange={(event) => {setMedicDose(event.target.value)}}
+                              />
+
+                            </Grid>
+                            <Grid item xs={4}>
+                                    <FormControl variant="standard" sx={{ m: 1, minWidth: 100 }}>
+                                      <InputLabel id="demo-simple-select-standard-label"
+                                      error={unitDoseError[0]}
+                                      helperText={unitDoseError[1]}>Unité de dose</InputLabel>
+                                      <Select                            
+                                          
+                                          labelId="demo-simple-select-label"
+                                          id="demo-simple-select"
+                                          value={unite}
+                                          label="Unité de Dose"
+                                          onChange={change_dose}
+                                      >
+                                            <MenuItem value={0}>none</MenuItem>
+                                            <MenuItem value={1}>mg</MenuItem>
+                                            <MenuItem value={2}>ml</MenuItem>
+                                            <MenuItem value={3}>l</MenuItem>
+                                      </Select>
+
+                                   </FormControl>
+                            </Grid>
+                          </Grid>
+                          
+                          <TextField           
+                            margin="dense"
+                            id="medic_place"
+                            label="Place de médicament"
+                            fullWidth
+                            variant="standard"
+                            onChange={(event) => {setMedicPlace(event.target.value)}}
+                          />
+                          
+                            <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
+                                <InputLabel required htmlFor="grouped-select"
+                                error={medicTypeError[0]}
+                                helperText={medicTypeError[1]}>Type de médicament</InputLabel>
+                                  <Select defaultValue="" id="grouped-select" label="Type de médicament"
+                                  onChange={change_type}>
+                                    <MenuItem value="">
+                                      <em>None</em>
+                                    </MenuItem>
+                                    <ListSubheader>Category 1</ListSubheader>
+                                    <MenuItem value={1}>Option 1</MenuItem>
+                                    <MenuItem value={2}>Option 2</MenuItem>
+                                    <ListSubheader>Category 2</ListSubheader>
+                                    <MenuItem value={3}>Option 3</MenuItem>
+                                    <MenuItem value={4}>Option 4</MenuItem>
+                                    
+                                    <ListSubheader>Category 2</ListSubheader>
+                                    <MenuItem value={5}>Option 3</MenuItem>
+                                    <MenuItem value={6}>Option 4</MenuItem>
+                                  </Select>
+                              </FormControl>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={editMedicClose}>Anuller</Button>
+                          <Button onClick={addMedicSave}>Sauvgarder</Button>
+                        </DialogActions>
+                  </Dialog>
                          
         </Container>
 
 
         {loadError ? <Alt type='error' message='Des erruers sur les données' /> : null}
+        {responseSuccesSignal ? <Alt type='success' message='Opération réussie' /> : null}
+        {responseErrorSignal ? <Alt type='error' message='Opération a échoué' /> : null}
+        {selectionError ? <Alt type='error' message='Selectioner un médicament' /> : null}
       
         </React.Fragment>
 
