@@ -28,6 +28,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 
 import { getAllMedic } from '../../actions/medicament_data';
+import Alt from '../layouts/alert';
 
 const columns = [
     { field: 'id', headerName: 'Id', width: 90 },
@@ -48,7 +49,7 @@ const columns = [
     { field: 'medic_place', headerName: 'Place de médicament', width: 150 },
   ];
 
-  const token = localStorage.getItem("auth_token");
+  
   
   
 
@@ -59,7 +60,6 @@ export default function Medicaments(){
     const [medicCodeError, setMedicCodeError] = React.useState([false, ""]);
     const [medicDoseError, setMedicDoseError] = React.useState([false, ""]);
     const [unitDoseError, setUnitDoseError] = React.useState([false, ""]);
-    const [medicPlaceError, setMedicPlaceError] = React.useState([false, ""]);
     const [medicTypeError, setMedicTypeError] = React.useState([false, ""]);
 
     const [medicName, setMedicName] = React.useState("");
@@ -68,25 +68,94 @@ export default function Medicaments(){
     const [unitDose, setUnitDose] = React.useState("");
     const [medicPlace, setMedicPlace] = React.useState("");
     const [medicType, setMedicType] = React.useState("");
+    const [loadError, setLoadError ] = React.useState(false);
+    const [response, setResponse] = React.useState(false);
 
     const [data, setData] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [openUpdate, setOpenUpdate] = React.useState(false);
     const [unite, setUnite] = React.useState(0);
-    const [type, setType] = React.useState("")
+
+
+    
 
 
     
 
     const addMedicSave = async () => {
 
-      
+      var test = true;
 
-      console.log()
+      setMedicNameError([false, ""])
+      setMedicCodeError([false, ""])
+      setMedicDoseError([false, ""])
+      setUnitDoseError([false, ""])
+      setMedicTypeError([false, ""])
+
+
+      if (medicName == ""){
+        setMedicNameError([true,"Ce champ est obligatoire"])
+        test = false;
+      }
+      if (medicCode == ""){
+        setMedicCodeError([true,"Ce champ est obligatoire"])
+        test = false;
+      }
+      if (medicDose == "" && unite!=0){
+        setMedicDoseError([true, "Ce champ est obligatoire quand l'unité de dose est définé!"])
+        test = false;
+      }
+
+      if (medicDose != "" && unite==0){
+        setUnitDoseError([true, "Ce champ est obligatoire"])
+        test = false;
+      }
+      if (medicType == ""){
+        setMedicTypeError([true, "Ce champ est obligatoire"])
+        test = false;
+      }
+
+      if (test){
+        console.log("good to go....")
+        setOpen(false);
+
+        const data = {
+          "medic_name":{medicName},
+          "medic_code":{medicName},
+          "medic_name":{medicName},
+          "medic_name":{medicName},
+          "medic_name":{medicName},
+
+        } 
+      }
+      else{
+        
+        setLoadError(true)
+        console.log("error")
 
       }
 
+      }
+    
+
+      const change_type = (event) => {
+
+        if (event.target.value == ""){
+          setMedicType("")
+  
+        }else if (event.target.value == 1){
+          setMedicType("type1")
+  
+        }else if (event.target.value == 2){
+          setMedicType("type2")
+  
+        }else if (event.target.value == 3){
+          setMedicType("type3")
+  
+        }
+
+      }
 
     const change_dose = (event) => {
       setUnite(event.target.value);
@@ -106,8 +175,22 @@ export default function Medicaments(){
     };
 
     const addMedicOpen = () => {
+      
+      setLoadError(false)
       setOpen(true);
       setUnite(0)
+      setMedicName("");
+      setMedicCode("")
+      setMedicDose("")
+      setUnitDose("")
+      setMedicPlace("")
+      setMedicType("")
+      setUnitDose("None")
+      setMedicNameError([false, ""])
+      setMedicCodeError([false, ""])
+      setMedicDoseError([false, ""])
+      setUnitDoseError([false, ""])
+      setMedicTypeError([false, ""])
     };
   
     const addMedicClose = () => {
@@ -135,6 +218,7 @@ export default function Medicaments(){
 
       const fetchData = async () => {
         try {
+          const token = localStorage.getItem("auth_token");
           setData(await getAllMedic(token));
           setLoading(false);
         } catch (error) {
@@ -224,7 +308,7 @@ export default function Medicaments(){
                             label="Code de médicament"
                             fullWidth
                             variant="standard"
-                            onChange={(event) => {setMedicName(event.target.value)}}
+                            onChange={(event) => {setMedicCode(event.target.value)}}
                           />
                           
 
@@ -242,6 +326,7 @@ export default function Medicaments(){
                                     InputLabelProps={{
                                       shrink: true,
                                     }}
+                                    onChange={(event) => {setMedicDose(event.target.value)}}
                               />
 
                             </Grid>
@@ -269,20 +354,20 @@ export default function Medicaments(){
                           </Grid>
                           
                           <TextField           
-                            error={unitDoseError[0]}
-                            helperText={unitDoseError[1]}
                             margin="dense"
                             id="medic_place"
                             label="Place de médicament"
                             fullWidth
                             variant="standard"
+                            onChange={(event) => {medicPlace(event.target.value)}}
                           />
                           
                             <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
                                 <InputLabel required htmlFor="grouped-select"
                                 error={medicTypeError[0]}
-                                helperText={medicTypeError[1]}>Grouping</InputLabel>
-                                  <Select defaultValue="" id="grouped-select" label="Type de médicament">
+                                helperText={medicTypeError[1]}>Type de médicament</InputLabel>
+                                  <Select defaultValue="" id="grouped-select" label="Type de médicament"
+                                  onChange={change_type}>
                                     <MenuItem value="">
                                       <em>None</em>
                                     </MenuItem>
@@ -306,6 +391,9 @@ export default function Medicaments(){
                   </Dialog>
                          
         </Container>
+
+
+        {loadError ? <Alt type='error' message='Des erruers sur les données' /> : null}
       
         </React.Fragment>
 

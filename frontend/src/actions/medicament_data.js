@@ -1,7 +1,7 @@
 
 
 export async function getAllMedic(token){
-
+    console.log("inside methode", token)
     const response = await fetch(
         '/pharm/api/get_all_medicaments/',
         {
