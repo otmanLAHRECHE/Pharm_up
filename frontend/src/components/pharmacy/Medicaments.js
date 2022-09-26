@@ -27,7 +27,7 @@ import Container from '@mui/material/Container';
 
 import Grid from '@mui/material/Grid';
 
-import { getAllMedic, addNewMedic } from '../../actions/medicament_data';
+import { getAllMedic, addNewMedic, getSelectedMedic } from '../../actions/medicament_data';
 import Alt from '../layouts/alert';
 
 const columns = [
@@ -48,11 +48,6 @@ const columns = [
     
     { field: 'medic_place', headerName: 'Place de médicament', width: 150 },
   ];
-
-  
-  
-  
-
 
 export default function Medicaments(){
 
@@ -81,6 +76,7 @@ export default function Medicaments(){
     const [selectionModel, setSelectionModel] = React.useState([]);
     const [selectionError, setSelectionError] = React.useState(false);
     const [typeValue, setTypeValue] = React.useState();
+    const [rowData, setRowData] = React.useState("");
     
     
 
@@ -145,10 +141,8 @@ export default function Medicaments(){
 
       }
 
-      }
-    
-
-      const change_type = (event) => {
+    };
+    const change_type = (event) => {
 
         if (event.target.value == ""){
           setMedicType("")
@@ -169,8 +163,7 @@ export default function Medicaments(){
           setMedicType("type6")
         }
 
-      }
-
+    };
     const change_dose = (event) => {
       setUnite(event.target.value);
       if (event.target.value == 0){
@@ -187,7 +180,6 @@ export default function Medicaments(){
 
       }
     };
-
     const addMedicOpen = () => {
 
       
@@ -210,12 +202,11 @@ export default function Medicaments(){
       setResponseErrorSignal(false);
       setResponseSuccesSignal(false);
     };
-  
     const addMedicClose = () => {
       setOpen(false);
     };
 
-    const editMedicOpen= () => {
+    const editMedicOpen= async () => {
 
       setSelectionError(false);
 
@@ -223,54 +214,15 @@ export default function Medicaments(){
         setSelectionError(true);
       }else{
 
-      setOpenUpdate(true);
-      setLoadError(false);
+        const data = {
+          id:selectionModel[0]
+        };
 
-      console.log(selectionModel[0])
+        console.log(JSON.stringify(data));
 
-      var row = data[selectionModel[0]];
+        const token = localStorage.getItem("auth_token");
 
-      console.log(row);
-
-      setMedicName(row.medic_name);
-      setMedicCode(row.medic_code)
-      setMedicDose(row.medic_dose)
-      setMedicPlace(row.medic_place)
-      
-      
-      if(row.medic_type == "type1"){
-        setTypeValue(1);
-      }else if(row.medic_type == "type2"){
-        setTypeValue(2);
-      }else if(row.medic_type == "type3"){
-        setTypeValue(3);
-      }else if(row.medic_type == "type4"){
-        setTypeValue(4);
-      }else if(row.medic_type == "type5"){
-        setTypeValue(5);
-      }else if(row.medic_type == "type6"){
-        setTypeValue(6);
-      }
-
-      if(row.dose_unit == "None"){
-        setUnite(0)
-      }else if(row.dose_unit == "ml"){
-        setUnite(2)
-      }else if(row.dose_unit == "mg"){
-        setUnite(1)
-      }else if(row.dose_unit == "l"){
-        setUnite(3)
-      }
-
-
-      setMedicNameError([false, ""])
-      setMedicCodeError([false, ""])
-      setMedicDoseError([false, ""])
-      setUnitDoseError([false, ""])
-      setMedicTypeError([false, ""])
-      setResponseErrorSignal(false);
-      setResponseSuccesSignal(false);
-
+        setRowData(await getSelectedMedic(token, JSON.stringify(data))); 
       }
 
     };
@@ -282,6 +234,63 @@ export default function Medicaments(){
     const deleteMedic = () => {
       setOpen(true);
     };
+
+    React.useEffect(() => {
+
+      console.log(rowData);
+
+      if (rowData == "no data"){
+        setResponseErrorSignal(true);
+      } else if(response != "") {
+
+      setOpenUpdate(true);
+      setLoadError(false);
+
+      console.log(rowData.id)
+
+
+      setMedicName(rowData.medic_name);
+      setMedicCode(rowData.medic_code)
+      setMedicDose(rowData.medic_dose)
+      setMedicPlace(rowData.medic_place)
+      
+      
+      if(rowData.medic_type == "type1"){
+        setTypeValue(1);
+      }else if(rowData.medic_type == "type2"){
+        setTypeValue(2);
+      }else if(rowData.medic_type == "type3"){
+        setTypeValue(3);
+      }else if(rowData.medic_type == "type4"){
+        setTypeValue(4);
+      }else if(rowData.medic_type == "type5"){
+        setTypeValue(5);
+      }else if(rowData.medic_type == "type6"){
+        setTypeValue(6);
+      }
+
+      if(rowData.dose_unit == "None"){
+        setUnite(0)
+      }else if(rowData.dose_unit == "ml"){
+        setUnite(2)
+      }else if(rowData.dose_unit == "mg"){
+        setUnite(1)
+      }else if(rowData.dose_unit == "l"){
+        setUnite(3)
+      }
+
+
+      setMedicNameError([false, ""])
+      setMedicCodeError([false, ""])
+      setMedicDoseError([false, ""])
+      setUnitDoseError([false, ""])
+      setMedicTypeError([false, ""])
+      setResponseErrorSignal(false);
+      setResponseSuccesSignal(false);  
+        
+      }
+
+    }, [rowData]);
    
     React.useEffect(() => {
 

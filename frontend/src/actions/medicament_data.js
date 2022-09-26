@@ -29,6 +29,7 @@ export async function getAllMedic(token){
 };
 
 export async function getSelectedMedic(token, data){
+  
   console.log("inside methode", token)
   const response = await fetch(
       '/pharm/api/get_selected_medicament/',

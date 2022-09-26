@@ -91,6 +91,7 @@ def getSelectedMedicament(request):
     if request.method == 'GET' and request.user.is_authenticated:
 
         id = request.data.pop("id")
+
         queryset = Medicament.objects.get(id=id)
 
         source_serial = MedicamentSerialize(queryset)
