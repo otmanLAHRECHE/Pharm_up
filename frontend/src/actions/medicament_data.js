@@ -28,11 +28,10 @@ export async function getAllMedic(token){
 
 };
 
-export async function getSelectedMedic(token, data){
-  
-  console.log("inside methode", token)
-  const response = await fetch(
-      '/pharm/api/get_selected_medicament/',
+export async function getSelectedMedic(token, id){
+
+    const response = await fetch(
+      '/pharm/api/get_selected_medicament/'+id,
       {
         method: 'GET',
         headers: {
@@ -40,7 +39,7 @@ export async function getSelectedMedic(token, data){
           'Content-Type': 'application/json',
           'Authorization': 'Token ' +token,
         },
-        body: data
+        body: JSON.stringify()
       }
   );
   const text = await response.text();

@@ -87,10 +87,8 @@ def getAllMedicaments(request):
         return Response(status=status.HTTP_401_UNAUTHORIZED)    
 
 @api_view(['GET'])
-def getSelectedMedicament(request):
+def getSelectedMedicament(request, id):
     if request.method == 'GET' and request.user.is_authenticated:
-
-        id = request.data.pop("id")
 
         queryset = Medicament.objects.get(id=id)
 

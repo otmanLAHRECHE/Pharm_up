@@ -212,17 +212,10 @@ export default function Medicaments(){
 
       if(selectionModel.length == 0){
         setSelectionError(true);
-      }else{
-
-        const data = {
-          id:selectionModel[0]
-        };
-
-        console.log(JSON.stringify(data));
-
+      }else{    
         const token = localStorage.getItem("auth_token");
 
-        setRowData(await getSelectedMedic(token, JSON.stringify(data))); 
+        setRowData(await getSelectedMedic(token, selectionModel[0])); 
       }
 
     };
@@ -239,56 +232,64 @@ export default function Medicaments(){
 
       console.log(rowData);
 
-      if (rowData == "no data"){
-        setResponseErrorSignal(true);
-      } else if(response != "") {
+      try{
 
-      setOpenUpdate(true);
-      setLoadError(false);
-
-      console.log(rowData.id)
-
-
-      setMedicName(rowData.medic_name);
-      setMedicCode(rowData.medic_code)
-      setMedicDose(rowData.medic_dose)
-      setMedicPlace(rowData.medic_place)
-      
-      
-      if(rowData.medic_type == "type1"){
-        setTypeValue(1);
-      }else if(rowData.medic_type == "type2"){
-        setTypeValue(2);
-      }else if(rowData.medic_type == "type3"){
-        setTypeValue(3);
-      }else if(rowData.medic_type == "type4"){
-        setTypeValue(4);
-      }else if(rowData.medic_type == "type5"){
-        setTypeValue(5);
-      }else if(rowData.medic_type == "type6"){
-        setTypeValue(6);
-      }
-
-      if(rowData.dose_unit == "None"){
-        setUnite(0)
-      }else if(rowData.dose_unit == "ml"){
-        setUnite(2)
-      }else if(rowData.dose_unit == "mg"){
-        setUnite(1)
-      }else if(rowData.dose_unit == "l"){
-        setUnite(3)
-      }
-
-
-      setMedicNameError([false, ""])
-      setMedicCodeError([false, ""])
-      setMedicDoseError([false, ""])
-      setUnitDoseError([false, ""])
-      setMedicTypeError([false, ""])
-      setResponseErrorSignal(false);
-      setResponseSuccesSignal(false);  
+        if (rowData == "no data"){
+          setResponseErrorSignal(true);
+        } else if(rowData != "") {
+  
+        setOpenUpdate(true);
+        setLoadError(false);
+  
+        console.log(rowData.id)
+  
+        setMedicName(rowData.medic_name);
+        setMedicCode(rowData.medic_code)
+        setMedicDose(rowData.medic_dose)
+        setMedicPlace(rowData.medic_place)
         
+        
+        if(rowData.medic_type == "type1"){
+          setTypeValue(1);
+        }else if(rowData.medic_type == "type2"){
+          setTypeValue(2);
+        }else if(rowData.medic_type == "type3"){
+          setTypeValue(3);
+        }else if(rowData.medic_type == "type4"){
+          setTypeValue(4);
+        }else if(rowData.medic_type == "type5"){
+          setTypeValue(5);
+        }else if(rowData.medic_type == "type6"){
+          setTypeValue(6);
+        }
+  
+        if(rowData.dose_unit == "None"){
+          setUnite(0)
+        }else if(rowData.dose_unit == "ml"){
+          setUnite(2)
+        }else if(rowData.dose_unit == "mg"){
+          setUnite(1)
+        }else if(rowData.dose_unit == "l"){
+          setUnite(3)
+        }
+  
+  
+        setMedicNameError([false, ""])
+        setMedicCodeError([false, ""])
+        setMedicDoseError([false, ""])
+        setUnitDoseError([false, ""])
+        setMedicTypeError([false, ""])
+        setResponseErrorSignal(false);
+        setResponseSuccesSignal(false);    
+        }
+
+      }catch(e){
+
+        console.log(e)
+
       }
+
+      
 
     }, [rowData]);
    
