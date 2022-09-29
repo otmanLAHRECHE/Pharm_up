@@ -120,9 +120,8 @@ def addMedicament(request):
 
 
 @api_view(['POST'])
-def updateMedicament(request):
+def updateMedicament(request, id):
     if request.method == 'POST' and request.user.is_authenticated:
-        id = request.data.pop("id")
         medic_code = request.data.pop("medic_code")
         medic_name = request.data.pop("medic_name")
         medic_dose = request.data.pop("medic_dose")
@@ -150,9 +149,8 @@ def updateMedicament(request):
 
 
 @api_view(['DELETE'])
-def deleteMedicament(request):
+def deleteMedicament(request, id):
     if request.method == 'DELETE' and request.user.is_authenticated:
-        id = request.data.pop("id")
         Medicament.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Medicament deleted"})
 

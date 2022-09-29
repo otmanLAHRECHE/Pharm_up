@@ -31,9 +31,9 @@ import { getAllMedic, addNewMedic, getSelectedMedic } from '../../actions/medica
 import Alt from '../layouts/alert';
 
 const columns = [
-    { field: 'id', headerName: 'Id', width: 90 },
-    { field: 'medic_name', headerName: 'Médicament', width: 130 },
-    { field: 'medic_code', headerName: 'Code', width: 130 },
+    { field: 'id', headerName: 'Id', width: 70 },
+    { field: 'medic_name', headerName: 'Médicament', width: 330 },
+    { field: 'medic_code', headerName: 'Code', width: 140 },
     {
       field: 'Dose de médicament',
       headerName: 'Dose de médicament',
@@ -44,7 +44,7 @@ const columns = [
         `${params.row.medic_dose || ''} ${params.row.dose_unit || ''}`,
     },
     
-    { field: 'medic_type', headerName: 'Type de médicament', width: 150 },
+    { field: 'medic_type', headerName: 'Type de médicament', width: 200 },
     
     { field: 'medic_place', headerName: 'Place de médicament', width: 150 },
   ];
