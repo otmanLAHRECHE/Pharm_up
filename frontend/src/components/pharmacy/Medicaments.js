@@ -32,11 +32,11 @@ import Alt from '../layouts/alert';
 
 const columns = [
     { field: 'id', headerName: 'Id', width: 70 },
-    { field: 'medic_name', headerName: 'Médicament', width: 330 },
-    { field: 'medic_code', headerName: 'Code', width: 140 },
+    { field: 'medic_code', headerName: 'Code PCH', width: 100 },
+    { field: 'medic_name', headerName: 'Médicament', width: 400 },
     {
       field: 'Dose de médicament',
-      headerName: 'Dose de médicament',
+      headerName: 'Dosage',
       description: 'This column has a value getter and is not sortable.',
       sortable: false,
       width: 140,
@@ -44,7 +44,7 @@ const columns = [
         `${params.row.medic_dose || ''} ${params.row.dose_unit || ''}`,
     },
     
-    { field: 'medic_type', headerName: 'Type de médicament', width: 200 },
+    { field: 'medic_type', headerName: 'Type et Classe', width: 300 },
     
     { field: 'medic_place', headerName: 'Place de médicament', width: 150 },
   ];
@@ -146,13 +146,10 @@ export default function Medicaments(){
 
         if (event.target.value == ""){
           setMedicType("")
-  
         }else if (event.target.value == 1){
           setMedicType("type1")
-  
         }else if (event.target.value == 2){
           setMedicType("type2")
-  
         }else if (event.target.value == 3){
           setMedicType("type3")
         }else if (event.target.value == 4){
@@ -207,9 +204,8 @@ export default function Medicaments(){
     };
 
     const editMedicOpen= async () => {
-
-      setSelectionError(false);
-
+      
+      console.log(selectionError);
       if(selectionModel.length == 0){
         setSelectionError(true);
       }else{    
@@ -227,6 +223,16 @@ export default function Medicaments(){
     const deleteMedic = () => {
       setOpen(true);
     };
+
+    React.useEffect(() => {
+
+      console.log(selectionError);
+
+      if (selectionError == true){
+        setSelectionError(false);
+      }
+
+    }, [selectionError]);
 
     React.useEffect(() => {
 
