@@ -1,5 +1,49 @@
 
 import * as React from 'react';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import ListSubheader from '@mui/material/ListSubheader';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContentText from '@mui/material/DialogContentText';
+import Slide from '@mui/material/Slide';
+
+import FormControl from '@mui/material/FormControl';
+
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+
+import InputLabel from '@mui/material/InputLabel';
+
+import Container from '@mui/material/Container';
+
+import Grid from '@mui/material/Grid';
+import Alt from '../layouts/alert';
+
+
+const columns = [
+    { field: 'id', headerName: 'Id', width: 70 },
+    { field: 'name', headerName: 'Fournisseur', width: 180 },
+    { field: 'address', headerName: 'Adress', width: 150 },
+    { field: 'email_adress', headerName: 'Email', width: 150 },
+    { field: 'phone_nbr', headerName: 'Numero de telephone', width: 150 },
+  ];
+
+  const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
+
 
 
 
@@ -9,9 +53,15 @@ export default function Fournisseur(){
 
 
     const [fournisseurName, setFournisseurName] = React.useState("")
-    const [fournisseurName, setFournisseurName] = React.useState("")
-    const [fournisseurName, setFournisseurName] = React.useState("")
-    const [fournisseurName, setFournisseurName] = React.useState("")
+    const [fournisseurAdress, setFournisseurAdress] = React.useState("")
+    const [fournisseurEmailAdr, setFournisseurEmailAdr] = React.useState("")
+    const [fournisseurPhone, setFournisseurPhone] = React.useState("")
+
+    const [fournisseurNameError, setFournisseurNameError] = React.useState([false, ""]);
+    const [fournisseurAdressError, setFournisseurAdressError] = React.useState([false, ""]);
+    const [fournisseurEmailAdrError, setFournisseurEmailAdrError] = React.useState([false, ""]);
+    const [fournisseurPhoneError, setFournisseurPhoneError] = React.useState([false, ""]);
+
     const [loadError, setLoadError ] = React.useState(false);
     const [response, setResponse] = React.useState("");
     const [responseSuccesSignal, setResponseSuccesSignal] = React.useState(false);
@@ -22,10 +72,45 @@ export default function Fournisseur(){
     const [open, setOpen] = React.useState(false);
     const [openUpdate, setOpenUpdate] = React.useState(false);
     const [openDelete, setOpenDelete] = React.useState(false);
-    const [unite, setUnite] = React.useState(0);
     const [selectionModel, setSelectionModel] = React.useState([]);
     const [selectionError, setSelectionError] = React.useState(false);
     const [rowData, setRowData] = React.useState("");
+
+
+
+
+
+
+    React.useEffect(() => {
+
+        console.log(response);
+  
+        if (response == "error"){
+          setResponseErrorSignal(true);
+        } else if(response != "") {
+          setResponseSuccesSignal(true);
+        }
+  
+      }, [response]);
+  
+      React.useEffect(() => {
+  
+        setLoading(true);
+  
+        const fetchData = async () => {
+          try {
+            const token = localStorage.getItem("auth_token");
+            setData(await getAllMedic(token));
+            setLoading(false);
+          } catch (error) {
+            console.log("error", error);
+          }
+        };
+    
+        fetchData();
+  
+      }, [response]);
+
 
 
 
@@ -92,12 +177,12 @@ export default function Fournisseur(){
                 </Grid>  
 
 
-                  <Dialog open={open} onClose={addMedicClose}  maxWidth="md" fullWidth={true}>
+                  <Dialog open={open} onClose={addFournClose}  maxWidth="md" fullWidth={true}>
                       <DialogTitle>Ajouter Fournisseur</DialogTitle>
                           <DialogContent>
                             <TextField
-                              error={medicNameError[0]}
-                              helperText={medicNameError[1]}
+                              error={fournisseurNameError[0]}
+                              helperText={fournisseurNameError[1]}
                               required
                               margin="dense"
                               name="fournisseur_name"
@@ -105,279 +190,134 @@ export default function Fournisseur(){
                               label="Nom de fournisseur"
                               fullWidth
                               variant="standard"
-                              onChange={(event) => {setMedicName(event.target.value)}}
+                              onChange={(event) => {setFournisseurName(event.target.value)}}
                             />
                             <TextField
-                              error={medicCodeError[0]}
-                              helperText={medicCodeError[1]}
+                              error={fournisseurAdressError[0]}
+                              helperText={fournisseurAdressError[1]}
                               required
                               margin="dense"
-                              id="medic_code"
-                              label="Code de médicament"
+                              id="fournisseur_adress"
+                              label="Adress"
                               fullWidth
                               variant="standard"
-                              onChange={(event) => {setMedicCode(event.target.value)}}
+                              onChange={(event) => {setFournisseurAdress(event.target.value)}}
                             />
                             
 
                             <Grid container spacing={2}>
                               <Grid item xs={8}>
                                 <TextField
-                                      error={medicDoseError[0]}
-                                      helperText={medicDoseError[1]}
+                                      error={fournisseurEmailAdrError[0]}
+                                      helperText={fournisseurEmailAdrError[1]}
                                       margin="dense"
-                                      id="medic_dose"
-                                      label="Dose de médicament"
+                                      id="fournisseur_email"
+                                      label="Email adress"
+                                      fullWidth
+                                      variant="standard"
+                                      InputLabelProps={{
+                                        shrink: true,
+                                      }}
+                                      onChange={(event) => {setFournisseurEmailAdr(event.target.value)}}
+                                />
+
+                              </Grid>
+                              <Grid item xs={4}>
+                              <TextField
+                                      error={fournisseurPhoneError[0]}
+                                      helperText={fournisseurPhoneError[1]}
+                                      margin="dense"
+                                      id="fournisseur_phone"
+                                      label="Numéro de telephone"
                                       fullWidth
                                       variant="standard"
                                       type="number"
                                       InputLabelProps={{
                                         shrink: true,
                                       }}
-                                      onChange={(event) => {setMedicDose(event.target.value)}}
+                                      onChange={(event) => {setFournisseurPhone(event.target.value)}}
                                 />
-
-                              </Grid>
-                              <Grid item xs={4}>
-                                      <FormControl variant="standard" sx={{ m: 1, minWidth: 100 }}>
-                                        <InputLabel id="demo-simple-select-standard-label"
-                                        error={unitDoseError[0]}
-                                        helperText={unitDoseError[1]}>Unité de dose</InputLabel>
-                                        <Select                            
-                                            
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={unite}
-                                            label="Unité de Dose"
-                                            onChange={change_dose}
-                                        >
-                                              <MenuItem value={0}>none</MenuItem>
-                                              <MenuItem value={1}>mg</MenuItem>
-                                              <MenuItem value={2}>ml</MenuItem>
-                                              <MenuItem value={3}>l</MenuItem>
-                                        </Select>
-
-                                    </FormControl>
                               </Grid>
                             </Grid>
                             
-                            <TextField           
-                              margin="dense"
-                              id="medic_place"
-                              label="Place de médicament"
-                              fullWidth
-                              variant="standard"
-                              onChange={(event) => {setMedicPlace(event.target.value)}}
-                            />
-                            
-                              <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
-                                  <InputLabel required htmlFor="grouped-select"
-                                  error={medicTypeError[0]}
-                                  helperText={medicTypeError[1]}>Type de médicament</InputLabel>
-                                    <Select defaultValue="" id="grouped-select" label="Type de médicament"
-                                    onChange={change_type}>
-                                      <MenuItem value="">
-                                        <em>None</em>
-                                      </MenuItem>
-                                      <ListSubheader>Medicaments</ListSubheader>
-                                      <MenuItem value={1}>ALLERGOLOGIE</MenuItem>
-                                      <MenuItem value={2}>ANESTHESIOLOGIE</MenuItem>
-                                      <MenuItem value={3}>ANTALOGIQUES</MenuItem>
-                                      <MenuItem value={4}>ANTI-INFLAMMATOIRES</MenuItem>
-                                      <MenuItem value={5}>CARDIOLOGIE ET ANGEIOLOGIE</MenuItem>
-                                      <MenuItem value={6}>DERMATOLOGIE</MenuItem>
-                                      <MenuItem value={7}>ENDOCRINOLOGIE ET HORMONES</MenuItem>
-                                      <MenuItem value={8}>GASTRO-ENTEROLOGIE</MenuItem>
-                                      <MenuItem value={9}>GYNECOLOGIE</MenuItem>
-                                      <MenuItem value={10}>HEMATOLOGIE ET HEMOSTATE</MenuItem>
-                                      <MenuItem value={11}>HORS NOMENCLATURE</MenuItem>
-                                      <MenuItem value={12}>INFECTIOLOGIE</MenuItem>
-                                      <MenuItem value={13}>METABOLISME-NUTRITION-DIABETE</MenuItem>
-                                      <MenuItem value={14}>NEUROLOGIE</MenuItem>
-                                      <MenuItem value={15}>OPHTALMOLOGIE</MenuItem>
-                                      <MenuItem value={16}>PARASITOLOGIE</MenuItem>
-                                      <MenuItem value={17}>PNEUMOLOGIE</MenuItem>
-                                      <MenuItem value={18}>PSYCHIATRIE</MenuItem>
-                                      <MenuItem value={19}>TOXICOLOGIE</MenuItem>
-                                      <MenuItem value={20}>UROLOGIE ET NEPHROLOGIE</MenuItem>
-                                      <ListSubheader>Reactifs</ListSubheader>
-                                      <MenuItem value={21}>REACTIFS BIOCHIMIE</MenuItem>
-                                      <MenuItem value={22}>REACTIFS SEROLOGIE</MenuItem>
-                                      <MenuItem value={23}>CHIMIQUES</MenuItem>
-                                      <MenuItem value={24}>REACTIFS HEMATOLOGIE</MenuItem>
-                                      <MenuItem value={25}>DIVERS</MenuItem>
-                                      <MenuItem value={26}>REACTIFS IMMUNOLOGIE</MenuItem>
-                                      
-                                      <ListSubheader>Consommables</ListSubheader>
-                                      <MenuItem value={27}>AIGUILLES ET INSTRUMENTATIONS</MenuItem>
-                                      <MenuItem value={28}>COLLE ET VERNIS CHIRURGICAUX</MenuItem>
-                                      <MenuItem value={29}>CONSOMMABLES DIVERS</MenuItem>
-                                      <MenuItem value={30}>FILMS ET PRODUITS DE DEVELOPPEMENT</MenuItem>
-                                      <MenuItem value={31}>LIGATURES</MenuItem>
-                                      <MenuItem value={32}>NON TISSE</MenuItem>
-                                      <MenuItem value={33}>PANSEMENT</MenuItem>
-
-                                      <ListSubheader>Laboratoire</ListSubheader>
-                                      <MenuItem value={34}>AUTRES PRODUITS REACTIFS</MenuItem>
-                                      <MenuItem value={35}>CONSOMMABLE DE LABORATOIRE</MenuItem>
-                                      <MenuItem value={36}>INSTRUMENTATION</MenuItem>
-
-                                      <ListSubheader>Dentaire</ListSubheader>
-                                      <MenuItem value={37}>DENTAIRES CHIMIQUES ET LABO</MenuItem>
-                                    </Select>
-                                </FormControl>
+                              
                           </DialogContent>
                           <DialogActions>
-                            <Button onClick={addMedicClose}>Anuller</Button>
-                            <Button onClick={addMedicSave}>Sauvgarder</Button>
+                            <Button onClick={addFournClose}>Anuller</Button>
+                            <Button onClick={addFournSave}>Sauvgarder</Button>
                           </DialogActions>
                   </Dialog>
 
 
-                  <Dialog open={openUpdate} onClose={editMedicClose}  maxWidth="md" fullWidth={true}>
-                    <DialogTitle>Modifier le médicament</DialogTitle>
-                        <DialogContent>
-                          <TextField
-                            error={medicNameError[0]}
-                            helperText={medicNameError[1]}
-                            required
-                            margin="dense"
-                            name="medic_name"
-                            id="medic_name"
-                            label="Nom de médicament"
-                            fullWidth
-                            variant="standard"
-                            value={medicName}
-                            onChange={(event) => {setMedicName(event.target.value)}}
-                          />
-                          <TextField
-                            error={medicCodeError[0]}
-                            helperText={medicCodeError[1]}
-                            required
-                            margin="dense"
-                            id="medic_code"
-                            label="Code de médicament"
-                            fullWidth
-                            variant="standard"
-                            value={medicCode}
-                            onChange={(event) => {setMedicCode(event.target.value)}}
-                          />
-                          
+                  <Dialog open={openUpdate} onClose={updateFournClose}  maxWidth="md" fullWidth={true}>
+                      <DialogTitle>Modifier un Fournisseur</DialogTitle>
+                          <DialogContent>
+                            <TextField
+                              error={fournisseurNameError[0]}
+                              helperText={fournisseurNameError[1]}
+                              required
+                              margin="dense"
+                              name="fournisseur_name"
+                              id="fournisseur_name"
+                              label="Nom de fournisseur"
+                              fullWidth
+                              variant="standard"
+                              onChange={(event) => {setFournisseurName(event.target.value)}}
+                            />
+                            <TextField
+                              error={fournisseurAdressError[0]}
+                              helperText={fournisseurAdressError[1]}
+                              required
+                              margin="dense"
+                              id="fournisseur_adress"
+                              label="Adress"
+                              fullWidth
+                              variant="standard"
+                              onChange={(event) => {setFournisseurAdress(event.target.value)}}
+                            />
+                            
 
-                          <Grid container spacing={2}>
-                            <Grid item xs={8}>
+                            <Grid container spacing={2}>
+                              <Grid item xs={8}>
+                                <TextField
+                                      error={fournisseurEmailAdrError[0]}
+                                      helperText={fournisseurEmailAdrError[1]}
+                                      margin="dense"
+                                      id="fournisseur_email"
+                                      label="Email adress"
+                                      fullWidth
+                                      variant="standard"
+                                      InputLabelProps={{
+                                        shrink: true,
+                                      }}
+                                      onChange={(event) => {setFournisseurEmailAdr(event.target.value)}}
+                                />
+
+                              </Grid>
+                              <Grid item xs={4}>
                               <TextField
-                                    error={medicDoseError[0]}
-                                    helperText={medicDoseError[1]}
-                                    margin="dense"
-                                    id="medic_dose"
-                                    label="Dose de médicament"
-                                    fullWidth
-                                    variant="standard"
-                                    type="number"
-                                    value={medicDose}
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                    onChange={(event) => {setMedicDose(event.target.value)}}
-                              />
-
+                                      error={fournisseurPhoneError[0]}
+                                      helperText={fournisseurPhoneError[1]}
+                                      margin="dense"
+                                      id="fournisseur_phone"
+                                      label="Numéro de telephone"
+                                      fullWidth
+                                      variant="standard"
+                                      type="number"
+                                      InputLabelProps={{
+                                        shrink: true,
+                                      }}
+                                      onChange={(event) => {setFournisseurPhone(event.target.value)}}
+                                />
+                              </Grid>
                             </Grid>
-                            <Grid item xs={4}>
-                                    <FormControl variant="standard" sx={{ m: 1, minWidth: 100 }}>
-                                      <InputLabel id="demo-simple-select-standard-label"
-                                      error={unitDoseError[0]}
-                                      helperText={unitDoseError[1]}>Unité de dose</InputLabel>
-                                      <Select                            
-                                          
-                                          labelId="demo-simple-select-label"
-                                          id="demo-simple-select"
-                                          value={unite}
-                                          label="Unité de Dose"
-                                          onChange={change_dose}
-                                      >
-                                            <MenuItem value={0}>none</MenuItem>
-                                            <MenuItem value={1}>mg</MenuItem>
-                                            <MenuItem value={2}>ml</MenuItem>
-                                            <MenuItem value={3}>l</MenuItem>
-                                      </Select>
-
-                                   </FormControl>
-                            </Grid>
-                          </Grid>
-                          
-                          <TextField           
-                            margin="dense"
-                            id="medic_place"
-                            label="Place de médicament"
-                            fullWidth
-                            variant="standard"
-                            value={medicPlace}
-                            onChange={(event) => {setMedicPlace(event.target.value)}}
-                          />
-                          
-                            <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
-                                <InputLabel required htmlFor="grouped-select"
-                                error={medicTypeError[0]}
-                                helperText={medicTypeError[1]}>Type de médicament</InputLabel>
-                                  <Select defaultValue="" id="grouped-select" label="Type de médicament"
-                                  onChange={change_type}
-                                  value ={typeValue}>
-                                    <MenuItem value="">
-                                      <em>None</em>
-                                    </MenuItem>
-                                    <ListSubheader>Medicaments</ListSubheader>
-                                    <MenuItem value={1}>ALLERGOLOGIE</MenuItem>
-                                    <MenuItem value={2}>ANESTHESIOLOGIE</MenuItem>
-                                    <MenuItem value={3}>ANTALOGIQUES</MenuItem>
-                                    <MenuItem value={4}>ANTI-INFLAMMATOIRES</MenuItem>
-                                    <MenuItem value={5}>CARDIOLOGIE ET ANGEIOLOGIE</MenuItem>
-                                    <MenuItem value={6}>DERMATOLOGIE</MenuItem>
-                                    <MenuItem value={7}>ENDOCRINOLOGIE ET HORMONES</MenuItem>
-                                    <MenuItem value={8}>GASTRO-ENTEROLOGIE</MenuItem>
-                                    <MenuItem value={9}>GYNECOLOGIE</MenuItem>
-                                    <MenuItem value={10}>HEMATOLOGIE ET HEMOSTATE</MenuItem>
-                                    <MenuItem value={11}>HORS NOMENCLATURE</MenuItem>
-                                    <MenuItem value={12}>INFECTIOLOGIE</MenuItem>
-                                    <MenuItem value={13}>METABOLISME-NUTRITION-DIABETE</MenuItem>
-                                    <MenuItem value={14}>NEUROLOGIE</MenuItem>
-                                    <MenuItem value={15}>OPHTALMOLOGIE</MenuItem>
-                                    <MenuItem value={16}>PARASITOLOGIE</MenuItem>
-                                    <MenuItem value={17}>PNEUMOLOGIE</MenuItem>
-                                    <MenuItem value={18}>PSYCHIATRIE</MenuItem>
-                                    <MenuItem value={19}>TOXICOLOGIE</MenuItem>
-                                    <MenuItem value={20}>UROLOGIE ET NEPHROLOGIE</MenuItem>
-                                    <ListSubheader>Reactifs</ListSubheader>
-                                    <MenuItem value={21}>REACTIFS BIOCHIMIE</MenuItem>
-                                    <MenuItem value={22}>REACTIFS SEROLOGIE</MenuItem>
-                                    <MenuItem value={23}>CHIMIQUES</MenuItem>
-                                    <MenuItem value={24}>REACTIFS HEMATOLOGIE</MenuItem>
-                                    <MenuItem value={25}>DIVERS</MenuItem>
-                                    <MenuItem value={26}>REACTIFS IMMUNOLOGIE</MenuItem>
-                                    
-                                    <ListSubheader>Consommables</ListSubheader>
-                                    <MenuItem value={27}>AIGUILLES ET INSTRUMENTATIONS</MenuItem>
-                                    <MenuItem value={28}>COLLE ET VERNIS CHIRURGICAUX</MenuItem>
-                                    <MenuItem value={29}>CONSOMMABLES DIVERS</MenuItem>
-                                    <MenuItem value={30}>FILMS ET PRODUITS DE DEVELOPPEMENT</MenuItem>
-                                    <MenuItem value={31}>LIGATURES</MenuItem>
-                                    <MenuItem value={32}>NON TISSE</MenuItem>
-                                    <MenuItem value={33}>PANSEMENT</MenuItem>
-
-                                    <ListSubheader>Laboratoire</ListSubheader>
-                                    <MenuItem value={34}>AUTRES PRODUITS REACTIFS</MenuItem>
-                                    <MenuItem value={35}>CONSOMMABLE DE LABORATOIRE</MenuItem>
-                                    <MenuItem value={36}>INSTRUMENTATION</MenuItem>
-
-                                    <ListSubheader>Dentaire</ListSubheader>
-                                    <MenuItem value={37}>DENTAIRES CHIMIQUES ET LABO</MenuItem>
-                                  </Select>
-                              </FormControl>
-                        </DialogContent>
-                        <DialogActions>
-                          <Button onClick={editMedicClose}>Anuller</Button>
-                          <Button onClick={editMedicSave}>Sauvgarder</Button>
-                        </DialogActions>
+                            
+                              
+                          </DialogContent>
+                          <DialogActions>
+                          <Button onClick={updateFournClose}>Anuller</Button>
+                            <Button onClick={updateFournSave}>Sauvgarder</Button>
+                          </DialogActions>
                   </Dialog>
 
 
@@ -405,7 +345,7 @@ export default function Fournisseur(){
         {loadError ? <Alt type='error' message='Des erruers sur les données' onClose={()=> setLoadError(false)}/> : null}
         {responseSuccesSignal ? <Alt type='success' message='Opération réussie' onClose={()=> setResponseSuccesSignal(false)}/> : null}
         {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
-        {selectionError ? <Alt type='error' message='Selectioner un médicament' onClose={()=> setSelectionError(false)} /> : null}
+        {selectionError ? <Alt type='error' message='Selectioner un fournisseur' onClose={()=> setSelectionError(false)} /> : null}
       
         </React.Fragment>
 
