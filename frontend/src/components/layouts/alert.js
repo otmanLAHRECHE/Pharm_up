@@ -8,17 +8,14 @@ export default function Alt(props){
 
     const [open, setOpen] = useState(true)
 
-    const handleClose = () => {
-        setOpen(false)
-    }
 
 
     
     return(
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical:'top', horizontal:'center' }}>
-            <Alert onClose={handleClose} severity={props.type} sx={{ width: '100%' }}>
+        <Snackbar open={open} autoHideDuration={4000} onClose={props.onClose} anchorOrigin={{ vertical:'top', horizontal:'center' }}>
+            <Alert onClose={props.onClose} severity={props.type} sx={{ width: '100%' }}>
                  {props.message}
-            </Alert>
+            </Alert>    
         </Snackbar>
     )
 

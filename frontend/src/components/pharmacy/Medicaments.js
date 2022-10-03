@@ -27,7 +27,7 @@ import Container from '@mui/material/Container';
 
 import Grid from '@mui/material/Grid';
 
-import { getAllMedic, addNewMedic, getSelectedMedic } from '../../actions/medicament_data';
+import { getAllMedic, addNewMedic, getSelectedMedic, updateMedic } from '../../actions/medicament_data';
 import Alt from '../layouts/alert';
 
 const columns = [
@@ -81,6 +81,7 @@ export default function Medicaments(){
     
 
     const addMedicSave = async () => {
+
 
       var test = true;
 
@@ -142,22 +143,149 @@ export default function Medicaments(){
       }
 
     };
+
+    const editMedicSave = async () => {
+
+      var test = true;
+
+      setMedicNameError([false, ""])
+      setMedicCodeError([false, ""])
+      setMedicDoseError([false, ""])
+      setUnitDoseError([false, ""])
+      setMedicTypeError([false, ""])
+
+
+      if (medicName == ""){
+        setMedicNameError([true,"Ce champ est obligatoire"])
+        test = false;
+      }
+      if (medicCode == ""){
+        setMedicCodeError([true,"Ce champ est obligatoire"])
+        test = false;
+      }
+      if (medicDose == "" && unite!=0){
+        setMedicDoseError([true, "Ce champ est obligatoire quand l'unité de dose est définé!"])
+        test = false;
+      }
+
+      if (medicDose != "" && unite==0){
+        setUnitDoseError([true, "Ce champ est obligatoire"])
+        test = false;
+      }
+      if (medicType == ""){
+        setMedicTypeError([true, "Ce champ est obligatoire"])
+        test = false;
+      }
+
+      if (test){
+        console.log("good to go....")
+        setOpenUpdate(false);
+
+        const data = {
+          medic_name:medicName,
+          medic_code:medicCode,
+          medic_dose:medicDose,
+          dose_unit:unitDose,
+          medic_place:medicPlace,
+          medic_type:medicType,
+        }
+
+        console.log("data", JSON.stringify(data));
+
+
+        const token = localStorage.getItem("auth_token");
+
+        setResponse(await updateMedic(token, JSON.stringify(data), rowData.id)); 
+        
+      }
+      else{
+        
+        setLoadError(true)
+        console.log("error")
+
+      }
+
+    };
+
+
     const change_type = (event) => {
 
         if (event.target.value == ""){
           setMedicType("")
         }else if (event.target.value == 1){
-          setMedicType("type1")
+          setMedicType("ALLERGOLOGIE")
         }else if (event.target.value == 2){
-          setMedicType("type2")
+          setMedicType("ANESTHESIOLOGIE")
         }else if (event.target.value == 3){
-          setMedicType("type3")
+          setMedicType("ANTALOGIQUES")
         }else if (event.target.value == 4){
-          setMedicType("type4")
+          setMedicType("ANTI-INFLAMMATOIRES")
         }else if (event.target.value == 5){
-          setMedicType("type5")
+          setMedicType("CARDIOLOGIE ET ANGEIOLOGIE")
         }else if (event.target.value == 6){
-          setMedicType("type6")
+          setMedicType("DERMATOLOGIE")
+        }else if (event.target.value == 7){
+          setMedicType("ENDOCRINOLOGIE ET HORMONES")
+        }else if (event.target.value == 8){
+          setMedicType("GASTRO-ENTEROLOGIE")
+        }else if (event.target.value == 9){
+          setMedicType("GYNECOLOGIE")
+        }else if (event.target.value == 10){
+          setMedicType("HEMATOLOGIE ET HEMOSTATE")
+        }else if (event.target.value == 11){
+          setMedicType("HORS NOMENCLATURE")
+        }else if (event.target.value == 12){
+          setMedicType("INFECTIOLOGIE")
+        }else if (event.target.value == 13){
+          setMedicType("METABOLISME-NUTRITION-DIABETE")
+        }else if (event.target.value == 14){
+          setMedicType("NEUROLOGIE")
+        }else if (event.target.value == 15){
+          setMedicType("OPHTALMOLOGIE")
+        }else if (event.target.value == 16){
+          setMedicType("PARASITOLOGIE")
+        }else if (event.target.value == 17){
+          setMedicType("PNEUMOLOGIE")
+        }else if (event.target.value == 18){
+          setMedicType("PSYCHIATRIE")
+        }else if (event.target.value == 19){
+          setMedicType("TOXICOLOGIE")
+        }else if (event.target.value == 20){
+          setMedicType("UROLOGIE ET NEPHROLOGIE")
+        }else if (event.target.value == 21){
+          setMedicType("REACTIFS BIOCHIMIE")
+        }else if (event.target.value == 22){
+          setMedicType("REACTIFS SEROLOGIE")
+        }else if (event.target.value == 23){
+          setMedicType("CHIMIQUES")
+        }else if (event.target.value == 24){
+          setMedicType("REACTIFS HEMATOLOGIE")
+        }else if (event.target.value == 25){
+          setMedicType("DIVERS")
+        }else if (event.target.value == 26){
+          setMedicType("REACTIFS IMMUNOLOGIE")
+        }else if (event.target.value == 27){
+          setMedicType("AIGUILLES ET INSTRUMENTATIONS")
+        }else if (event.target.value == 28){
+          setMedicType("COLLE ET VERNIS CHIRURGICAUX")
+        }else if (event.target.value == 29){
+          setMedicType("CONSOMMABLES DIVERS")
+        }else if (event.target.value == 30){
+          setMedicType("FILMS ET PRODUITS DE DEVELOPPEMENT")
+        }else if (event.target.value == 31){
+          setMedicType("LIGATURES")
+        }else if (event.target.value == 32){
+          setMedicType("NON TISSE")
+        }else if (event.target.value == 33){
+          setMedicType("PANSEMENT")
+        }else if (event.target.value == 34){
+          setMedicType("AUTRES PRODUITS REACTIFS")
+        }else if (event.target.value == 35){
+          setMedicType("CONSOMMABLE DE LABORATOIRE")
+        }else if (event.target.value == 36){
+          setMedicType("INSTRUMENTATION")
+        }else if (event.target.value == 37){
+          setMedicType("DENTAIRES CHIMIQUES ET LABO")
         }
 
     };
@@ -181,7 +309,6 @@ export default function Medicaments(){
 
       
       
-      setLoadError(false)
       setOpen(true);
       setUnite(0)
       setMedicName("");
@@ -196,8 +323,6 @@ export default function Medicaments(){
       setMedicDoseError([false, ""])
       setUnitDoseError([false, ""])
       setMedicTypeError([false, ""])
-      setResponseErrorSignal(false);
-      setResponseSuccesSignal(false);
     };
     const addMedicClose = () => {
       setOpen(false);
@@ -206,6 +331,7 @@ export default function Medicaments(){
     const editMedicOpen= async () => {
       
       console.log(selectionError);
+
       if(selectionModel.length == 0){
         setSelectionError(true);
       }else{    
@@ -224,19 +350,10 @@ export default function Medicaments(){
       setOpen(true);
     };
 
-    React.useEffect(() => {
-
-      console.log(selectionError);
-
-      if (selectionError == true){
-        setSelectionError(false);
-      }
-
-    }, [selectionError]);
 
     React.useEffect(() => {
 
-      console.log(rowData);
+      console.log(rowData.medic_type);
 
       try{
 
@@ -245,30 +362,93 @@ export default function Medicaments(){
         } else if(rowData != "") {
   
         setOpenUpdate(true);
-        setLoadError(false);
-  
         console.log(rowData.id)
   
         setMedicName(rowData.medic_name);
         setMedicCode(rowData.medic_code)
         setMedicDose(rowData.medic_dose)
         setMedicPlace(rowData.medic_place)
+
+        setMedicType(rowData.medic_type)
         
         
-        if(rowData.medic_type == "type1"){
+        if(rowData.medic_type == "ALLERGOLOGIE"){
           setTypeValue(1);
-        }else if(rowData.medic_type == "type2"){
+        }else if(rowData.medic_type == "ANESTHESIOLOGIE"){
           setTypeValue(2);
-        }else if(rowData.medic_type == "type3"){
+        }else if(rowData.medic_type == "ANTALOGIQUES"){
           setTypeValue(3);
-        }else if(rowData.medic_type == "type4"){
+        }else if(rowData.medic_type == "ANTI-INFLAMMATOIRES"){
           setTypeValue(4);
-        }else if(rowData.medic_type == "type5"){
+        }else if(rowData.medic_type == "CARDIOLOGIE ET ANGEIOLOGIE"){
           setTypeValue(5);
-        }else if(rowData.medic_type == "type6"){
+        }else if(rowData.medic_type == "DERMATOLOGIE"){
           setTypeValue(6);
+        }else if(rowData.medic_type == "ENDOCRINOLOGIE ET HORMONES"){
+          setTypeValue(7);
+        }else if(rowData.medic_type == "GASTRO-ENTEROLOGIE"){
+          setTypeValue(8);
+        }else if(rowData.medic_type == "GYNECOLOGIE"){
+          setTypeValue(9);
+        }else if(rowData.medic_type == "HEMATOLOGIE ET HEMOSTATE"){
+          setTypeValue(10);
+        }else if(rowData.medic_type == "HORS NOMENCLATURE"){
+          setTypeValue(11);
+        }else if(rowData.medic_type == "INFECTIOLOGIE"){
+          setTypeValue(12);
+        }else if(rowData.medic_type == "METABOLISME-NUTRITION-DIABETE"){
+          setTypeValue(13);
+        }else if(rowData.medic_type == "NEUROLOGIE"){
+          setTypeValue(14);
+        }else if(rowData.medic_type == "OPHTALMOLOGIE"){
+          setTypeValue(15);
+        }else if(rowData.medic_type == "PARASITOLOGIE"){
+          setTypeValue(16);
+        }else if(rowData.medic_type == "PNEUMOLOGIE"){
+          setTypeValue(17);
+        }else if(rowData.medic_type == "PSYCHIATRIE"){
+          setTypeValue(18);
+        }else if(rowData.medic_type == "TOXICOLOGIE"){
+          setTypeValue(19);
+        }else if(rowData.medic_type == "UROLOGIE ET NEPHROLOGIE"){
+          setTypeValue(20);
+        }else if(rowData.medic_type == "REACTIFS BIOCHIMIE"){
+          setTypeValue(21);
+        }else if(rowData.medic_type == "REACTIFS SEROLOGIE"){
+          setTypeValue(22);
+        }else if(rowData.medic_type == "CHIMIQUES"){
+          setTypeValue(23);
+        }else if(rowData.medic_type == "REACTIFS HEMATOLOGIE"){
+          setTypeValue(24);
+        }else if(rowData.medic_type == "DIVERS"){
+          setTypeValue(25);
+        }else if(rowData.medic_type == "REACTIFS IMMUNOLOGIE"){
+          setTypeValue(26);
+        }else if(rowData.medic_type == "AIGUILLES ET INSTRUMENTATIONS"){
+          setTypeValue(27);
+        }else if(rowData.medic_type == "COLLE ET VERNIS CHIRURGICAUX"){
+          setTypeValue(28);
+        }else if(rowData.medic_type == "CONSOMMABLES DIVERS"){
+          setTypeValue(29);
+        }else if(rowData.medic_type == "FILMS ET PRODUITS DE DEVELOPPEMENT"){
+          setTypeValue(30);
+        }else if(rowData.medic_type == "LIGATURES"){
+          setTypeValue(31);
+        }else if(rowData.medic_type == "NON TISSE"){
+          setTypeValue(32);
+        }else if(rowData.medic_type == "PANSEMENT"){
+          setTypeValue(33);
+        }else if(rowData.medic_type == "AUTRES PRODUITS REACTIFS"){
+          setTypeValue(34);
+        }else if(rowData.medic_type == "CONSOMMABLE DE LABORATOIRE"){
+          setTypeValue(35);
+        }else if(rowData.medic_type == "INSTRUMENTATION"){
+          setTypeValue(36);
+        }else if(rowData.medic_type == "DENTAIRES CHIMIQUES ET LABO"){
+          setTypeValue(37);
         }
-  
+        
+        setUnitDose(rowData.dose_unit);
         if(rowData.dose_unit == "None"){
           setUnite(0)
         }else if(rowData.dose_unit == "ml"){
@@ -278,24 +458,15 @@ export default function Medicaments(){
         }else if(rowData.dose_unit == "l"){
           setUnite(3)
         }
-  
-  
         setMedicNameError([false, ""])
         setMedicCodeError([false, ""])
         setMedicDoseError([false, ""])
         setUnitDoseError([false, ""])
         setMedicTypeError([false, ""])
-        setResponseErrorSignal(false);
-        setResponseSuccesSignal(false);    
         }
-
       }catch(e){
-
         console.log(e)
-
       }
-
-      
 
     }, [rowData]);
    
@@ -328,6 +499,10 @@ export default function Medicaments(){
       fetchData();
 
     }, [response]);
+
+
+
+
 
     return(
 
@@ -478,16 +653,51 @@ export default function Medicaments(){
                                     <MenuItem value="">
                                       <em>None</em>
                                     </MenuItem>
-                                    <ListSubheader>Category 1</ListSubheader>
-                                    <MenuItem value={1}>Option 1</MenuItem>
-                                    <MenuItem value={2}>Option 2</MenuItem>
-                                    <ListSubheader>Category 2</ListSubheader>
-                                    <MenuItem value={3}>Option 3</MenuItem>
-                                    <MenuItem value={4}>Option 4</MenuItem>
+                                    <ListSubheader>Medicaments</ListSubheader>
+                                    <MenuItem value={1}>ALLERGOLOGIE</MenuItem>
+                                    <MenuItem value={2}>ANESTHESIOLOGIE</MenuItem>
+                                    <MenuItem value={3}>ANTALOGIQUES</MenuItem>
+                                    <MenuItem value={4}>ANTI-INFLAMMATOIRES</MenuItem>
+                                    <MenuItem value={5}>CARDIOLOGIE ET ANGEIOLOGIE</MenuItem>
+                                    <MenuItem value={6}>DERMATOLOGIE</MenuItem>
+                                    <MenuItem value={7}>ENDOCRINOLOGIE ET HORMONES</MenuItem>
+                                    <MenuItem value={8}>GASTRO-ENTEROLOGIE</MenuItem>
+                                    <MenuItem value={9}>GYNECOLOGIE</MenuItem>
+                                    <MenuItem value={10}>HEMATOLOGIE ET HEMOSTATE</MenuItem>
+                                    <MenuItem value={11}>HORS NOMENCLATURE</MenuItem>
+                                    <MenuItem value={12}>INFECTIOLOGIE</MenuItem>
+                                    <MenuItem value={13}>METABOLISME-NUTRITION-DIABETE</MenuItem>
+                                    <MenuItem value={14}>NEUROLOGIE</MenuItem>
+                                    <MenuItem value={15}>OPHTALMOLOGIE</MenuItem>
+                                    <MenuItem value={16}>PARASITOLOGIE</MenuItem>
+                                    <MenuItem value={17}>PNEUMOLOGIE</MenuItem>
+                                    <MenuItem value={18}>PSYCHIATRIE</MenuItem>
+                                    <MenuItem value={19}>TOXICOLOGIE</MenuItem>
+                                    <MenuItem value={20}>UROLOGIE ET NEPHROLOGIE</MenuItem>
+                                    <ListSubheader>Reactifs</ListSubheader>
+                                    <MenuItem value={21}>REACTIFS BIOCHIMIE</MenuItem>
+                                    <MenuItem value={22}>REACTIFS SEROLOGIE</MenuItem>
+                                    <MenuItem value={23}>CHIMIQUES</MenuItem>
+                                    <MenuItem value={24}>REACTIFS HEMATOLOGIE</MenuItem>
+                                    <MenuItem value={25}>DIVERS</MenuItem>
+                                    <MenuItem value={26}>REACTIFS IMMUNOLOGIE</MenuItem>
                                     
-                                    <ListSubheader>Category 2</ListSubheader>
-                                    <MenuItem value={5}>Option 3</MenuItem>
-                                    <MenuItem value={6}>Option 4</MenuItem>
+                                    <ListSubheader>Consommables</ListSubheader>
+                                    <MenuItem value={27}>AIGUILLES ET INSTRUMENTATIONS</MenuItem>
+                                    <MenuItem value={28}>COLLE ET VERNIS CHIRURGICAUX</MenuItem>
+                                    <MenuItem value={29}>CONSOMMABLES DIVERS</MenuItem>
+                                    <MenuItem value={30}>FILMS ET PRODUITS DE DEVELOPPEMENT</MenuItem>
+                                    <MenuItem value={31}>LIGATURES</MenuItem>
+                                    <MenuItem value={32}>NON TISSE</MenuItem>
+                                    <MenuItem value={33}>PANSEMENT</MenuItem>
+
+                                    <ListSubheader>Laboratoire</ListSubheader>
+                                    <MenuItem value={34}>AUTRES PRODUITS REACTIFS</MenuItem>
+                                    <MenuItem value={35}>CONSOMMABLE DE LABORATOIRE</MenuItem>
+                                    <MenuItem value={36}>INSTRUMENTATION</MenuItem>
+
+                                    <ListSubheader>Dentaire</ListSubheader>
+                                    <MenuItem value={37}>DENTAIRES CHIMIQUES ET LABO</MenuItem>
                                   </Select>
                               </FormControl>
                         </DialogContent>
@@ -590,32 +800,67 @@ export default function Medicaments(){
                                     <MenuItem value="">
                                       <em>None</em>
                                     </MenuItem>
-                                    <ListSubheader>Category 1</ListSubheader>
-                                    <MenuItem value={1}>Option 1</MenuItem>
-                                    <MenuItem value={2}>Option 2</MenuItem>
-                                    <ListSubheader>Category 2</ListSubheader>
-                                    <MenuItem value={3}>Option 3</MenuItem>
-                                    <MenuItem value={4}>Option 4</MenuItem>
+                                    <ListSubheader>Medicaments</ListSubheader>
+                                    <MenuItem value={1}>ALLERGOLOGIE</MenuItem>
+                                    <MenuItem value={2}>ANESTHESIOLOGIE</MenuItem>
+                                    <MenuItem value={3}>ANTALOGIQUES</MenuItem>
+                                    <MenuItem value={4}>ANTI-INFLAMMATOIRES</MenuItem>
+                                    <MenuItem value={5}>CARDIOLOGIE ET ANGEIOLOGIE</MenuItem>
+                                    <MenuItem value={6}>DERMATOLOGIE</MenuItem>
+                                    <MenuItem value={7}>ENDOCRINOLOGIE ET HORMONES</MenuItem>
+                                    <MenuItem value={8}>GASTRO-ENTEROLOGIE</MenuItem>
+                                    <MenuItem value={9}>GYNECOLOGIE</MenuItem>
+                                    <MenuItem value={10}>HEMATOLOGIE ET HEMOSTATE</MenuItem>
+                                    <MenuItem value={11}>HORS NOMENCLATURE</MenuItem>
+                                    <MenuItem value={12}>INFECTIOLOGIE</MenuItem>
+                                    <MenuItem value={13}>METABOLISME-NUTRITION-DIABETE</MenuItem>
+                                    <MenuItem value={14}>NEUROLOGIE</MenuItem>
+                                    <MenuItem value={15}>OPHTALMOLOGIE</MenuItem>
+                                    <MenuItem value={16}>PARASITOLOGIE</MenuItem>
+                                    <MenuItem value={17}>PNEUMOLOGIE</MenuItem>
+                                    <MenuItem value={18}>PSYCHIATRIE</MenuItem>
+                                    <MenuItem value={19}>TOXICOLOGIE</MenuItem>
+                                    <MenuItem value={20}>UROLOGIE ET NEPHROLOGIE</MenuItem>
+                                    <ListSubheader>Reactifs</ListSubheader>
+                                    <MenuItem value={21}>REACTIFS BIOCHIMIE</MenuItem>
+                                    <MenuItem value={22}>REACTIFS SEROLOGIE</MenuItem>
+                                    <MenuItem value={23}>CHIMIQUES</MenuItem>
+                                    <MenuItem value={24}>REACTIFS HEMATOLOGIE</MenuItem>
+                                    <MenuItem value={25}>DIVERS</MenuItem>
+                                    <MenuItem value={26}>REACTIFS IMMUNOLOGIE</MenuItem>
                                     
-                                    <ListSubheader>Category 2</ListSubheader>
-                                    <MenuItem value={5}>Option 3</MenuItem>
-                                    <MenuItem value={6}>Option 4</MenuItem>
+                                    <ListSubheader>Consommables</ListSubheader>
+                                    <MenuItem value={27}>AIGUILLES ET INSTRUMENTATIONS</MenuItem>
+                                    <MenuItem value={28}>COLLE ET VERNIS CHIRURGICAUX</MenuItem>
+                                    <MenuItem value={29}>CONSOMMABLES DIVERS</MenuItem>
+                                    <MenuItem value={30}>FILMS ET PRODUITS DE DEVELOPPEMENT</MenuItem>
+                                    <MenuItem value={31}>LIGATURES</MenuItem>
+                                    <MenuItem value={32}>NON TISSE</MenuItem>
+                                    <MenuItem value={33}>PANSEMENT</MenuItem>
+
+                                    <ListSubheader>Laboratoire</ListSubheader>
+                                    <MenuItem value={34}>AUTRES PRODUITS REACTIFS</MenuItem>
+                                    <MenuItem value={35}>CONSOMMABLE DE LABORATOIRE</MenuItem>
+                                    <MenuItem value={36}>INSTRUMENTATION</MenuItem>
+
+                                    <ListSubheader>Dentaire</ListSubheader>
+                                    <MenuItem value={37}>DENTAIRES CHIMIQUES ET LABO</MenuItem>
                                   </Select>
                               </FormControl>
                         </DialogContent>
                         <DialogActions>
                           <Button onClick={editMedicClose}>Anuller</Button>
-                          <Button onClick={addMedicSave}>Sauvgarder</Button>
+                          <Button onClick={editMedicSave}>Sauvgarder</Button>
                         </DialogActions>
                   </Dialog>
                          
         </Container>
 
 
-        {loadError ? <Alt type='error' message='Des erruers sur les données' /> : null}
-        {responseSuccesSignal ? <Alt type='success' message='Opération réussie' /> : null}
-        {responseErrorSignal ? <Alt type='error' message='Opération a échoué' /> : null}
-        {selectionError ? <Alt type='error' message='Selectioner un médicament' /> : null}
+        {loadError ? <Alt type='error' message='Des erruers sur les données' onClose={()=> setLoadError(false)}/> : null}
+        {responseSuccesSignal ? <Alt type='success' message='Opération réussie' onClose={()=> setResponseSuccesSignal(false)}/> : null}
+        {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
+        {selectionError ? <Alt type='error' message='Selectioner un médicament' onClose={()=> setSelectionError(false)} /> : null}
       
         </React.Fragment>
 
