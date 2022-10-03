@@ -7,6 +7,11 @@ import * as React from 'react';
 export default function Fournisseur(){
 
 
+
+    const [fournisseurName, setFournisseurName] = React.useState("")
+    const [fournisseurName, setFournisseurName] = React.useState("")
+    const [fournisseurName, setFournisseurName] = React.useState("")
+    const [fournisseurName, setFournisseurName] = React.useState("")
     const [loadError, setLoadError ] = React.useState(false);
     const [response, setResponse] = React.useState("");
     const [responseSuccesSignal, setResponseSuccesSignal] = React.useState(false);
@@ -95,9 +100,9 @@ export default function Fournisseur(){
                               helperText={medicNameError[1]}
                               required
                               margin="dense"
-                              name="medic_name"
-                              id="medic_name"
-                              label="Nom de médicament"
+                              name="fournisseur_name"
+                              id="fournisseur_name"
+                              label="Nom de fournisseur"
                               fullWidth
                               variant="standard"
                               onChange={(event) => {setMedicName(event.target.value)}}
