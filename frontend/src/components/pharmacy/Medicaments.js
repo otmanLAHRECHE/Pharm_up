@@ -15,6 +15,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import DialogContentText from '@mui/material/DialogContentText';
+import Slide from '@mui/material/Slide';
 
 import FormControl from '@mui/material/FormControl';
 
@@ -27,7 +29,7 @@ import Container from '@mui/material/Container';
 
 import Grid from '@mui/material/Grid';
 
-import { getAllMedic, addNewMedic, getSelectedMedic, updateMedic } from '../../actions/medicament_data';
+import { getAllMedic, addNewMedic, getSelectedMedic, updateMedic, deleteMedic } from '../../actions/medicament_data';
 import Alt from '../layouts/alert';
 
 const columns = [
@@ -48,6 +50,10 @@ const columns = [
     
     { field: 'medic_place', headerName: 'Place de médicament', width: 150 },
   ];
+
+  const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
 export default function Medicaments(){
 
@@ -191,11 +197,7 @@ export default function Medicaments(){
           medic_type:medicType,
         }
 
-        console.log("data", JSON.stringify(data));
-
-
         const token = localStorage.getItem("auth_token");
-
         setResponse(await updateMedic(token, JSON.stringify(data), rowData.id)); 
         
       }
@@ -353,12 +355,9 @@ export default function Medicaments(){
 
       if(selectionModel.length == 0){
         setSelectionError(true);
-      }else{    
-        const token = localStorage.getItem("auth_token");
-
-        setRowData(await getSelectedMedic(token, selectionModel[0])); 
+      }else{   
+        setOpenDelete(true);
       }
-      setOpenDelete(true);
     };
 
     const deleteMedicClose = () => {
@@ -366,10 +365,16 @@ export default function Medicaments(){
     };
 
 
-    const deleteMedic = () =>{
+    const deleteConfirmation = async () =>{
+
+      setOpenDelete(false);
+      const token = localStorage.getItem("auth_token");
+      setResponse(await deleteMedic(token, selectionModel[0])); 
 
     };
 
+
+    
 
     React.useEffect(() => {
 
@@ -574,7 +579,7 @@ export default function Medicaments(){
                             </ListItemIcon>
                             <ListItemText primary="Modifier médicament" />
                           </ListItemButton>
-                          <ListItemButton>
+                          <ListItemButton onClick={deleteMedicOpen}>
                             <ListItemIcon>
                               <DeleteForeverIcon />
                             </ListItemIcon>
@@ -586,145 +591,145 @@ export default function Medicaments(){
                 </Grid>  
 
 
-                <Dialog open={open} onClose={addMedicClose}  maxWidth="md" fullWidth={true}>
-                    <DialogTitle>Ajouter médicament</DialogTitle>
-                        <DialogContent>
-                          <TextField
-                            error={medicNameError[0]}
-                            helperText={medicNameError[1]}
-                            required
-                            margin="dense"
-                            name="medic_name"
-                            id="medic_name"
-                            label="Nom de médicament"
-                            fullWidth
-                            variant="standard"
-                            onChange={(event) => {setMedicName(event.target.value)}}
-                          />
-                          <TextField
-                            error={medicCodeError[0]}
-                            helperText={medicCodeError[1]}
-                            required
-                            margin="dense"
-                            id="medic_code"
-                            label="Code de médicament"
-                            fullWidth
-                            variant="standard"
-                            onChange={(event) => {setMedicCode(event.target.value)}}
-                          />
-                          
+                  <Dialog open={open} onClose={addMedicClose}  maxWidth="md" fullWidth={true}>
+                      <DialogTitle>Ajouter médicament</DialogTitle>
+                          <DialogContent>
+                            <TextField
+                              error={medicNameError[0]}
+                              helperText={medicNameError[1]}
+                              required
+                              margin="dense"
+                              name="medic_name"
+                              id="medic_name"
+                              label="Nom de médicament"
+                              fullWidth
+                              variant="standard"
+                              onChange={(event) => {setMedicName(event.target.value)}}
+                            />
+                            <TextField
+                              error={medicCodeError[0]}
+                              helperText={medicCodeError[1]}
+                              required
+                              margin="dense"
+                              id="medic_code"
+                              label="Code de médicament"
+                              fullWidth
+                              variant="standard"
+                              onChange={(event) => {setMedicCode(event.target.value)}}
+                            />
+                            
 
-                          <Grid container spacing={2}>
-                            <Grid item xs={8}>
-                              <TextField
-                                    error={medicDoseError[0]}
-                                    helperText={medicDoseError[1]}
-                                    margin="dense"
-                                    id="medic_dose"
-                                    label="Dose de médicament"
-                                    fullWidth
-                                    variant="standard"
-                                    type="number"
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                    onChange={(event) => {setMedicDose(event.target.value)}}
-                              />
+                            <Grid container spacing={2}>
+                              <Grid item xs={8}>
+                                <TextField
+                                      error={medicDoseError[0]}
+                                      helperText={medicDoseError[1]}
+                                      margin="dense"
+                                      id="medic_dose"
+                                      label="Dose de médicament"
+                                      fullWidth
+                                      variant="standard"
+                                      type="number"
+                                      InputLabelProps={{
+                                        shrink: true,
+                                      }}
+                                      onChange={(event) => {setMedicDose(event.target.value)}}
+                                />
 
+                              </Grid>
+                              <Grid item xs={4}>
+                                      <FormControl variant="standard" sx={{ m: 1, minWidth: 100 }}>
+                                        <InputLabel id="demo-simple-select-standard-label"
+                                        error={unitDoseError[0]}
+                                        helperText={unitDoseError[1]}>Unité de dose</InputLabel>
+                                        <Select                            
+                                            
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            value={unite}
+                                            label="Unité de Dose"
+                                            onChange={change_dose}
+                                        >
+                                              <MenuItem value={0}>none</MenuItem>
+                                              <MenuItem value={1}>mg</MenuItem>
+                                              <MenuItem value={2}>ml</MenuItem>
+                                              <MenuItem value={3}>l</MenuItem>
+                                        </Select>
+
+                                    </FormControl>
+                              </Grid>
                             </Grid>
-                            <Grid item xs={4}>
-                                    <FormControl variant="standard" sx={{ m: 1, minWidth: 100 }}>
-                                      <InputLabel id="demo-simple-select-standard-label"
-                                      error={unitDoseError[0]}
-                                      helperText={unitDoseError[1]}>Unité de dose</InputLabel>
-                                      <Select                            
-                                          
-                                          labelId="demo-simple-select-label"
-                                          id="demo-simple-select"
-                                          value={unite}
-                                          label="Unité de Dose"
-                                          onChange={change_dose}
-                                      >
-                                            <MenuItem value={0}>none</MenuItem>
-                                            <MenuItem value={1}>mg</MenuItem>
-                                            <MenuItem value={2}>ml</MenuItem>
-                                            <MenuItem value={3}>l</MenuItem>
-                                      </Select>
+                            
+                            <TextField           
+                              margin="dense"
+                              id="medic_place"
+                              label="Place de médicament"
+                              fullWidth
+                              variant="standard"
+                              onChange={(event) => {setMedicPlace(event.target.value)}}
+                            />
+                            
+                              <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
+                                  <InputLabel required htmlFor="grouped-select"
+                                  error={medicTypeError[0]}
+                                  helperText={medicTypeError[1]}>Type de médicament</InputLabel>
+                                    <Select defaultValue="" id="grouped-select" label="Type de médicament"
+                                    onChange={change_type}>
+                                      <MenuItem value="">
+                                        <em>None</em>
+                                      </MenuItem>
+                                      <ListSubheader>Medicaments</ListSubheader>
+                                      <MenuItem value={1}>ALLERGOLOGIE</MenuItem>
+                                      <MenuItem value={2}>ANESTHESIOLOGIE</MenuItem>
+                                      <MenuItem value={3}>ANTALOGIQUES</MenuItem>
+                                      <MenuItem value={4}>ANTI-INFLAMMATOIRES</MenuItem>
+                                      <MenuItem value={5}>CARDIOLOGIE ET ANGEIOLOGIE</MenuItem>
+                                      <MenuItem value={6}>DERMATOLOGIE</MenuItem>
+                                      <MenuItem value={7}>ENDOCRINOLOGIE ET HORMONES</MenuItem>
+                                      <MenuItem value={8}>GASTRO-ENTEROLOGIE</MenuItem>
+                                      <MenuItem value={9}>GYNECOLOGIE</MenuItem>
+                                      <MenuItem value={10}>HEMATOLOGIE ET HEMOSTATE</MenuItem>
+                                      <MenuItem value={11}>HORS NOMENCLATURE</MenuItem>
+                                      <MenuItem value={12}>INFECTIOLOGIE</MenuItem>
+                                      <MenuItem value={13}>METABOLISME-NUTRITION-DIABETE</MenuItem>
+                                      <MenuItem value={14}>NEUROLOGIE</MenuItem>
+                                      <MenuItem value={15}>OPHTALMOLOGIE</MenuItem>
+                                      <MenuItem value={16}>PARASITOLOGIE</MenuItem>
+                                      <MenuItem value={17}>PNEUMOLOGIE</MenuItem>
+                                      <MenuItem value={18}>PSYCHIATRIE</MenuItem>
+                                      <MenuItem value={19}>TOXICOLOGIE</MenuItem>
+                                      <MenuItem value={20}>UROLOGIE ET NEPHROLOGIE</MenuItem>
+                                      <ListSubheader>Reactifs</ListSubheader>
+                                      <MenuItem value={21}>REACTIFS BIOCHIMIE</MenuItem>
+                                      <MenuItem value={22}>REACTIFS SEROLOGIE</MenuItem>
+                                      <MenuItem value={23}>CHIMIQUES</MenuItem>
+                                      <MenuItem value={24}>REACTIFS HEMATOLOGIE</MenuItem>
+                                      <MenuItem value={25}>DIVERS</MenuItem>
+                                      <MenuItem value={26}>REACTIFS IMMUNOLOGIE</MenuItem>
+                                      
+                                      <ListSubheader>Consommables</ListSubheader>
+                                      <MenuItem value={27}>AIGUILLES ET INSTRUMENTATIONS</MenuItem>
+                                      <MenuItem value={28}>COLLE ET VERNIS CHIRURGICAUX</MenuItem>
+                                      <MenuItem value={29}>CONSOMMABLES DIVERS</MenuItem>
+                                      <MenuItem value={30}>FILMS ET PRODUITS DE DEVELOPPEMENT</MenuItem>
+                                      <MenuItem value={31}>LIGATURES</MenuItem>
+                                      <MenuItem value={32}>NON TISSE</MenuItem>
+                                      <MenuItem value={33}>PANSEMENT</MenuItem>
 
-                                   </FormControl>
-                            </Grid>
-                          </Grid>
-                          
-                          <TextField           
-                            margin="dense"
-                            id="medic_place"
-                            label="Place de médicament"
-                            fullWidth
-                            variant="standard"
-                            onChange={(event) => {setMedicPlace(event.target.value)}}
-                          />
-                          
-                            <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
-                                <InputLabel required htmlFor="grouped-select"
-                                error={medicTypeError[0]}
-                                helperText={medicTypeError[1]}>Type de médicament</InputLabel>
-                                  <Select defaultValue="" id="grouped-select" label="Type de médicament"
-                                  onChange={change_type}>
-                                    <MenuItem value="">
-                                      <em>None</em>
-                                    </MenuItem>
-                                    <ListSubheader>Medicaments</ListSubheader>
-                                    <MenuItem value={1}>ALLERGOLOGIE</MenuItem>
-                                    <MenuItem value={2}>ANESTHESIOLOGIE</MenuItem>
-                                    <MenuItem value={3}>ANTALOGIQUES</MenuItem>
-                                    <MenuItem value={4}>ANTI-INFLAMMATOIRES</MenuItem>
-                                    <MenuItem value={5}>CARDIOLOGIE ET ANGEIOLOGIE</MenuItem>
-                                    <MenuItem value={6}>DERMATOLOGIE</MenuItem>
-                                    <MenuItem value={7}>ENDOCRINOLOGIE ET HORMONES</MenuItem>
-                                    <MenuItem value={8}>GASTRO-ENTEROLOGIE</MenuItem>
-                                    <MenuItem value={9}>GYNECOLOGIE</MenuItem>
-                                    <MenuItem value={10}>HEMATOLOGIE ET HEMOSTATE</MenuItem>
-                                    <MenuItem value={11}>HORS NOMENCLATURE</MenuItem>
-                                    <MenuItem value={12}>INFECTIOLOGIE</MenuItem>
-                                    <MenuItem value={13}>METABOLISME-NUTRITION-DIABETE</MenuItem>
-                                    <MenuItem value={14}>NEUROLOGIE</MenuItem>
-                                    <MenuItem value={15}>OPHTALMOLOGIE</MenuItem>
-                                    <MenuItem value={16}>PARASITOLOGIE</MenuItem>
-                                    <MenuItem value={17}>PNEUMOLOGIE</MenuItem>
-                                    <MenuItem value={18}>PSYCHIATRIE</MenuItem>
-                                    <MenuItem value={19}>TOXICOLOGIE</MenuItem>
-                                    <MenuItem value={20}>UROLOGIE ET NEPHROLOGIE</MenuItem>
-                                    <ListSubheader>Reactifs</ListSubheader>
-                                    <MenuItem value={21}>REACTIFS BIOCHIMIE</MenuItem>
-                                    <MenuItem value={22}>REACTIFS SEROLOGIE</MenuItem>
-                                    <MenuItem value={23}>CHIMIQUES</MenuItem>
-                                    <MenuItem value={24}>REACTIFS HEMATOLOGIE</MenuItem>
-                                    <MenuItem value={25}>DIVERS</MenuItem>
-                                    <MenuItem value={26}>REACTIFS IMMUNOLOGIE</MenuItem>
-                                    
-                                    <ListSubheader>Consommables</ListSubheader>
-                                    <MenuItem value={27}>AIGUILLES ET INSTRUMENTATIONS</MenuItem>
-                                    <MenuItem value={28}>COLLE ET VERNIS CHIRURGICAUX</MenuItem>
-                                    <MenuItem value={29}>CONSOMMABLES DIVERS</MenuItem>
-                                    <MenuItem value={30}>FILMS ET PRODUITS DE DEVELOPPEMENT</MenuItem>
-                                    <MenuItem value={31}>LIGATURES</MenuItem>
-                                    <MenuItem value={32}>NON TISSE</MenuItem>
-                                    <MenuItem value={33}>PANSEMENT</MenuItem>
+                                      <ListSubheader>Laboratoire</ListSubheader>
+                                      <MenuItem value={34}>AUTRES PRODUITS REACTIFS</MenuItem>
+                                      <MenuItem value={35}>CONSOMMABLE DE LABORATOIRE</MenuItem>
+                                      <MenuItem value={36}>INSTRUMENTATION</MenuItem>
 
-                                    <ListSubheader>Laboratoire</ListSubheader>
-                                    <MenuItem value={34}>AUTRES PRODUITS REACTIFS</MenuItem>
-                                    <MenuItem value={35}>CONSOMMABLE DE LABORATOIRE</MenuItem>
-                                    <MenuItem value={36}>INSTRUMENTATION</MenuItem>
-
-                                    <ListSubheader>Dentaire</ListSubheader>
-                                    <MenuItem value={37}>DENTAIRES CHIMIQUES ET LABO</MenuItem>
-                                  </Select>
-                              </FormControl>
-                        </DialogContent>
-                        <DialogActions>
-                          <Button onClick={addMedicClose}>Anuller</Button>
-                          <Button onClick={addMedicSave}>Sauvgarder</Button>
-                        </DialogActions>
+                                      <ListSubheader>Dentaire</ListSubheader>
+                                      <MenuItem value={37}>DENTAIRES CHIMIQUES ET LABO</MenuItem>
+                                    </Select>
+                                </FormControl>
+                          </DialogContent>
+                          <DialogActions>
+                            <Button onClick={addMedicClose}>Anuller</Button>
+                            <Button onClick={addMedicSave}>Sauvgarder</Button>
+                          </DialogActions>
                   </Dialog>
 
 
@@ -874,8 +879,8 @@ export default function Medicaments(){
                         </DialogActions>
                   </Dialog>
 
-                  <Dialog
-                                open={openDelete}
+
+                  <Dialog open={openDelete}
                                 TransitionComponent={Transition}
                                 keepMounted
                                 onClose={deleteMedicClose}
@@ -889,9 +894,9 @@ export default function Medicaments(){
                                 </DialogContent>
                                 <DialogActions>
                                   <Button onClick={deleteMedicClose}>Anuller</Button>
-                                  <Button onClick={deleteMedicClose}>Supprimer</Button>
+                                  <Button onClick={deleteConfirmation}>Supprimer</Button>
                                 </DialogActions>
-                    </Dialog>
+                  </Dialog>
                          
         </Container>
 
