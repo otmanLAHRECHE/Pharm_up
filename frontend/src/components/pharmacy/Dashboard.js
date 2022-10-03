@@ -93,13 +93,13 @@ function DashboardContent() {
 
   const clickDashboard = () =>{
     
-      setPage([true,false,false,false,false,false])
-      setToolBar("Dashboard")
+      setPage([true,false,false,false,false,false,false,false])
+      setToolBar("Tableau de bord")
   };
 
   const clickSortie= () =>{
   
-    setPage([false,true,false,false,false,false])
+    setPage([false,true,false,false,false,false,false,false])
     setToolBar("Bons de sortie")
    
   
@@ -107,31 +107,43 @@ function DashboardContent() {
 
   const clickCommande = () =>{
   
-    setPage([false,false,true,false,false,false])
+    setPage([false,false,true,false,false,false,false,false])
     setToolBar("Bons de commande")
   
   };
   const clickStock= () =>{
   
-    setPage([false,false,false,true,false,false])
+    setPage([false,false,false,true,false,false,false,false])
     setToolBar("Stock des médicaments")
   
   };
   const clickMedic= () =>{
   
-    setPage([false,false,false,false,true,false])
+    setPage([false,false,false,false,true,false,false,false])
     setToolBar("Liste des médicaments")
+  
+  };
+  const clickFornisseur= () =>{
+  
+    setPage([false,false,false,false,false,true,false,false])
+    setToolBar("Liste des fournisseurs")
+  
+  };
+  const clickDestinataire= () =>{
+  
+    setPage([false,false,false,false,false,false,true,false])
+    setToolBar("Rappel d'expiration")
   
   };
   const clickExpired= () =>{
   
-    setPage([false,false,false,false,false,true])
+    setPage([false,false,false,false,false,false,false,true])
     setToolBar("Rappel d'expiration")
   
   };
 
 
-  const [page, setPage] = React.useState([true,false,false,false,false,false]);
+  const [page, setPage] = React.useState([true,false,false,false,false,false,false,false]);
   
   
 
@@ -223,7 +235,19 @@ function DashboardContent() {
                       </ListItemIcon>
                       <ListItemText primary="Médicaments" />
                     </ListItemButton>
-                    <ListItemButton selected={page[5]} onClick={clickExpired}>
+                    <ListItemButton selected={page[5]} onClick={clickMedic}>
+                      <ListItemIcon>
+                        <VaccinesIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Fournisseurs" />
+                    </ListItemButton>
+                    <ListItemButton selected={page[6]} onClick={clickMedic}>
+                      <ListItemIcon>
+                        <VaccinesIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Déstinataires" />
+                    </ListItemButton>
+                    <ListItemButton selected={page[7]} onClick={clickExpired}>
                       <ListItemIcon>
                         <EventIcon />
                       </ListItemIcon>
