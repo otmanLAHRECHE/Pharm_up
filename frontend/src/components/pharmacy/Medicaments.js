@@ -72,6 +72,7 @@ export default function Medicaments(){
     const [loading, setLoading] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [openUpdate, setOpenUpdate] = React.useState(false);
+    const [openDelete, setOpenDelete] = React.useState(false);
     const [unite, setUnite] = React.useState(0);
     const [selectionModel, setSelectionModel] = React.useState([]);
     const [selectionError, setSelectionError] = React.useState(false);
@@ -346,8 +347,27 @@ export default function Medicaments(){
       setOpenUpdate(false);
     };
 
-    const deleteMedic = () => {
-      setOpen(true);
+    const deleteMedicOpen = () => {
+
+      console.log(selectionError);
+
+      if(selectionModel.length == 0){
+        setSelectionError(true);
+      }else{    
+        const token = localStorage.getItem("auth_token");
+
+        setRowData(await getSelectedMedic(token, selectionModel[0])); 
+      }
+      setOpenDelete(true);
+    };
+
+    const deleteMedicClose = () => {
+      setOpenDelete(false);
+    };
+
+
+    const deleteMedic = () =>{
+
     };
 
 
@@ -853,6 +873,25 @@ export default function Medicaments(){
                           <Button onClick={editMedicSave}>Sauvgarder</Button>
                         </DialogActions>
                   </Dialog>
+
+                  <Dialog
+                                open={openDelete}
+                                TransitionComponent={Transition}
+                                keepMounted
+                                onClose={deleteMedicClose}
+                                aria-describedby="alert-dialog-slide-description"
+                              >
+                                <DialogTitle>{"Confirmer la suppression d'un médicament"}</DialogTitle>
+                                <DialogContent>
+                                  <DialogContentText id="alert-dialog-slide-description">
+                                  Êtes-vous sûr de la décision de supprimer le médicament ?
+                                  </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                  <Button onClick={deleteMedicClose}>Anuller</Button>
+                                  <Button onClick={deleteMedicClose}>Supprimer</Button>
+                                </DialogActions>
+                    </Dialog>
                          
         </Container>
 
