@@ -210,7 +210,6 @@ export default function Medicaments(){
 
     };
 
-
     const change_type = (event) => {
 
         if (event.target.value == ""){

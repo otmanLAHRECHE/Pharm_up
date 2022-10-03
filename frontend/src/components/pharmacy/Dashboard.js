@@ -235,13 +235,13 @@ function DashboardContent() {
                       </ListItemIcon>
                       <ListItemText primary="Médicaments" />
                     </ListItemButton>
-                    <ListItemButton selected={page[5]} onClick={clickMedic}>
+                    <ListItemButton selected={page[5]} onClick={clickFornisseur}>
                       <ListItemIcon>
-                        <VaccinesIcon />
+                        <ShoppingCartIcon />
                       </ListItemIcon>
                       <ListItemText primary="Fournisseurs" />
                     </ListItemButton>
-                    <ListItemButton selected={page[6]} onClick={clickMedic}>
+                    <ListItemButton selected={page[6]} onClick={clickDestinataire}>
                       <ListItemIcon>
                         <VaccinesIcon />
                       </ListItemIcon>
@@ -276,6 +276,8 @@ function DashboardContent() {
         {page[3] ? <Dashboard_app/> : null}
         {page[4] ? <Medicaments/> : null}
         {page[5] ? <Dashboard_app/> : null}
+        {page[6] ? <Dashboard_app/> : null}
+        {page[7] ? <Dashboard_app/> : null}
         
 
         
