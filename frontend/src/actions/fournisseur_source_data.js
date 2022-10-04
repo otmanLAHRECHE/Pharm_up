@@ -1,7 +1,7 @@
 export async function getAllFournisseur(token){
     console.log("inside methode", token)
     const response = await fetch(
-        '/pharm/api/get_all_medicaments/',
+        '/pharm/api/get_all_fournisseurs/',
         {
           method: 'GET',
           headers: {
@@ -26,10 +26,10 @@ export async function getAllFournisseur(token){
 
 };
 
-export async function getSelectedMedic(token, id){
+export async function getSelectedFournisseeur(token, id){
 
     const response = await fetch(
-      '/pharm/api/get_selected_medicament/'+id,
+      '/pharm/api/get_selected_fournisseur/'+id,
       {
         method: 'GET',
         headers: {
@@ -52,10 +52,10 @@ export async function getSelectedMedic(token, id){
 };
 
 
-export async function addNewMedic(token, data){
+export async function addNewFournisseur(token, data){
   console.log("inside methode", token)
   const response = await fetch(
-      '/pharm/api/add_medicament/',
+      '/pharm/api/add_fournisseurs/',
       {
         method: 'POST',
         headers: {
@@ -78,10 +78,10 @@ export async function addNewMedic(token, data){
 };
 
 
-export async function updateMedic(token, data, id){
+export async function updateFournisseur(token, data, id){
   console.log("inside methode", token)
   const response = await fetch(
-      '/pharm/api/update_medicament/'+id,
+      '/pharm/api/update_fournisseurs/'+id,
       {
         method: 'POST',
         headers: {
@@ -104,10 +104,10 @@ export async function updateMedic(token, data, id){
 };
 
 
-export async function deleteMedic(token, id){
+export async function deleteFournisseur(token, id){
   console.log("inside methode", token)
   const response = await fetch(
-      '/pharm/api/delete_medicament/'+id,
+      '/pharm/api/delete_fournisseurs/'+id,
       {
         method: 'DELETE',
         headers: {

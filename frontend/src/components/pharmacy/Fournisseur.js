@@ -30,6 +30,7 @@ import Container from '@mui/material/Container';
 
 import Grid from '@mui/material/Grid';
 import Alt from '../layouts/alert';
+import { getAllFournisseur } from '../../actions/fournisseur_source_data';
 
 
 const columns = [
@@ -79,6 +80,54 @@ export default function Fournisseur(){
 
 
 
+    const addFournisseurOpen = () =>{
+      setOpen(true);
+      setFournisseurName("");
+      setFournisseurAdress("")
+      setFournisseurEmailAdr("")
+      setFournisseurPhone("")
+
+      setFournisseurNameError([false, ""])
+      setFournisseurAdressError([false, ""])
+      setFournisseurEmailAdrError([false, ""])
+      setFournisseurPhoneError([false, ""])
+
+    }
+
+    const editFournisseurOpen = () =>{
+
+    }
+
+    const addFournClose = () =>{
+
+    }
+
+    const updateFournClose = () =>{
+
+    }
+
+    const deleteFournisseurOpen = () =>{
+
+    }
+
+    const deleteFournClose = () =>{
+
+    }
+
+
+    const addFournSave = async () =>{
+
+    }
+    const updateFournSave = async () =>{
+        
+    }
+    const deleteConfirmation = async () =>{
+        
+    }
+
+    
+
+
 
 
     React.useEffect(() => {
@@ -100,7 +149,7 @@ export default function Fournisseur(){
         const fetchData = async () => {
           try {
             const token = localStorage.getItem("auth_token");
-            setData(await getAllMedic(token));
+            setData(await getAllFournisseur(token));
             setLoading(false);
           } catch (error) {
             console.log("error", error);
@@ -324,7 +373,7 @@ export default function Fournisseur(){
                   <Dialog open={openDelete}
                                 TransitionComponent={Transition}
                                 keepMounted
-                                onClose={deleteMedicClose}
+                                onClose={deleteFournClose}
                                 aria-describedby="alert-dialog-slide-description"
                               >
                                 <DialogTitle>{"Confirmer la suppression d'un médicament"}</DialogTitle>
@@ -334,7 +383,7 @@ export default function Fournisseur(){
                                   </DialogContentText>
                                 </DialogContent>
                                 <DialogActions>
-                                  <Button onClick={deleteMedicClose}>Anuller</Button>
+                                  <Button onClick={deleteFournClose}>Anuller</Button>
                                   <Button onClick={deleteConfirmation}>Supprimer</Button>
                                 </DialogActions>
                   </Dialog>

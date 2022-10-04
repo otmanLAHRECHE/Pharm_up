@@ -32,6 +32,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Dashboard_app from './Dashboard_data';
 import Medicaments from './Medicaments';
+import Fournisseur from './Fournisseur';
 
 
 
@@ -132,7 +133,7 @@ function DashboardContent() {
   const clickDestinataire= () =>{
   
     setPage([false,false,false,false,false,false,true,false])
-    setToolBar("Rappel d'expiration")
+    setToolBar("Destinataires")
   
   };
   const clickExpired= () =>{
@@ -275,7 +276,7 @@ function DashboardContent() {
         {page[2] ? <Dashboard_app/> : null}
         {page[3] ? <Dashboard_app/> : null}
         {page[4] ? <Medicaments/> : null}
-        {page[5] ? <Dashboard_app/> : null}
+        {page[5] ? <Fournisseur/> : null}
         {page[6] ? <Dashboard_app/> : null}
         {page[7] ? <Dashboard_app/> : null}
         

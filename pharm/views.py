@@ -376,9 +376,22 @@ def deleteBonSortieItem(request):
 def getAllFournisseurs(request):
     if request.method == 'GET' and request.user.is_authenticated:
         queryset = Fournisseur.objects.all()
-        print(queryset)
 
         source_serial = FournisseurSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)    
+
+
+@api_view(['GET'])
+def getSelectedFournisseur(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Fournisseur.objects.get(id = id)
+
+        source_serial = FournisseurSerializer(queryset)
 
         return Response(status=status.HTTP_200_OK,data=source_serial.data)
                 
@@ -404,9 +417,8 @@ def createNewFournisseur(request):
 
 
 @api_view(['POST'])
-def updateFournisseur(request):
+def updateFournisseur(request, id):
     if request.method == 'POST' and request.user.is_authenticated:
-        id = request.data.get('id')
         name = request.data.pop('name')
         address = request.data.pop('address')
         email_adress = request.data.pop('email_adress')
@@ -428,9 +440,8 @@ def updateFournisseur(request):
 
 
 @api_view(['DELETE'])
-def deleteFournisseur(request):
+def deleteFournisseur(request, id):
     if request.method == 'DELETE' and request.user.is_authenticated:
-        id = request.data.pop("id")
         Fournisseur.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Fournisseur deleted"})
 
