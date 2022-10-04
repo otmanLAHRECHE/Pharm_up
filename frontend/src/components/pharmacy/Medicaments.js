@@ -199,6 +199,8 @@ export default function Medicaments(){
 
         const token = localStorage.getItem("auth_token");
         setResponse(await updateMedic(token, JSON.stringify(data), rowData.id)); 
+
+        setOpenUpdate(false);
         
       }
       else{

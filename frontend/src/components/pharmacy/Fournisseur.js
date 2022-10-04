@@ -24,7 +24,7 @@ import Container from '@mui/material/Container';
 
 import Grid from '@mui/material/Grid';
 import Alt from '../layouts/alert';
-import { addNewFournisseur, getAllFournisseur, getSelectedFournisseeur, updateFournisseur } from '../../actions/fournisseur_source_data';
+import { addNewFournisseur, deleteFournisseur, getAllFournisseur, getSelectedFournisseeur, updateFournisseur } from '../../actions/fournisseur_source_data';
 
 
 const columns = [
@@ -209,6 +209,8 @@ export default function Fournisseur(){
         const token = localStorage.getItem("auth_token");
 
         setResponse(await updateFournisseur(token, JSON.stringify(data), rowData.id)); 
+
+        setOpenUpdate(false);
         
       }
       else{
@@ -222,7 +224,7 @@ export default function Fournisseur(){
 
       setOpenDelete(false);
       const token = localStorage.getItem("auth_token");
-      setResponse(await deleteMedic(token, selectionModel[0])); 
+      setResponse(await deleteFournisseur(token, selectionModel[0])); 
         
     }
 
@@ -243,7 +245,7 @@ export default function Fournisseur(){
         console.log(rowData.id)
   
         setFournisseurName(rowData.name);
-        setFournisseurAdress(rowData.adress)
+        setFournisseurAdress(rowData.address);
         setFournisseurEmailAdr(rowData.email_adress)
         setFournisseurPhone(rowData.phone_nbr)
 
