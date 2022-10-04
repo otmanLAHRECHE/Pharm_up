@@ -203,11 +203,9 @@ export default function Medicaments(){
         setOpenUpdate(false);
         
       }
-      else{
-        
+      else{ 
         setLoadError(true)
         console.log("error")
-
       }
 
     };
