@@ -331,16 +331,16 @@ const columns = [
     
     
                       <Dialog open={open} onClose={addServiceClose}  maxWidth="md" fullWidth={true}>
-                          <DialogTitle>Ajouter Destinataire</DialogTitle>
+                          <DialogTitle>Ajouter un destinataire</DialogTitle>
                               <DialogContent>
                                 <TextField
                                   error={serviceNameError[0]}
                                   helperText={serviceNameError[1]}
                                   required
                                   margin="dense"
-                                  name="fournisseur_name"
-                                  id="fournisseur_name"
-                                  label="Nom de fournisseur"
+                                  name="service_name"
+                                  id="service_name"
+                                  label="Nom de destinataire"
                                   fullWidth
                                   variant="standard"
                                   onChange={(event) => {setServiceName(event.target.value)}}
@@ -350,8 +350,8 @@ const columns = [
                                   helperText={serviceServiceError[1]}
                                   required
                                   margin="dense"
-                                  id="fournisseur_adress"
-                                  label="Adress"
+                                  id="service_service"
+                                  label="Service"
                                   fullWidth
                                   variant="standard"
                                   onChange={(event) => {setServiceService(event.target.value)}}
@@ -373,9 +373,9 @@ const columns = [
                                   helperText={serviceNameError[1]}
                                   required
                                   margin="dense"
-                                  name="fournisseur_name"
-                                  id="fournisseur_name"
-                                  label="Nom de fournisseur"
+                                  name="service_name"
+                                  id="service_name"
+                                  label="Nom de destinataire"
                                   fullWidth
                                   variant="standard"
                                   value={serviceName}
@@ -387,7 +387,7 @@ const columns = [
                                   required
                                   margin="dense"
                                   id="fournisseur_adress"
-                                  label="Adress"
+                                  label="Service"
                                   fullWidth
                                   variant="standard"
                                   value={serviceService}
@@ -405,7 +405,7 @@ const columns = [
                       <Dialog open={openDelete}
                                     TransitionComponent={Transition}
                                     keepMounted
-                                    onClose={deleteFournClose}
+                                    onClose={deleteServiceClose}
                                     aria-describedby="alert-dialog-slide-description"
                                   >
                                     <DialogTitle>{"Confirmer la suppression d'un destinataire"}</DialogTitle>
@@ -426,7 +426,7 @@ const columns = [
             {loadError ? <Alt type='error' message='Des erruers sur les données' onClose={()=> setLoadError(false)}/> : null}
             {responseSuccesSignal ? <Alt type='success' message='Opération réussie' onClose={()=> setResponseSuccesSignal(false)}/> : null}
             {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
-            {selectionError ? <Alt type='error' message='Selectioner un fournisseur' onClose={()=> setSelectionError(false)} /> : null}
+            {selectionError ? <Alt type='error' message='Selectioner un Destinataire' onClose={()=> setSelectionError(false)} /> : null}
           
             </React.Fragment>
     

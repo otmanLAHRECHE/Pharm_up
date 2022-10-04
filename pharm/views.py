@@ -57,7 +57,7 @@ def createNewSource(request):
         source = Source.objects.create(name=name, service=service)
 
         if source.id is not None:
-            return Response(status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_201_CREATED, data = {"status":"source created"})
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
