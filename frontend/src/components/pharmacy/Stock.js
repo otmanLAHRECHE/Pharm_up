@@ -173,8 +173,8 @@ const columns = [
 export default function Stock(){
 
 
-    const [medicName, setMedicName] = React.useState("");
-    const [arivage, setArivage] = React.useState("");
+    const [medicName, setMedicName] = React.useState(null);
+    const [arivage, setArivage] = React.useState(null);
     const [dateArived, setDateArived] = React.useState("");
     const [dateExpired, setDateExpired] = React.useState("");
     const [qnt, setQnt] = React.useState("");
@@ -286,6 +286,8 @@ export default function Stock(){
             <Dialog open={open} onClose={addStockClose}  maxWidth="md" fullWidth={true}>
                           <DialogTitle>Ajouter un médicament au stock</DialogTitle>
                               <DialogContent>
+
+                              
                               <Grid container spacing={2}>
                                         <Grid item xs={6}>
                                         <Autocomplete
@@ -321,6 +323,8 @@ export default function Stock(){
                                         </Grid>
 
                               </Grid>
+
+                              <br></br>
                               
                               
                                 
@@ -367,6 +371,8 @@ export default function Stock(){
                                   value = {qnt}
                                   onChange={(event) => {setQnt(event.target.value)}}
                                 />
+
+                            
                                   
                               </DialogContent>
                               <DialogActions>
