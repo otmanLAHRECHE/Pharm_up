@@ -230,6 +230,9 @@ export default function Fournisseur(){
 
     React.useEffect(() => {
 
+
+      console.log(rowData);
+
       try{
 
         if (rowData == "no data"){
@@ -438,6 +441,7 @@ export default function Fournisseur(){
                               label="Nom de fournisseur"
                               fullWidth
                               variant="standard"
+                              value={fournisseurName}
                               onChange={(event) => {setFournisseurName(event.target.value)}}
                             />
                             <TextField
@@ -449,6 +453,7 @@ export default function Fournisseur(){
                               label="Adress"
                               fullWidth
                               variant="standard"
+                              value={fournisseurAdress}
                               onChange={(event) => {setFournisseurAdress(event.target.value)}}
                             />
                             
@@ -463,6 +468,7 @@ export default function Fournisseur(){
                                       label="Email adress"
                                       fullWidth
                                       variant="standard"
+                                      value={fournisseurEmailAdr}
                                       InputLabelProps={{
                                         shrink: true,
                                       }}
@@ -480,6 +486,7 @@ export default function Fournisseur(){
                                       fullWidth
                                       variant="standard"
                                       type="number"
+                                      value={fournisseurPhone}
                                       InputLabelProps={{
                                         shrink: true,
                                       }}
