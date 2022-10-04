@@ -23,6 +23,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import Groups3Icon from '@mui/icons-material/Groups3';
 import EventIcon from '@mui/icons-material/Event';
 import OutputIcon from '@mui/icons-material/Output';
 import InputIcon from '@mui/icons-material/Input';
@@ -244,7 +245,7 @@ function DashboardContent() {
                     </ListItemButton>
                     <ListItemButton selected={page[6]} onClick={clickDestinataire}>
                       <ListItemIcon>
-                        <VaccinesIcon />
+                        <Groups3Icon />
                       </ListItemIcon>
                       <ListItemText primary="Déstinataires" />
                     </ListItemButton>
