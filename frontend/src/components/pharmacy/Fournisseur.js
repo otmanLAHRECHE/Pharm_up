@@ -19,25 +19,19 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContentText from '@mui/material/DialogContentText';
 import Slide from '@mui/material/Slide';
 
-import FormControl from '@mui/material/FormControl';
-
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-
-import InputLabel from '@mui/material/InputLabel';
 
 import Container from '@mui/material/Container';
 
 import Grid from '@mui/material/Grid';
 import Alt from '../layouts/alert';
-import { getAllFournisseur } from '../../actions/fournisseur_source_data';
+import { addNewFournisseur, getAllFournisseur, getSelectedFournisseeur, updateFournisseur } from '../../actions/fournisseur_source_data';
 
 
 const columns = [
     { field: 'id', headerName: 'Id', width: 70 },
     { field: 'name', headerName: 'Fournisseur', width: 180 },
     { field: 'address', headerName: 'Adress', width: 150 },
-    { field: 'email_adress', headerName: 'Email', width: 150 },
+    { field: 'email_adress', headerName: 'Email', width: 230 },
     { field: 'phone_nbr', headerName: 'Numero de telephone', width: 150 },
   ];
 
@@ -94,40 +88,173 @@ export default function Fournisseur(){
 
     }
 
-    const editFournisseurOpen = () =>{
+    const editFournisseurOpen = async () =>{
+     
+
+
+      if(selectionModel.length == 0){
+        setSelectionError(true);
+      }else{    
+        const token = localStorage.getItem("auth_token");
+
+        setRowData(await getSelectedFournisseeur(token, selectionModel[0])); 
+      }
 
     }
 
     const addFournClose = () =>{
 
+      setOpen(false);
+
     }
 
     const updateFournClose = () =>{
+      setOpenUpdate(false);
 
     }
 
     const deleteFournisseurOpen = () =>{
+      if(selectionModel.length == 0){
+        setSelectionError(true);
+      }else{   
+        setOpenDelete(true);
+      }
 
     }
 
     const deleteFournClose = () =>{
+      setOpenDelete(false);
 
     }
 
 
     const addFournSave = async () =>{
 
+      var test = true;
+
+      setFournisseurNameError([false, ""])
+      setFournisseurAdressError([false, ""])
+      setFournisseurEmailAdrError([false, ""])
+      setFournisseurPhoneError([false, ""])
+
+
+      if (fournisseurName == ""){
+        setFournisseurNameError([true,"Ce champ est obligatoire"])
+        test = false;
+      }
+      if (fournisseurAdress == ""){
+        setFournisseurAdressError([true,"Ce champ est obligatoire"])
+        test = false;
+      }
+
+      if (test){
+        console.log("good to go....")
+        setOpen(false);
+
+        const data = {
+          name:fournisseurName,
+          address:fournisseurAdress,
+          email_adress:fournisseurEmailAdr,
+          phone_nbr:fournisseurPhone,
+        }
+
+        console.log("data", JSON.stringify(data));
+
+
+        const token = localStorage.getItem("auth_token");
+
+        setResponse(await addNewFournisseur(token, JSON.stringify(data))); 
+        
+      }
+      else{
+        setLoadError(true);
+        console.log("error");
+
+      }
+
     }
     const updateFournSave = async () =>{
+
+      var test = true;
+
+      setFournisseurNameError([false, ""])
+      setFournisseurAdressError([false, ""])
+      setFournisseurEmailAdrError([false, ""])
+      setFournisseurPhoneError([false, ""])
+
+
+      if (fournisseurName == ""){
+        setFournisseurNameError([true,"Ce champ est obligatoire"])
+        test = false;
+      }
+      if (fournisseurAdress == ""){
+        setFournisseurAdressError([true,"Ce champ est obligatoire"])
+        test = false;
+      }
+
+      if (test){
+        console.log("good to go....")
+        setOpen(false);
+
+        const data = {
+          name:fournisseurName,
+          address:fournisseurAdress,
+          email_adress:fournisseurEmailAdr,
+          phone_nbr:fournisseurPhone,
+        }
+
+        console.log("data", JSON.stringify(data));
+
+
+        const token = localStorage.getItem("auth_token");
+
+        setResponse(await updateFournisseur(token, JSON.stringify(data), rowData.id)); 
+        
+      }
+      else{
+        setLoadError(true);
+        console.log("error");
+
+      }
         
     }
     const deleteConfirmation = async () =>{
+
+      setOpenDelete(false);
+      const token = localStorage.getItem("auth_token");
+      setResponse(await deleteMedic(token, selectionModel[0])); 
         
     }
 
     
 
+    React.useEffect(() => {
 
+      try{
+
+        if (rowData == "no data"){
+          setResponseErrorSignal(true);
+        } else if(rowData != "") {
+  
+        setOpenUpdate(true);
+        console.log(rowData.id)
+  
+        setFournisseurName(rowData.name);
+        setFournisseurAdress(rowData.adress)
+        setFournisseurEmailAdr(rowData.email_adress)
+        setFournisseurPhone(rowData.phone_nbr)
+
+        setFournisseurNameError([false, ""])
+        setFournisseurAdressError([false, ""])
+        setFournisseurEmailAdrError([false, ""])
+        setFournisseurPhoneError([false, ""])
+
+        }
+      }catch(e){
+        console.log(e)
+      }
+
+    }, [rowData]);
 
 
     React.useEffect(() => {
@@ -376,10 +503,10 @@ export default function Fournisseur(){
                                 onClose={deleteFournClose}
                                 aria-describedby="alert-dialog-slide-description"
                               >
-                                <DialogTitle>{"Confirmer la suppression d'un médicament"}</DialogTitle>
+                                <DialogTitle>{"Confirmer la suppression d'un fournisseur"}</DialogTitle>
                                 <DialogContent>
                                   <DialogContentText id="alert-dialog-slide-description">
-                                  Êtes-vous sûr de la décision de supprimer le médicament ?
+                                  Êtes-vous sûr de la décision de supprimer le fournisseur ?
                                   </DialogContentText>
                                 </DialogContent>
                                 <DialogActions>

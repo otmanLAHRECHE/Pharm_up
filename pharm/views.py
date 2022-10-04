@@ -411,7 +411,7 @@ def createNewFournisseur(request):
         fournisseur = Fournisseur.objects.create(name=name, address=address, email_adress=email_adress, phone_nbr=phone_nbr)
 
         if fournisseur.id is not None:
-            return Response(status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_201_CREATED, data={"status": "Fournisseur item created sucsusfully"})
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
