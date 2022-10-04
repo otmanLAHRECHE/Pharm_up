@@ -7,9 +7,10 @@ from pharm import views
 
 urlpatterns = [
     path('api/get_all_sources/', views.getAllSources),
+    path('api/get_selected_sources/<int:id>', views.getSelectedSources),
     path('api/create_new_source/', views.createNewSource),
-    path('api/update_source/', views.updateSource),
-    path('api/delete_source/', views.deleteSource),
+    path('api/update_source/<int:id>', views.updateSource),
+    path('api/delete_source/<int:id>', views.deleteSource),
     path('api/get_all_medicaments/', views.getAllMedicaments),
     path('api/get_selected_medicament/<int:id>', views.getSelectedMedicament),
     path('api/add_medicament/', views.addMedicament),

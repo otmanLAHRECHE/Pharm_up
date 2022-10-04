@@ -34,6 +34,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import Dashboard_app from './Dashboard_data';
 import Medicaments from './Medicaments';
 import Fournisseur from './Fournisseur';
+import Destinataire from './Destinataire';
 
 
 
@@ -278,7 +279,7 @@ function DashboardContent() {
         {page[3] ? <Dashboard_app/> : null}
         {page[4] ? <Medicaments/> : null}
         {page[5] ? <Fournisseur/> : null}
-        {page[6] ? <Dashboard_app/> : null}
+        {page[6] ? <Destinataire/> : null}
         {page[7] ? <Dashboard_app/> : null}
         
 

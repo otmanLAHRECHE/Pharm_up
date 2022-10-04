@@ -34,6 +34,20 @@ def getAllSources(request):
         return Response(status=status.HTTP_401_UNAUTHORIZED)    
 
 
+@api_view(['GET'])
+def getSelectedSources(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Source.objects.get(id = id)
+
+        source_serial = SourceSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)    
+
+
 @api_view(['POST'])
 def createNewSource(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -49,9 +63,8 @@ def createNewSource(request):
 
 
 @api_view(['POST'])
-def updateSource(request):
+def updateSource(request, id):
     if request.method == 'POST' and request.user.is_authenticated:
-        id = request.data.pop("id")
         name = request.data.pop("name")
         service = request.data.pop("service")
         source_to_update = Source.objects.get(id=id)
@@ -66,9 +79,8 @@ def updateSource(request):
 
 
 @api_view(['DELETE'])
-def deleteSource(request):
+def deleteSource(request, id):
     if request.method == 'DELETE' and request.user.is_authenticated:
-        id = request.data.pop("id")
         Source.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"source deleted"})
 

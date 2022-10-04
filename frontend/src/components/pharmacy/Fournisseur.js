@@ -90,8 +90,6 @@ export default function Fournisseur(){
 
     const editFournisseurOpen = async () =>{
      
-
-
       if(selectionModel.length == 0){
         setSelectionError(true);
       }else{    
