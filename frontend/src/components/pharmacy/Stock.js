@@ -5,6 +5,9 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
+
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -217,8 +220,16 @@ export default function Stock(){
       }
 
       const addStockSave = async () =>{
-        
+
       }
+
+      const handleChangeDateArived = (newValue) => {
+        setDateArived(newValue);
+      };
+
+      const handleChangeDateExpired = (newValue) => {
+        setDateExpired(newValue);
+      };
 
 
 
@@ -316,26 +327,33 @@ export default function Stock(){
 
                             <Grid container spacing={2}>
                                             <Grid item xs={6}>
-                                            <DesktopDatePicker
-                                                    label="Date d arivage"
-                                                    inputFormat="MM/DD/YYYY"
-                                                    value={dateArived}
-                                                    onChange={(event) => {setDateArived(event.target.value)}}
-                                                    renderInput={(params) => <TextField {...params} error={dateArivedError[0]}
-                                                    helperText={dateArivedError[1]} />}
-                                            />
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DesktopDatePicker
+                                                        label="Date d arivage"
+                                                        inputFormat="MM/DD/YYYY"
+                                                        value={dateArived}
+                                                        onChange={handleChangeDateArived}
+                                                        renderInput={(params) => <TextField {...params} error={dateArivedError[0]}
+                                                        helperText={dateArivedError[1]} />}
+                                                />
+
+                                            </LocalizationProvider>
+                                            
 
                                             </Grid>
 
                                             <Grid item xs={6}>
-                                            <DesktopDatePicker
-                                                    label="Date d expiration"
-                                                    inputFormat="MM/DD/YYYY"
-                                                    value={dateExpired}
-                                                    onChange={(event) => {setDateExpired(event.target.value)}}
-                                                    renderInput={(params) => <TextField {...params} error={dateExpiredError[0]}
-                                                    helperText={dateExpiredError[1]} />}
-                                            />
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DesktopDatePicker
+                                                        label="Date d expiration"
+                                                        inputFormat="MM/DD/YYYY"
+                                                        value={dateExpired}
+                                                        onChange={handleChangeDateExpired}
+                                                        renderInput={(params) => <TextField {...params} error={dateExpiredError[0]}
+                                                        helperText={dateExpiredError[1]} />}
+                                                />
+                                            </LocalizationProvider>
+                                            
                                             </Grid>
                             </Grid>
                                 <TextField
