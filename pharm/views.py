@@ -96,7 +96,20 @@ def getAllMedicaments(request):
                 
     
     else :
-        return Response(status=status.HTTP_401_UNAUTHORIZED)    
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['GET'])
+def getAllMedicamentsNames(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Medicament.objects.all()
+
+        source_serial = MedicamentListSerialize(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)     
 
 @api_view(['GET'])
 def getSelectedMedicament(request, id):
@@ -397,7 +410,7 @@ def getAllFournisseurs(request):
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED)    
 
-
+ 
 @api_view(['GET'])
 def getSelectedFournisseur(request, id):
     if request.method == 'GET' and request.user.is_authenticated:

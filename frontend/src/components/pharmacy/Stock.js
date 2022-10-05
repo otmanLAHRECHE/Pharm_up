@@ -27,6 +27,9 @@ import Typography from '@mui/material/Typography';
 
 import Container from '@mui/material/Container';
 
+import Alt from '../layouts/alert';
+import { getAllMedicNames } from '../../actions/medicament_data';
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -185,7 +188,16 @@ export default function Stock(){
     const [dateExpiredError, setDateExpiredError] = React.useState([false, ""]);
     const [qntError, setQntError] = React.useState([false, ""]);
 
+    const [loadError, setLoadError ] = React.useState(false);
+    const [response, setResponse] = React.useState("");
+    const [responseSuccesSignal, setResponseSuccesSignal] = React.useState(false);
+    const [responseErrorSignal, setResponseErrorSignal] = React.useState(false);
+
+    const [checkNames, setCheckNames] = React.useState(false);
+    const [checkArivage, setCheckArivage] = React.useState(false);
+
     const [data, setData] = React.useState([]);
+    const [namesData, setNamesData] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [openUpdate, setOpenUpdate] = React.useState(false);
@@ -215,8 +227,24 @@ export default function Stock(){
 
       }
 
-      const addStockOpen = () =>{
-        setOpen(true);
+      const addStockOpen = async () =>{
+        
+        setServiceName("");
+        setServiceService("");
+
+        setMedicName(null);
+        setArivage(null);
+        setQnt("");
+
+        setMedicNameError([false, ""]);
+        setArivageError([false, ""]);
+        setDateArivedError([false, ""]);
+        setDateExpiredError([false, ""]);
+        setQntError([false, ""]);
+
+        const token = localStorage.getItem("auth_token");
+
+        setNamesData(await getAllMedicNames(toke));
       }
 
       const addStockSave = async () =>{
@@ -230,6 +258,32 @@ export default function Stock(){
       const handleChangeDateExpired = (newValue) => {
         setDateExpired(newValue);
       };
+
+
+      React.useEffect(() =>{
+        console.log(namesData);
+
+
+        try{
+          if (rowData == "no data"){
+            setResponseErrorSignal(true);
+          } else if(rowData != "") {
+    
+          setOpenUpdate(true);
+          console.log(rowData.id)
+    
+          setServiceName(rowData.name);
+          setServiceService(rowData.service);
+  
+          setServiceNameError([false, ""]);
+          setServiceServiceError([false, ""]);
+  
+          }
+
+        }catch(e){
+          console.log(e);
+        }
+      }, [namesData])
 
 
 
@@ -381,6 +435,13 @@ export default function Stock(){
                               </DialogActions>
                       </Dialog>
           </Container>
+
+
+            {loadError ? <Alt type='error' message='Des erruers sur les données' onClose={()=> setLoadError(false)}/> : null}
+            {responseSuccesSignal ? <Alt type='success' message='Opération réussie' onClose={()=> setResponseSuccesSignal(false)}/> : null}
+            {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
+            {selectionError ? <Alt type='error' message='Selectioner un Destinataire' onClose={()=> setSelectionError(false)} /> : null}
+          
       
         </React.Fragment>
       )

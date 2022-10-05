@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/update_source/<int:id>', views.updateSource),
     path('api/delete_source/<int:id>', views.deleteSource),
     path('api/get_all_medicaments/', views.getAllMedicaments),
+    path('api/get_all_medicaments_names/', views.getAllMedicamentsNames),
     path('api/get_selected_medicament/<int:id>', views.getSelectedMedicament),
     path('api/add_medicament/', views.addMedicament),
     path('api/update_medicament/<int:id>', views.updateMedicament),
