@@ -129,15 +129,34 @@ export default function Stock(){
       }
 
       const addStockSave = async () =>{
-        console.log(medicName);
-        console.log(arivage);
-        console.log(dateArived.get('year'));
-        console.log(dateExpired.get('year'));
-        console.log(dateArived.get('month')+1);
-        console.log(dateExpired.get('month')+1);
-        console.log(dateArived.get('date'));
-        console.log(dateExpired.get('date'));
-        console.log(qnt);
+
+        var test = true;
+
+        setMedicNameError([false, ""]);
+        setArivageError([false, ""]);
+        setDateArivedError([false, ""]);
+        setDateExpiredError([false, ""]);
+        setQntError([false, ""]);
+
+        if(dateArived>= dateExpired){
+          setDateArivedError([true, "problem sur la date"]);
+          setDateExpiredError([true, "problem sur la date"]);
+          test = false
+        }else{
+          console.log("good");
+          var m = dateArived.get('month')+1;
+          const date_a = dateArived.get('date') +"/"+m +"/"+dateArived.get('year');
+          m = dateExpired.get('month')+1
+          const date_e = dateExpired.get('date') +"/"+m+"/"+dateExpired.get('year');
+          
+          console.log(date_a);
+          console.log(date_e);
+        }
+        if(medicName == null || medicName == ""){
+          test = false;
+          
+
+        }
         
       }
 

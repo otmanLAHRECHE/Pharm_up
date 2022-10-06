@@ -370,10 +370,7 @@ export default function Medicaments(){
       const token = localStorage.getItem("auth_token");
       setResponse(await deleteMedic(token, selectionModel[0])); 
 
-    };
-
-
-    
+    };   
 
     React.useEffect(() => {
 
