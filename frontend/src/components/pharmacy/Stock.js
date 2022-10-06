@@ -28,7 +28,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 
 import Alt from '../layouts/alert';
-import { getAllMedicNames } from '../../actions/medicament_data';
+import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
+import { getAllStocks } from '../../actions/stock_data';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -39,8 +40,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const columns = [
     { field: 'id', headerName: 'Id', width: 60 },
-    { field: 'medic_code', headerName: 'Code PCH', width: 100 },
-    { field: 'medic_name', headerName: 'Medicament', width: 400 },
+    { field: 'medic_code', headerName: 'Code PCH', width: 100, valueGetter: (params) =>
+    `${params.row.medicament.medic_code || ''}`},
+    { field: 'medic_name', headerName: 'Medicament', width: 400, valueGetter: (params) =>
+    `${params.row.medicament.medic_name || ''}` },
     { field: 'date_arrived', headerName: 'Date d arivage', width: 170 },
     { field: 'date_expired', headerName: 'Date d expiration', width: 170 },
     { field: 'stock_qte', headerName: 'QNT', width: 150 },
@@ -69,10 +72,13 @@ export default function Stock(){
     const [responseErrorSignal, setResponseErrorSignal] = React.useState(false);
 
     const [allNames, setAllNames] = React.useState([]);
-    const [allArivage, setAllArivage] = React.useState([]);
+    const [allArivage, setAllArivage] = React.useState([{"label":"Nouveau arrivage"}]);
 
+
+    const [datePickersState,setDatePickersState] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [namesData, setNamesData] = React.useState([]);
+    const [arrivageData, setArrivageData] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [openUpdate, setOpenUpdate] = React.useState(false);
@@ -107,6 +113,8 @@ export default function Stock(){
 
         setMedicName(null);
         setArivage(null);
+        setDateArived(null);
+        setDateExpired(null);
         setQnt("");
 
         setMedicNameError([false, ""]);
@@ -121,7 +129,16 @@ export default function Stock(){
       }
 
       const addStockSave = async () =>{
-
+        console.log(medicName);
+        console.log(arivage);
+        console.log(dateArived.get('year'));
+        console.log(dateExpired.get('year'));
+        console.log(dateArived.get('month')+1);
+        console.log(dateExpired.get('month')+1);
+        console.log(dateArived.get('date'));
+        console.log(dateExpired.get('date'));
+        console.log(qnt);
+        
       }
 
       const handleChangeDateArived = (newValue) => {
@@ -145,7 +162,41 @@ export default function Stock(){
         }catch(e){
           console.log(e);
         }
-      }, [namesData])
+      }, [namesData]);
+
+      React.useEffect(() =>{
+        console.log(arrivageData);
+        try{
+          if (arrivageData == "no data"){
+            setResponseErrorSignal(true);
+          } else if(arrivageData != "") {
+            console.log("inside else if ",arrivageData);
+            arrivageData.push({"label":"Nouveau arrivage"})
+            setAllArivage(arrivageData);
+          }
+        }catch(e){
+          console.log(e);
+        }
+      }, [arrivageData]);
+
+
+      React.useEffect(() => {
+
+        setLoading(true);
+  
+        const fetchData = async () => {
+          try {
+            const token = localStorage.getItem("auth_token");
+            setData(await getAllStocks(token));
+            setLoading(false);
+          } catch (error) {
+            console.log("error", error);
+          }
+        };
+    
+        fetchData();
+  
+      }, [response]);
 
 
 
@@ -209,9 +260,13 @@ export default function Stock(){
                                         <Autocomplete
                                             disablePortal
                                             value={medicName}
-                                            onChange={(event, newVlue) =>{
+                                            onChange={async (event, newVlue) =>{
                                                 setMedicName(newVlue);
-                                                console.log(newValue);
+                                                console.log(newVlue.id);
+                                                setAllArivage([{"label":"Nouveau arrivage"}]);
+                                                const token = localStorage.getItem("auth_token");
+                                                setArrivageData(await getAllArrivageOfMedic(token, newVlue.id));
+  
                                                 
                                             }}
                                             id="combo-box-demo"
@@ -230,6 +285,13 @@ export default function Stock(){
                                                     value={arivage}
                                                     onChange={(event, newVlue) =>{
                                                         setArivage(newVlue);
+                                                        console.log(newVlue.label); 
+
+                                                        if(newVlue.label == "Nouveau arrivage"){
+                                                          setDatePickersState(false);
+                                                        }else{
+                                                          setDatePickersState(true);
+                                                        }
                                                         
                                                     }}
                                                     options={allArivage}
@@ -253,7 +315,8 @@ export default function Stock(){
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <DesktopDatePicker
                                                         label="Date d arrivage"
-                                                        inputFormat="MM/DD/YYYY"
+                                                        inputFormat="DD/MM/YYYY"
+                                                        disabled = {datePickersState}
                                                         value={dateArived}
                                                         onChange={handleChangeDateArived}
                                                         renderInput={(params) => <TextField {...params} error={dateArivedError[0]}
@@ -270,7 +333,8 @@ export default function Stock(){
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <DesktopDatePicker
                                                         label="Date d expiration"
-                                                        inputFormat="MM/DD/YYYY"
+                                                        inputFormat="DD/MM/YYYY"
+                                                        disabled = {datePickersState}
                                                         value={dateExpired}
                                                         onChange={handleChangeDateExpired}
                                                         renderInput={(params) => <TextField {...params} error={dateExpiredError[0]}

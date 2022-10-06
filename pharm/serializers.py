@@ -27,6 +27,13 @@ class StockSerializer(serializers.ModelSerializer):
         model = Stock
         fields = ['id', 'date_arrived', 'date_expired', 'stock_qte', 'medicament']
 
+class StockArrivageMedicSerializer(serializers.ModelSerializer):
+    label = serializers.CharField(source = 'arrivage') 
+    class Meta:
+        model = Stock
+        fields = ['id', 'label']
+
+
 class SortieItemsSerializer(serializers.ModelSerializer):
     stock_item = StockSerializer()
     class Meta:

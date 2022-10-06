@@ -199,28 +199,55 @@ def getAllStocks(request):
 def addStock(request):
     if request.method == 'POST' and request.user.is_authenticated:
 
-        id_medic = request.data.pop("id")
+        id_medic = request.data.pop("id_medic")
         medicament = Medicament.objects.get(id=id_medic)
         date_a = request.data.pop("date_arrived")
         date_b = request.data.pop("date_expired")
         date_arrived = date_a.split("/")
         date_expired = date_b.split("/")
+
+        print(date_arrived)
+        print(date_expired)
+
+        d_arr = date_arrived[0]
+        m_arr = date_arrived[1]
+
+        d_exp = date_expired[0]
+        m_exp = date_expired[1]
+
+        if d_arr[0] == '0':
+            d_arr.replace('0','',1)
+        if m_arr[0] == '0':
+            m_arr.replace('0','',1)
+        if d_exp[0] == '0':
+            d_exp.replace('0','',1)
+        if m_exp[0] == '0':
+            m_exp.replace('0','',1)
+
+        date_arrived[0] = d_arr
+        date_arrived[1] = m_arr
+        date_expired[0] = d_exp
+        date_expired[1] = m_exp
+
+        print(date_arrived)
+        print(date_expired)
         stock_qte = request.data.pop("stock_qte")
+        
+        date_arrived = datetime.date(int(date_arrived[2]), int(date_arrived[1]), int(date_arrived[0]))
+        date_expired = datetime.date(int(date_expired[2]), int(date_expired[1]), int(date_expired[0]))
 
-        if date_arrived >= date_expired : 
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"error":"medicment arrived date is grater than expired date"})
-        else:
-            date_arrived = datetime.date(int(date_arrived[0]), int(date_arrived[1]), int(date_arrived[2]))
-            date_expired = datetime.date(int(date_expired[0]), int(date_expired[1]), int(date_expired[2]))
+        print(date_arrived)
+        print(date_expired)
 
-            
-
+        if date_arrived >= date_expired:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"error": "date arrive grateer than date expired"})
+        else:    
             stock = Stock.objects.create(medicament=medicament, date_arrived=date_arrived, date_expired=date_expired, stock_qte=stock_qte)
 
-            
+                
             if stock.id is not None:
                 return Response(status=status.HTTP_201_CREATED, data={"status": "stock created sucsusfully for medicament :" + medicament.medic_name}) 
-            
+                
             else:
                 return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -703,6 +730,19 @@ def deleteArivageItem(request):
 
 
 
+@api_view(['GET'])
+def getAllArivageOfMedic(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
 
+        medic = Medicament.objects.get(id = id)
+        queryset = Stock.objects.filter(medicament = medic)
+        
+
+        arivage_serializer = StockArrivageMedicSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=arivage_serializer.data)
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
 
 

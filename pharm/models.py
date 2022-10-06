@@ -47,6 +47,8 @@ class Stock(models.Model):
 
     def __str__(self):
         return self.id
+    def arrivage(self):
+        return str(self.date_arrived) +" au "+ str(self.date_expired)
 
 
 class Sortie_items(models.Model):
