@@ -29,7 +29,7 @@ import Container from '@mui/material/Container';
 
 import Alt from '../layouts/alert';
 import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
-import { getAllStocks } from '../../actions/stock_data';
+import { addStock, addStockToArrivage, getAllStocks } from '../../actions/stock_data';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -129,7 +129,7 @@ export default function Stock(){
       }
 
       const addStockSave = async () =>{
-
+        var mode = 0;
         var test = true;
 
         setMedicNameError([false, ""]);
@@ -138,25 +138,93 @@ export default function Stock(){
         setDateExpiredError([false, ""]);
         setQntError([false, ""]);
 
-        if(dateArived>= dateExpired){
-          setDateArivedError([true, "problem sur la date"]);
-          setDateExpiredError([true, "problem sur la date"]);
-          test = false
-        }else{
-          console.log("good");
-          var m = dateArived.get('month')+1;
-          const date_a = dateArived.get('date') +"/"+m +"/"+dateArived.get('year');
-          m = dateExpired.get('month')+1
-          const date_e = dateExpired.get('date') +"/"+m+"/"+dateExpired.get('year');
-          
-          console.log(date_a);
-          console.log(date_e);
-        }
         if(medicName == null || medicName == ""){
           test = false;
+          setMedicNameError([true, "champ est obligatoire"]);
+        }
+        if(qnt == null || qnt == "" || qnt == "0"){
+          test = false;
+          setQntError([true, "champ est obligatoire"]);
+        }
+        if(arivage == null || arivage == ""){
+          test = false;
+          setArivageError([true, "champ est obligatoire"]);
+        }else if(arivage.label == "Nouveau arrivage"){
+          mode = 0;
+          if(dateArived == null || dateArived == ""){
+            test = false;
+            setDateArivedError([true, "champ est obligatoire"]);
+  
+          }else if(dateArived.isValid() == false){
+            test = false;
+            setDateArivedError([true, "date n est pas valide"]);
+  
+          }
+          if(dateExpired == null || dateExpired == ""){
+            test = false;
+            setDateExpiredError([true, "champ est obligatoire"]);
+  
+          }else if(dateExpired.isValid() == false){
+            test = false;
+            setDateExpiredError([true, "date n est pas valide"]);
+  
+          }
+  
+          if(dateArived>= dateExpired){
+            setDateArivedError([true, "problem sur la date"]);
+            setDateExpiredError([true, "problem sur la date"]);
+            test = false
+          }
+
+        }else{
+          mode = 1;
+
+        }
+        
+        
+        if(test){
+          
+          console.log("good to go");
+
+          if(mode ==0){
+
+            var m = dateArived.get('month')+1;
+            const date_a = dateArived.get('date') +"/"+m +"/"+dateArived.get('year');
+            m = dateExpired.get('month')+1
+            const date_e = dateExpired.get('date') +"/"+m+"/"+dateExpired.get('year');
+
+            const data = {
+              "date_arrived":dateArived,
+              "date_expired":dateExpired,
+              "stock_qte":qnt,
+              "id_medic": medicName.id 
+            }
+
+            const token = localStorage.getItem("auth_token");
+            setResponse(await addStock(token));
+
+          }else{
+
+            const data = {
+              "id_stock":arivage.id,
+              "stock_qte":qnt
+            }
+            
+            const token = localStorage.getItem("auth_token");
+            setResponse(await addStockToArrivage(token));
+
+          }
+          
+   
           
 
         }
+        else{
+          console.log("error");
+          setLoadError(true)
+        }
+        
+
         
       }
 
@@ -197,6 +265,18 @@ export default function Stock(){
           console.log(e);
         }
       }, [arrivageData]);
+
+      React.useEffect(() => {
+
+        console.log(response);
+  
+        if (response == "error"){
+          setResponseErrorSignal(true);
+        } else if(response != "") {
+          setResponseSuccesSignal(true);
+        }
+  
+      }, [response]);
 
 
       React.useEffect(() => {
@@ -390,7 +470,7 @@ export default function Stock(){
             {loadError ? <Alt type='error' message='Des erruers sur les données' onClose={()=> setLoadError(false)}/> : null}
             {responseSuccesSignal ? <Alt type='success' message='Opération réussie' onClose={()=> setResponseSuccesSignal(false)}/> : null}
             {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
-            {selectionError ? <Alt type='error' message='Selectioner un Destinataire' onClose={()=> setSelectionError(false)} /> : null}
+            {selectionError ? <Alt type='error' message='Selectioner un stock' onClose={()=> setSelectionError(false)} /> : null}
           
       
         </React.Fragment>

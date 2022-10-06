@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/get_all_stocks/', views.getAllStocks),
     path('api/get_all_arivage_of_medic/<int:id>', views.getAllArivageOfMedic),
     path('api/add_stock/', views.addStock),
+    path('api/add_stock_to_arrivage/', views.addStockToArivage),
     path('api/update_stock/', views.updateStock),
     path('api/delete_stock/', views.deleteStock),
     path('api/get_all_bon_sortie/', views.getAllBonSorties),

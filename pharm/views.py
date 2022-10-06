@@ -251,7 +251,24 @@ def addStock(request):
             else:
                 return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@api_view(['POST'])
+def addStockToArivage(request):
+    if request.method == 'POST' and request.user.is_authenticated:
 
+        id_stock = request.data.pop("id_stock")
+        stock_qte_new = int(request.data.pop("stock_qte"))
+
+        stock = Stock.objects.get(id=id_stock)
+
+        stock_qte_old = int(stock.stock_qte)
+
+        stock.stock_qte = stock_qte_old + stock_qte_new
+
+        stock.save()
+
+      
+        return Response(status=status.HTTP_201_CREATED, data={"status": "stock added"}) 
+         
 
 @api_view(['POST'])
 def updateStock(request):
