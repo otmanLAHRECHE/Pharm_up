@@ -13,6 +13,7 @@ import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Box from '@mui/material/Box';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -185,6 +186,7 @@ export default function Stock(){
         if(test){
           
           console.log("good to go");
+          setOpen(false);
 
           if(mode ==0){
 
@@ -194,14 +196,14 @@ export default function Stock(){
             const date_e = dateExpired.get('date') +"/"+m+"/"+dateExpired.get('year');
 
             const data = {
-              "date_arrived":dateArived,
-              "date_expired":dateExpired,
+              "date_arrived":date_a,
+              "date_expired":date_e,
               "stock_qte":qnt,
-              "id_medic": medicName.id 
+              "id_medic": medicName.id
             }
 
             const token = localStorage.getItem("auth_token");
-            setResponse(await addStock(token));
+            setResponse(await addStock(token, JSON.stringify(data)));
 
           }else{
 
@@ -211,7 +213,7 @@ export default function Stock(){
             }
             
             const token = localStorage.getItem("auth_token");
-            setResponse(await addStockToArrivage(token));
+            setResponse(await addStockToArrivage(token, JSON.stringify(data)));
 
           }
           
@@ -235,6 +237,14 @@ export default function Stock(){
       const handleChangeDateExpired = (newValue) => {
         setDateExpired(newValue);
       };
+
+      const editStockOpen = () =>{
+
+      }
+
+      const deleteStockOpen = () =>{
+        
+      }
 
 
       React.useEffect(() =>{
@@ -318,8 +328,9 @@ export default function Stock(){
                     }}
                 >
       <ButtonGroup variant="outlined" aria-label="outlined button group">
-        <Button startIcon={<InventoryIcon />} onClick={addStockOpen}>Etat de stock des médicaments</Button>
-        <Button startIcon={<EditAttributesIcon />} >Modifier le stock de médicament</Button>
+        <Button startIcon={<InventoryIcon />} onClick={addStockOpen}>Ajouter stock des médicaments</Button>
+        <Button startIcon={<EditAttributesIcon />} onClick={editStockOpen}>Modifier le stock de médicament</Button>
+        <Button startIcon={<DeleteForeverIcon />} onClick={deleteStockOpen}>Supprimer de stock</Button>
       </ButtonGroup>
                 </Box>
                 

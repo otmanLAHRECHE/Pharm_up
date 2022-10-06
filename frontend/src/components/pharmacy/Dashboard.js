@@ -183,7 +183,7 @@ function DashboardContent() {
               {toolBar}
             </Typography>
             <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
+              <Badge badgeContent={20} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
