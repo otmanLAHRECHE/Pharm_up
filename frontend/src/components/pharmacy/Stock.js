@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import dayjs from 'dayjs';
 
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -20,6 +21,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import DialogContentText from '@mui/material/DialogContentText';
 import Slide from '@mui/material/Slide';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -30,7 +32,7 @@ import Container from '@mui/material/Container';
 
 import Alt from '../layouts/alert';
 import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
-import { addStock, addStockToArrivage, getAllStocks } from '../../actions/stock_data';
+import { addStock, addStockToArrivage, deleteStock, getAllStocks, getSelectedStock, updateStock } from '../../actions/stock_data';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -77,6 +79,7 @@ export default function Stock(){
 
 
     const [datePickersState,setDatePickersState] = React.useState(false);
+    const [arrivageState, setArrivageState] = React.useState(true);
     const [data, setData] = React.useState([]);
     const [namesData, setNamesData] = React.useState([]);
     const [arrivageData, setArrivageData] = React.useState([]);
@@ -90,18 +93,18 @@ export default function Stock(){
 
     const theme = useTheme
 
-    function Copyright(props) {
-        return (
-          <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://github.com/otmanLAHRECHE">
-              EPSP Djanet Pharm_Up V1.0 
-            </Link>{' '}
-            -- created by otman LAHRECHE
-            {'.'}
-          </Typography>
-        );
-      }
+      function Copyright(props) {
+          return (
+            <Typography variant="body2" color="text.secondary" align="center" {...props}>
+              {'Copyright © '}
+              <Link color="inherit" href="https://github.com/otmanLAHRECHE">
+                EPSP Djanet Pharm_Up V1.0 
+              </Link>{' '}
+              -- created by otman LAHRECHE
+              {'.'}
+            </Typography>
+          );
+        }
 
 
       const addStockClose = () =>{
@@ -117,6 +120,7 @@ export default function Stock(){
         setDateArived(null);
         setDateExpired(null);
         setQnt("");
+        
 
         setMedicNameError([false, ""]);
         setArivageError([false, ""]);
@@ -238,14 +242,134 @@ export default function Stock(){
         setDateExpired(newValue);
       };
 
-      const editStockOpen = () =>{
+      const editStockOpen = async () =>{
+        if(selectionModel.length == 0){
+          setSelectionError(true);
+        }else{    
+          const token = localStorage.getItem("auth_token");
+  
+          setRowData(await getSelectedStock(token, selectionModel[0])); 
+        }
+
+      }
+
+      const editStockClose = () => {
+        setOpenUpdate(false);
+      }
+
+      const editStockSave = async () =>{
+        var test = true;
+
+        
+        setDateArivedError([false, ""]);
+        setDateExpiredError([false, ""]);
+        setQntError([false, ""]);
+
+        
+        if(qnt == null || qnt == "" || qnt == "0"){
+          test = false;
+          setQntError([true, "champ est obligatoire"]);
+        }
+          if(dateArived == null || dateArived == ""){
+            test = false;
+            setDateArivedError([true, "champ est obligatoire"]);
+  
+          }else if(dateArived.isValid() == false){
+            test = false;
+            setDateArivedError([true, "date n est pas valide"]);
+  
+          }
+          if(dateExpired == null || dateExpired == ""){
+            test = false;
+            setDateExpiredError([true, "champ est obligatoire"]);
+  
+          }else if(dateExpired.isValid() == false){
+            test = false;
+            setDateExpiredError([true, "date n est pas valide"]);
+  
+          }
+  
+          if(dateArived>= dateExpired){
+            setDateArivedError([true, "problem sur la date"]);
+            setDateExpiredError([true, "problem sur la date"]);
+            test = false
+          }                
+        if(test){          
+          console.log("good to go");
+          setOpenUpdate(false);
+            var m = dateArived.get('month')+1;
+            const date_a = dateArived.get('date') +"/"+m +"/"+dateArived.get('year');
+            m = dateExpired.get('month')+1
+            const date_e = dateExpired.get('date') +"/"+m+"/"+dateExpired.get('year');
+
+            const data = {
+              "date_arrived":date_a,
+              "date_expired":date_e,
+              "stock_qte":qnt
+            }
+
+            const token = localStorage.getItem("auth_token");
+            setResponse(await updateStock(token, JSON.stringify(data), rowData.id));  
+        }
+        else{
+          console.log("error");
+          setLoadError(true)
+        }
 
       }
 
       const deleteStockOpen = () =>{
+
+        if(selectionModel.length == 0){
+          setSelectionError(true);
+        }else{   
+          setOpenDelete(true);
+        }
         
       }
 
+      const deleteStockClose = () =>{
+        setOpenDelete(false);
+      }
+
+      const deleteConfirmation = async () =>{
+
+        setOpenDelete(false);
+        const token = localStorage.getItem("auth_token");
+        setResponse(await deleteStock(token, selectionModel[0])); 
+      }
+
+      React.useEffect(() => {
+        console.log(rowData);
+        try{
+  
+          if (rowData == "no data"){
+            setResponseErrorSignal(true);
+          } else if(rowData != "") {
+    
+          setOpenUpdate(true);
+          console.log(rowData.id)
+    
+          setMedicName(rowData.medicament.medic_name);
+          setArrivageState(true);
+          console.log(rowData.date_arrived);
+          console.log(rowData.date_expired);
+          setDateArived(dayjs(rowData.date_arrived, 'YYYY-MM-DD'));
+          setDateExpired(dayjs(rowData.date_expired, 'YYYY-MM-DD'));
+          setQnt(rowData.stock_qte);
+  
+          setMedicNameError([false, ""]);
+          setArivageError([false, ""]);
+          setDateArivedError([false, ""]);
+          setDateExpiredError([false, ""]);
+          setQntError([false, ""]);
+  
+          }
+        }catch(e){
+          console.log(e)
+        }
+  
+      }, [rowData]);
 
       React.useEffect(() =>{
         console.log(namesData);
@@ -474,6 +598,142 @@ export default function Stock(){
                                 <Button onClick={addStockClose}>Anuller</Button>
                                 <Button onClick={addStockSave}>Sauvgarder</Button>
                               </DialogActions>
+            </Dialog>
+
+            <Dialog open={openUpdate} onClose={editStockClose}  maxWidth="md" fullWidth={true}>
+                          <DialogTitle>Editer un médicament de stock</DialogTitle>
+                              <DialogContent>
+
+                              
+                              <Grid container spacing={2}>
+                                        <Grid item xs={6}>
+                                        <Autocomplete
+                                            disablePortal
+                                            value={medicName}
+                                            disabled = {arrivageState}
+                                            onChange={async (event, newVlue) =>{
+                                                setMedicName(newVlue);
+                                                console.log(newVlue.id);
+                                                setAllArivage([{"label":"Nouveau arrivage"}]);
+                                                const token = localStorage.getItem("auth_token");
+                                                setArrivageData(await getAllArrivageOfMedic(token, newVlue.id));
+  
+                                                
+                                            }}
+                                            id="combo-box-demo"
+                                            options={allNames}
+                                            sx={{ width: 300 }}
+                                            renderInput={(params) => <TextField {...params} error={medicNameError[0]}
+                                            helperText={medicNameError[1]} fullWidth variant="standard" label="Médicaments" 
+                                            required/>}
+                                        />
+
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                                <Autocomplete
+                                                    disablePortal
+                                                    id="combo-box-demo"
+                                                    value={arivage}
+                                                    disabled={arrivageState}
+                                                    onChange={(event, newVlue) =>{
+                                                        setArivage(newVlue);
+                                                        console.log(newVlue.label); 
+
+                                                        if(newVlue.label == "Nouveau arrivage"){
+                                                          setDatePickersState(false);
+                                                        }else{
+                                                          setDatePickersState(true);
+                                                        }
+                                                        
+                                                    }}
+                                                    options={allArivage}
+                                                    sx={{ width: 300 }}
+                                                    renderInput={(params) => <TextField {...params} error={arivageError[0]}
+                                                    helperText={arivageError[1]} fullWidth variant="standard" label="Arrivage" 
+                                                    required/>}
+                                                />  
+                                        
+                                        </Grid>
+
+                              </Grid>
+
+                              <br></br>
+                              
+                              
+                                
+
+                            <Grid container spacing={2}>
+                                            <Grid item xs={6}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DesktopDatePicker
+                                                        label="Date d arrivage"
+                                                        inputFormat="DD/MM/YYYY"
+                                                        disabled = {datePickersState}
+                                                        value={dateArived}
+                                                        onChange={handleChangeDateArived}
+                                                        renderInput={(params) => <TextField {...params} error={dateArivedError[0]}
+                                                        helperText={dateArivedError[1]} 
+                                                        required/>}
+                                                />
+
+                                            </LocalizationProvider>
+                                            
+
+                                            </Grid>
+
+                                            <Grid item xs={6}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DesktopDatePicker
+                                                        label="Date d expiration"
+                                                        inputFormat="DD/MM/YYYY"
+                                                        disabled = {datePickersState}
+                                                        value={dateExpired}
+                                                        onChange={handleChangeDateExpired}
+                                                        renderInput={(params) => <TextField {...params} error={dateExpiredError[0]}
+                                                        helperText={dateExpiredError[1]} 
+                                                        required />}
+                                                />
+                                            </LocalizationProvider>
+                                            
+                                            </Grid>
+                            </Grid>
+                                <TextField
+                                  error={qntError[0]}
+                                  helperText={qntError[1]}
+                                  required
+                                  margin="dense"
+                                  label="Qnt"
+                                  fullWidth
+                                  variant="standard"
+                                  value = {qnt}
+                                  onChange={(event) => {setQnt(event.target.value)}}
+                                />
+
+                            
+                                  
+                              </DialogContent>
+                              <DialogActions>
+                                <Button onClick={editStockClose}>Anuller</Button>
+                                <Button onClick={editStockSave}>Sauvgarder</Button>
+                              </DialogActions>
+            </Dialog>
+
+            <Dialog open={openDelete}
+                                    TransitionComponent={Transition}
+                                    keepMounted
+                                    onClose={deleteStockClose}
+                                    aria-describedby="alert-dialog-slide-description"
+                                  >
+                                    <DialogTitle>{"Confirmer la suppression d'un médicament de stock"}</DialogTitle>
+                                    <DialogContent>
+                                      <DialogContentText id="alert-dialog-slide-description">
+                                      Êtes-vous sûr de la décision de supprimer le médicament de stock ?
+                                      </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                      <Button onClick={deleteStockClose}>Anuller</Button>
+                                      <Button onClick={deleteConfirmation}>Supprimer</Button>
+                                    </DialogActions>
                       </Dialog>
           </Container>
 

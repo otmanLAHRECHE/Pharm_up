@@ -194,7 +194,20 @@ def getAllStocks(request):
     
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED)   
+
+@api_view(['GET'])
+def getSelectedStock(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Stock.objects.get(id= id)
+
+        source_serial = StockSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
     
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)   
+
 @api_view(['POST'])
 def addStock(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -271,10 +284,9 @@ def addStockToArivage(request):
          
 
 @api_view(['POST'])
-def updateStock(request):
+def updateStock(request, id):
     if request.method == 'POST' and request.user.is_authenticated:
 
-        id = request.data.pop("id")
         date_a = request.data.pop("date_arrived")
         date_b = request.data.pop("date_expired")
         stock_qte = request.data.pop("stock_qte")
@@ -283,8 +295,10 @@ def updateStock(request):
         date_arrived = date_a.split("/")
         date_expired = date_b.split("/")
 
-        date_arrived = datetime.date(int(date_arrived[0]), int(date_arrived[1]), int(date_arrived[2]))
-        date_expired = datetime.date(int(date_expired[0]), int(date_expired[1]), int(date_expired[2]))
+        print(date_arrived)
+
+        date_arrived = datetime.date(int(date_arrived[2]), int(date_arrived[1]), int(date_arrived[0]))
+        date_expired = datetime.date(int(date_expired[2]), int(date_expired[1]), int(date_expired[0]))
 
         if date_arrived >= date_expired : 
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"error":"medicment arrived date is grater than expired date"})
@@ -305,9 +319,8 @@ def updateStock(request):
 
 
 @api_view(['DELETE'])
-def deleteStock(request):
+def deleteStock(request, id):
     if request.method == 'DELETE' and request.user.is_authenticated:
-        id = request.data.pop("id")
         Stock.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Stock deleted"})
 
