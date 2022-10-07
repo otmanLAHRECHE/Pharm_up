@@ -47,8 +47,8 @@ const columns = [
     `${params.row.medicament.medic_code || ''}`},
     { field: 'medic_name', headerName: 'Medicament', width: 400, valueGetter: (params) =>
     `${params.row.medicament.medic_name || ''}` },
-    { field: 'date_arrived', headerName: 'Date d arivage', width: 170 },
-    { field: 'date_expired', headerName: 'Date d expiration', width: 170 },
+    { field: 'date_arrived', headerName: 'Date d arivage', width: 140 },
+    { field: 'date_expired', headerName: 'Date d expiration', width: 140 },
     { field: 'stock_qte', headerName: 'QNT', width: 150 },
   ];
 
