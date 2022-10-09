@@ -57,43 +57,32 @@ const columns = [
    },
   ];
 
-  function EditToolbar(props) {
-    const { setRows, setRowModesModel } = props;
-  
-    const handleClick = () => {
-      const id = randomId();
-      setRows((oldRows) => [...oldRows, { id, name: '', age: '', isNew: true }]);
-      setRowModesModel((oldModel) => ({
-        ...oldModel,
-        [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
-      }));
-    };
-  
-    return (
-      <GridToolbarContainer>
-        <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-          Add record
-        </Button>
-      </GridToolbarContainer>
-    );
-  }
-  
-  EditToolbar.propTypes = {
-    setRowModesModel: PropTypes.func.isRequired,
-    setRows: PropTypes.func.isRequired,
-  };
-  
+  const columnsSortie = [
+    { field: 'id', headerName: 'Id', width: 60, hide: true },
+    { field: 'id_stock', headerName: 'Id_stock', width: 60, hide: true },
+    { field: 'medic_name', headerName: 'Nbr de bon', width: 100},
+    { field: 'source', headerName: 'Destination', width: 200, valueGetter: (params) =>
+    `${params.row.source.name || ''} ${params.row.source.service || ''}` },
+    { field: 'date', headerName: 'Date', width: 140 },
+    { field: 'sortie_items', headerName: 'Les items de sortie', renderCell: () => (
+      <SortieItemsTable rows={params.row.sortie_items}/>
+    ),
+   },
+  ];
 
   export default function Bon_sortie(){
 
     const [bonNbr, setBonNbr] = React.useState("");
     const [source, setSource] = React.useState(null);
     const [date, setDate] = React.useState("");
+    const [dateFilter, setDateFilter] = React.useState("");
     
 
     const [bonNbrError, setBonNbrError] = React.useState([false, ""]);
     const [sourceError, setSourceError] = React.useState([false, ""]);
     const [dateError, setDateError] = React.useState([false, ""]);
+
+    const [dateFilterError, setDateFilterError] = React.useState("");
 
     const [loadError, setLoadError ] = React.useState(false);
     const [response, setResponse] = React.useState("");
@@ -107,6 +96,7 @@ const columns = [
     const [datePickersState,setDatePickersState] = React.useState(false);
     const [arrivageState, setArrivageState] = React.useState(true);
     const [data, setData] = React.useState([]);
+    const [dataSortie, setDataSortie] = React.useState([]);
     const [namesData, setNamesData] = React.useState([]);
     const [arrivageData, setArrivageData] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
@@ -131,48 +121,6 @@ const columns = [
             </Typography>
           );
         }
-        const [rows, setRows] = React.useState([]);
-        const [rowModesModel, setRowModesModel] = React.useState({});
-      
-        const handleRowEditStart = (params, event) => {
-          event.defaultMuiPrevented = true;
-        };
-      
-        const handleRowEditStop = (params, event) => {
-          event.defaultMuiPrevented = true;
-        };
-      
-        const handleEditClick = (id) => () => {
-          setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-        };
-      
-        const handleSaveClick = (id) => () => {
-          setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-        };
-      
-        const handleDeleteClick = (id) => () => {
-          setRows(rows.filter((row) => row.id !== id));
-        };
-      
-        const handleCancelClick = (id) => () => {
-          setRowModesModel({
-            ...rowModesModel,
-            [id]: { mode: GridRowModes.View, ignoreModifications: true },
-          });
-      
-          const editedRow = rows.find((row) => row.id === id);
-          if (editedRow.isNew) {
-            setRows(rows.filter((row) => row.id !== id));
-          }
-        };
-      
-        const processRowUpdate = (newRow) => {
-          const updatedRow = { ...newRow, isNew: false };
-          setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-          return updatedRow;
-        };
-
-
 
         const addBonSortieOpen = () =>{
 
@@ -195,75 +143,14 @@ const columns = [
 
         }
 
-        const addBonSortieSave = async () =>{
+        const handleChangeFilterDate = (newValue) =>{
+          setDateFilter(newValue);
 
         }
 
-        const columnsItems = [
-          { field: 'name', headerName: 'Name', width: 180, editable: true },
-          { field: 'age', headerName: 'Age', type: 'number', editable: true },
-          {
-            field: 'dateCreated',
-            headerName: 'Date Created',
-            type: 'date',
-            width: 180,
-            editable: true,
-          },
-          {
-            field: 'lastLogin',
-            headerName: 'Last Login',
-            type: 'dateTime',
-            width: 220,
-            editable: true,
-          },
-          {
-            field: 'actions',
-            type: 'actions',
-            headerName: 'Actions',
-            width: 100,
-            cellClassName: 'actions',
-            getActions: ({ id }) => {
-              const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-      
-              if (isInEditMode) {
-                return [
-                  <GridActionsCellItem
-                    icon={<SaveIcon />}
-                    label="Save"
-                    onClick={handleSaveClick(id)}
-                  />,
-                  <GridActionsCellItem
-                    icon={<CancelIcon />}
-                    label="Cancel"
-                    className="textPrimary"
-                    onClick={handleCancelClick(id)}
-                    color="inherit"
-                  />,
-                ];
+        const addBonSortieSave = async () =>{
 
-              }
-              return [
-                <GridActionsCellItem
-                  icon={<EditIcon />}
-                  label="Edit"
-                  className="textPrimary"
-                  onClick={handleEditClick(id)}
-                  color="inherit"
-                />,
-                <GridActionsCellItem
-                  icon={<DeleteIcon />}
-                  label="Delete"
-                  onClick={handleDeleteClick(id)}
-                  color="inherit"
-                />,
-              ];
-
-            },
-          },
-        ];
-
-
-
+        }
 
         return(
 
@@ -271,10 +158,23 @@ const columns = [
 
             <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
-              {/* Chart */}
+
               <Grid item xs={6}>
 
               <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DesktopDatePicker
+                                                        label="Selectioner la date de bon_sortie"
+                                                        inputFormat="DD/MM/YYYY"
+                                                        value={dateFilter}
+                                                        onChange={handleChangeFilterDate}
+                                                        renderInput={(params) => <TextField {...params} error={dateFilterError[0]}
+                                                        helperText={dateFilterError[1]} 
+                                                        required/>}
+                                                />
+
+                                            </LocalizationProvider>
 
               </Paper>
                 
@@ -388,6 +288,26 @@ const columns = [
 
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>  
+                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ height: 400, width: '100%' }}>
+                                          <DataGrid
+                                            components={{
+                                              Toolbar: GridToolbar,
+                                            }}
+                                              rows={data}
+                                              columns={columns}
+                                              pageSize={15}
+                                              checkboxSelection = {false}
+                                              loading={loading}
+                                              disableMultipleSelection={true}
+                                              onSelectionModelChange={(newSelectionModel) => {
+                                                setSelectionModel(newSelectionModel);
+                                              }}
+                                              selectionModel={selectionModel}
+                                              
+                                          />
+                                    </div>   
+                                </Paper>
 
 
                                 </Grid>
