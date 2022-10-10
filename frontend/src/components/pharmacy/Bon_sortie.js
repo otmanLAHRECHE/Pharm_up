@@ -5,6 +5,9 @@ import Paper from '@mui/material/Paper';
 import { DataGrid, GridToolbar} from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 
+import LoadingButton from '@mui/lab/LoadingButton';
+import SaveIcon from '@mui/icons-material/Save';
+
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -65,6 +68,14 @@ const columns = [
     const [source, setSource] = React.useState(null);
     const [date, setDate] = React.useState("");
     const [dateFilter, setDateFilter] = React.useState("");
+
+    const [medicName, setMedicName] = React.useState(null);
+    const [arivage, setArivage] = React.useState(null);
+    const [qnt, setQnt] = React.useState("");
+
+    const [medicNameError, setMedicNameError] = React.useState([false, ""]);
+    const [arivageError, setArivageError] = React.useState([false, ""]);
+    const [qntError, setQntError] = React.useState([false, ""]);
     
 
     const [bonNbrError, setBonNbrError] = React.useState([false, ""]);
@@ -80,6 +91,7 @@ const columns = [
 
     const [allNames, setAllNames] = React.useState([]);
     const [allSources, setAllSources] = React.useState([]);
+    const [allArivage, setAllArivage] = React.useState([]);
 
 
     const [datePickersState,setDatePickersState] = React.useState(false);
@@ -95,6 +107,7 @@ const columns = [
     const [selectionModel, setSelectionModel] = React.useState([]);
     const [selectionError, setSelectionError] = React.useState(false);
     const [rowData, setRowData] = React.useState("");
+    const [loadingSortieItem, setLoadingSortieItem] = React.useState(false);
 
     const theme = useTheme
 
@@ -111,9 +124,18 @@ const columns = [
           );
         }
 
-        const addBonSortieOpen = () =>{
+        const addBonSortieOpen = async () =>{
 
           setOpen(true);
+
+          setBonNbr("");
+          setMedicName(null);
+          setArivage(null);
+          setQnt("");
+
+          setMedicNameError([false, ""]);
+          setArivageError([false, ""]);
+          setQntError([false, ""]);
 
         };
 
@@ -140,6 +162,14 @@ const columns = [
         }
 
         const addBonSortieSave = async () =>{
+
+        }
+
+        const editSortieItem = () =>{
+
+        }
+
+        const addSortieIem = () =>{
 
         }
 
@@ -232,9 +262,6 @@ const columns = [
                                                   fullWidth
                                                   variant="standard"
                                                   type="number"
-                                                  InputLabelProps={{
-                                                    shrink: true,
-                                                  }}
                                                   onChange={(event) => {setBonNbr(event.target.value)}}
                                           />
 
@@ -280,7 +307,81 @@ const columns = [
                       <br></br> 
 
                       <Grid container spacing={2}>
+
                                 <Grid item xs={4}>
+                                <Box sx={{ p: 2, border: '1px dashed grey' }}>
+                                
+                                
+                                  <Grid container spacing={2}>
+                                    <Grid item xs={12}>
+                                    <Autocomplete
+                                            disablePortal
+                                            value={medicName}
+                                            onChange={async (event, newVlue) =>{
+                                                setMedicName(newVlue);
+                                                console.log(newVlue.id);
+
+                                                const token = localStorage.getItem("auth_token");
+                                                setArrivageData(await getAllArrivageOfMedic(token, newVlue.id));
+  
+                                                
+                                            }}
+                                            id="combo-box-demo"
+                                            options={allNames}
+                                            sx={{ width: 300 }}
+                                            renderInput={(params) => <TextField {...params} error={medicNameError[0]}
+                                            helperText={medicNameError[1]} fullWidth variant="standard" label="Médicaments" 
+                                            required/>}
+                                        />
+
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                    <Autocomplete
+                                                    disablePortal
+                                                    id="combo-box-demo"
+                                                    value={arivage}
+                                                    onChange={(event, newVlue) =>{
+                                                        setArivage(newVlue);
+                                                        console.log(newVlue.label); 
+
+                                                        if(newVlue.label == "Nouveau arrivage"){
+                                                          setDatePickersState(false);
+                                                        }else{
+                                                          setDatePickersState(true);
+                                                        }
+                                                        
+                                                    }}
+                                                    options={allArivage}
+                                                    sx={{ width: 300 }}
+                                                    renderInput={(params) => <TextField {...params} error={arivageError[0]}
+                                                    helperText={arivageError[1]} fullWidth variant="standard" label="Arrivage" 
+                                                    required/>}
+                                                />  
+
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                    <TextField
+                                          error={qntError[0]}
+                                          helperText={qntError[1]}
+                                          required
+                                          margin="dense"
+                                          label="Qnt"
+                                          fullWidth
+                                          variant="standard"
+                                          value = {qnt}
+                                          onChange={(event) => {setQnt(event.target.value)}}
+                                      />
+
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                    <ButtonGroup variant="text" aria-label="text button group">                                      
+                                        <Button startIcon={<EditAttributesIcon />} onClick={editSortieItem}>Modifier</Button>
+                                        <Button startIcon={<AddCircleOutlineIcon />} onClick={addSortieIem}>Ajouter au liste</Button>                                        
+                                    </ButtonGroup>
+                                    </Grid>
+
+                                  </Grid>
+                                  </Box>
                                   </Grid>  
                                 <Grid item xs={8}>  
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
