@@ -63,6 +63,9 @@ const columns = [
    
   ];
 
+  
+  var sortieItemsTableData = [];
+
 
   
 
@@ -115,7 +118,6 @@ const columns = [
     const [rowData, setRowData] = React.useState("");
     const [loadingSortieItem, setLoadingSortieItem] = React.useState(false);
 
-    var sortieItemsTableData = [];
 
     const theme = useTheme
 
@@ -207,7 +209,7 @@ const columns = [
           if(test){
             console.log("good to go");
 
-            if (int(currentStockItem.stock_qte)< int(qnt)){
+            if (Number(currentStockItem.stock_qte)< Number(qnt)){
                 setSortieQntError(true);
 
             }else{
@@ -221,6 +223,9 @@ const columns = [
               }
               sortieItemsTableData.push(data);
               setDataSortie(sortieItemsTableData);
+              setMedicName(null);
+              setArivage(null);
+              setQnt("");
             }
 
             
@@ -268,7 +273,7 @@ const columns = [
           try{
             if (arrivageData == "no data"){
               setResponseErrorSignal(true);
-            } else if(arrivageData != "") {
+            } else{
               console.log("arrivage data returned from the api...",arrivageData);
               setAllArivage(arrivageData);
             }
