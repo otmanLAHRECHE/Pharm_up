@@ -36,6 +36,7 @@ import Medicaments from './Medicaments';
 import Fournisseur from './Fournisseur';
 import Destinataire from './Destinataire';
 import Stock from './Stock';
+import Bon_sortie from './Bon_sortie';
 
 
 
@@ -275,7 +276,7 @@ function DashboardContent() {
 
         
         {page[0] ? <Dashboard_app/> : null}
-        {page[1] ? <Dashboard_app/> : null}
+        {page[1] ? <Bon_sortie/> : null}
         {page[2] ? <Dashboard_app/> : null}
         {page[3] ? <Stock/> : null}
         {page[4] ? <Medicaments/> : null}

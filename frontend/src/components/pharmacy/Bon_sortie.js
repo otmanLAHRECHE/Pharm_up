@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { DataGrid, GridToolbar, GridRowMode, GridToolbarContainer, GridActionsCellItem } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar} from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 
 
@@ -12,7 +12,6 @@ import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Box from '@mui/material/Box';
-import InventoryIcon from '@mui/icons-material/Inventory';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import TextField from '@mui/material/TextField';
@@ -20,30 +19,19 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import DialogContentText from '@mui/material/DialogContentText';
 import Slide from '@mui/material/Slide';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Typography from '@mui/material/Typography';
 
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Close';
-
 import Container from '@mui/material/Container';
 
 import Alt from '../layouts/alert';
-import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
 
 import SortieItemsTable from '../layouts/sortie_items_table';
 
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-  });
 
 const columns = [
     { field: 'id', headerName: 'Id', width: 60 },
@@ -51,7 +39,7 @@ const columns = [
     { field: 'source', headerName: 'Destination', width: 200, valueGetter: (params) =>
     `${params.row.source.name || ''} ${params.row.source.service || ''}` },
     { field: 'date', headerName: 'Date', width: 140 },
-    { field: 'sortie_items', headerName: 'Les items de sortie', renderCell: () => (
+    { field: 'sortie_items', headerName: 'Les items de sortie',width: 580 , renderCell: () => (
       <SortieItemsTable rows={params.row.sortie_items}/>
     ),
    },
@@ -60,15 +48,16 @@ const columns = [
   const columnsSortie = [
     { field: 'id', headerName: 'Id', width: 60, hide: true },
     { field: 'id_stock', headerName: 'Id_stock', width: 60, hide: true },
-    { field: 'medic_name', headerName: 'Nbr de bon', width: 100},
-    { field: 'source', headerName: 'Destination', width: 200, valueGetter: (params) =>
-    `${params.row.source.name || ''} ${params.row.source.service || ''}` },
-    { field: 'date', headerName: 'Date', width: 140 },
-    { field: 'sortie_items', headerName: 'Les items de sortie', renderCell: () => (
-      <SortieItemsTable rows={params.row.sortie_items}/>
-    ),
-   },
+    { field: 'id_medic', headerName: 'Id_medic', width: 60, hide: true },
+    { field: 'medic_name', headerName: 'nom de medicament', width: 280},
+    { field: 'arrivage', headerName: 'Arrivage', width: 180},
+    { field: 'qnt', headerName: 'Qnt de stock', width: 150},
+    { field: 'sortie_qnt', headerName: 'Qnt de sortie', width: 150},
+   
   ];
+
+
+  
 
   export default function Bon_sortie(){
 
@@ -124,6 +113,8 @@ const columns = [
 
         const addBonSortieOpen = () =>{
 
+          setOpen(true);
+
         };
 
         const addBonSortieClose = () =>{
@@ -157,7 +148,7 @@ const columns = [
           <React.Fragment>
 
             <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
 
               <Grid item xs={6}>
 
@@ -165,8 +156,8 @@ const columns = [
 
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <DesktopDatePicker
-                                                        label="Selectioner la date de bon_sortie"
-                                                        inputFormat="DD/MM/YYYY"
+                                                        views={['year', 'month']}
+                                                        label="Selectioner le mois"
                                                         value={dateFilter}
                                                         onChange={handleChangeFilterDate}
                                                         renderInput={(params) => <TextField {...params} error={dateFilterError[0]}
@@ -174,7 +165,7 @@ const columns = [
                                                         required/>}
                                                 />
 
-                                            </LocalizationProvider>
+              </LocalizationProvider>
 
               </Paper>
                 
@@ -192,7 +183,7 @@ const columns = [
                         },
                     }}
                 >
-                <ButtonGroup variant="outlined" aria-label="outlined button group" orientation="vertical">
+                <ButtonGroup variant="outlined" aria-label="outlined primary button group" orientation="vertical">
                   <Button startIcon={<AddCircleOutlineIcon />} onClick={addBonSortieOpen}>Ajouter bon de sortie</Button>
                   <Button startIcon={<EditAttributesIcon />} onClick={editBonSortieOpen}>Modifier bon de sortie</Button>
                   <Button startIcon={<DeleteForeverIcon />} onClick={deleteBonSortieOpen}>Supprimer bon de sortie</Button>
@@ -219,6 +210,7 @@ const columns = [
                               }}
                               selectionModel={selectionModel}
                               
+                              
                           />
                     </div>   
                 </Paper>
@@ -227,37 +219,36 @@ const columns = [
             <Copyright sx={{ pt: 4 }} />
 
             <Dialog open={open} onClose={addBonSortieClose}  maxWidth="lg" fullWidth={true}>
-                          <DialogTitle>Ajouter un bon de sortie</DialogTitle>
-                              <DialogContent>
-                              <Grid container spacing={2}>
+                  <DialogTitle>Ajouter un bon de sortie</DialogTitle>
+                    <DialogContent>
+                      <Grid container spacing={2}>
                                         <Grid item xs={4}>
-                                        <TextField
-                                                error={bonSortieNbrError[0]}
-                                                helperText={bonSortieNbrError[1]}
-                                                margin="dense"
-                                                id="bon_sortie_nbr"
-                                                label="Bon de sortie Nbr"
-                                                fullWidth
-                                                variant="standard"
-                                                type="number"
-                                                InputLabelProps={{
-                                                  shrink: true,
-                                                }}
-                                                onChange={(event) => {setBonNbr(event.target.value)}}
-                                        />
+                                          <TextField
+                                                  error={bonNbrError[0]}
+                                                  helperText={bonNbrError[1]}
+                                                  margin="dense"
+                                                  id="bon_sortie_nbr"
+                                                  label="Bon de sortie Nbr"
+                                                  fullWidth
+                                                  variant="standard"
+                                                  type="number"
+                                                  InputLabelProps={{
+                                                    shrink: true,
+                                                  }}
+                                                  onChange={(event) => {setBonNbr(event.target.value)}}
+                                          />
 
                                         </Grid>
                                         <Grid item xs={4}>
                                                 <Autocomplete
                                                     disablePortal
-                                                    id="combo-box-demo"
                                                     value={source}
                                                     onChange={(event, newVlue) =>{
                                                         setSource(newVlue);
                                                         console.log(newVlue.label); 
                                                         
                                                     }}
-                                                    options={allArivage}
+                                                    options={allSources}
                                                     sx={{ width: 300 }}
                                                     renderInput={(params) => <TextField {...params} error={sourceError[0]}
                                                     helperText={sourceError[1]} fullWidth variant="standard" label="Destination" 
@@ -265,6 +256,7 @@ const columns = [
                                                 />  
                                         
                                         </Grid>
+
                                         <Grid item xs={4}>
                                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <DesktopDatePicker
@@ -282,11 +274,12 @@ const columns = [
                                         
                                         </Grid>
 
-                              </Grid>
+                        
+                      </Grid>
 
-                              <br></br>                                                          
+                      <br></br> 
 
-                            <Grid container spacing={2}>
+                      <Grid container spacing={2}>
                                 <Grid item xs={12}>  
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ height: 400, width: '100%' }}>
@@ -294,8 +287,8 @@ const columns = [
                                             components={{
                                               Toolbar: GridToolbar,
                                             }}
-                                              rows={data}
-                                              columns={columns}
+                                              rows={dataSortie}
+                                              columns={columnsSortie}
                                               pageSize={15}
                                               checkboxSelection = {false}
                                               loading={loading}
@@ -312,32 +305,15 @@ const columns = [
 
                                 </Grid>
                             </Grid> 
-                              </DialogContent>
+                    </DialogContent>
                               <DialogActions>
                                 <Button onClick={addBonSortieClose}>Anuller</Button>
                                 <Button onClick={addBonSortieSave}>Sauvgarder</Button>
-                              </DialogActions>
+                              </DialogActions>   
+
+                    
             </Dialog>
-
             
-
-            <Dialog open={openDelete}
-                                    TransitionComponent={Transition}
-                                    keepMounted
-                                    onClose={deleteStockClose}
-                                    aria-describedby="alert-dialog-slide-description"
-                                  >
-                                    <DialogTitle>{"Confirmer la suppression d'un médicament de stock"}</DialogTitle>
-                                    <DialogContent>
-                                      <DialogContentText id="alert-dialog-slide-description">
-                                      Êtes-vous sûr de la décision de supprimer le médicament de stock ?
-                                      </DialogContentText>
-                                    </DialogContent>
-                                    <DialogActions>
-                                      <Button onClick={deleteStockClose}>Anuller</Button>
-                                      <Button onClick={deleteConfirmation}>Supprimer</Button>
-                                    </DialogActions>
-                      </Dialog>
           </Container>
 
 
