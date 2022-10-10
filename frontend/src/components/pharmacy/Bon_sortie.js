@@ -280,7 +280,9 @@ const columns = [
                       <br></br> 
 
                       <Grid container spacing={2}>
-                                <Grid item xs={12}>  
+                                <Grid item xs={4}>
+                                  </Grid>  
+                                <Grid item xs={8}>  
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ height: 400, width: '100%' }}>
                                           <DataGrid
