@@ -36,6 +36,7 @@ import SortieItemsTable from '../layouts/sortie_items_table';
 import { getAllDestinataireForSelect } from '../../actions/fournisseur_source_data';
 import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
 import { getSelectedStock } from '../../actions/stock_data';
+import { internal_processStyles } from '@mui/styled-engine';
 
 
 
@@ -91,6 +92,7 @@ const columns = [
     const [response, setResponse] = React.useState("");
     const [responseSuccesSignal, setResponseSuccesSignal] = React.useState(false);
     const [responseErrorSignal, setResponseErrorSignal] = React.useState(false);
+    const [sortieQntError, setSortieQntError] = React.useState(false);
 
     const [allNames, setAllNames] = React.useState([]);
     const [allSources, setAllSources] = React.useState([]);
@@ -205,7 +207,23 @@ const columns = [
           if(test){
             console.log("good to go");
 
-            sortieItemsTableData
+            if (int(currentStockItem.stock_qte)< int(qnt)){
+                setSortieQntError(true);
+
+            }else{
+              var data = {
+                "id": Math.random(),
+                "id_stock": currentStockItem.id,
+                "medic_name": currentStockItem.medicament.medic_name,
+                "arrivage":currentStockItem.date_arrived + " au "+currentStockItem.date_expired,
+                "qnt":currentStockItem.stock_qte,
+                "sortie_qnt":qnt,
+              }
+              sortieItemsTableData.push(data);
+              setDataSortie(sortieItemsTableData);
+            }
+
+            
 
 
           }else{
@@ -526,8 +544,9 @@ const columns = [
             {responseSuccesSignal ? <Alt type='success' message='Opération réussie' onClose={()=> setResponseSuccesSignal(false)}/> : null}
             {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
             {selectionError ? <Alt type='error' message='Selectioner un bon de sortie' onClose={()=> setSelectionError(false)} /> : null}
+            {sortieQntError ? <Alt type='error' message='la quantité remplie n est pas desponible' onClose={()=> setSortieQntError(false)} /> : null}
           
-      
+            sortieQntError
         </React.Fragment>
 
 
