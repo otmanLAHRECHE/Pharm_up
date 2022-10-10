@@ -33,6 +33,9 @@ import Container from '@mui/material/Container';
 import Alt from '../layouts/alert';
 
 import SortieItemsTable from '../layouts/sortie_items_table';
+import { getAllDestinataireForSelect } from '../../actions/fournisseur_source_data';
+import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
+import { getSelectedStock } from '../../actions/stock_data';
 
 
 
@@ -93,12 +96,13 @@ const columns = [
     const [allSources, setAllSources] = React.useState([]);
     const [allArivage, setAllArivage] = React.useState([]);
 
-
+    const [currentStockItem, setCurrentStockItem] = React.useState([]);
     const [datePickersState,setDatePickersState] = React.useState(false);
     const [arrivageState, setArrivageState] = React.useState(true);
     const [data, setData] = React.useState([]);
     const [dataSortie, setDataSortie] = React.useState([]);
     const [namesData, setNamesData] = React.useState([]);
+    const [sourceData, setSourceData] = React.useState([]);
     const [arrivageData, setArrivageData] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [open, setOpen] = React.useState(false);
@@ -108,6 +112,8 @@ const columns = [
     const [selectionError, setSelectionError] = React.useState(false);
     const [rowData, setRowData] = React.useState("");
     const [loadingSortieItem, setLoadingSortieItem] = React.useState(false);
+
+    var sortieItemsTableData = [];
 
     const theme = useTheme
 
@@ -125,9 +131,6 @@ const columns = [
         }
 
         const addBonSortieOpen = async () =>{
-
-          setOpen(true);
-
           setBonNbr("");
           setMedicName(null);
           setArivage(null);
@@ -136,6 +139,13 @@ const columns = [
           setMedicNameError([false, ""]);
           setArivageError([false, ""]);
           setQntError([false, ""]);
+
+
+          const token = localStorage.getItem("auth_token");
+
+          setSourceData(await getAllDestinataireForSelect(token));
+
+          setNamesData(await getAllMedicNames(token));
 
         };
 
@@ -169,9 +179,98 @@ const columns = [
 
         }
 
-        const addSortieIem = () =>{
+        const addSortieIem = async () =>{
+          var test = true;
+
+          setMedicNameError([false, ""]);
+          setArivageError([false, ""]);
+          setQntError([false, ""]);
+
+          if(qnt == null || qnt == "" || qnt == "0"){
+            test = false;
+            setQntError([true, "champ est obligatoire"]);
+          }
+
+          if(medicName == null || medicName == ""){
+            test = false;
+            setMedicNameError([true, "champ est obligatoire"]);
+          }
+          if(arivage == null || arivage == ""){
+            test = false;
+          setArivageError([true, "champ est obligatoire"]);
+
+          }
+
+
+          if(test){
+            console.log("good to go");
+
+            sortieItemsTableData
+
+
+          }else{
+            
+            console.log("problem");
+
+          }
+
 
         }
+
+
+        React.useEffect(() =>{
+          console.log(sourceData);
+          try{
+            if (sourceData == "no data"){
+              setResponseErrorSignal(true);
+            } else if(sourceData != "") {
+              setAllSources(sourceData);
+            }
+          }catch(e){
+            console.log(e);
+          }
+        }, [sourceData]);
+
+        React.useEffect(() =>{
+          console.log(namesData);
+          try{
+            if (namesData == "no data"){
+              setResponseErrorSignal(true);
+            } else if(namesData != "") {
+              setAllNames(namesData);
+              setOpen(true);
+            }
+          }catch(e){
+            console.log(e);
+          }
+        }, [namesData]);
+
+        React.useEffect(() =>{
+          console.log(arrivageData);
+          try{
+            if (arrivageData == "no data"){
+              setResponseErrorSignal(true);
+            } else if(arrivageData != "") {
+              console.log("arrivage data returned from the api...",arrivageData);
+              setAllArivage(arrivageData);
+            }
+          }catch(e){
+            console.log(e);
+          }
+        }, [arrivageData]);
+
+        React.useEffect(() =>{
+          
+          try{
+            if (currentStockItem == "no data"){
+              setResponseErrorSignal(true);
+            } else if(currentStockItem != "") {
+              console.log(currentStockItem);
+            }
+          }catch(e){
+            console.log(e);
+          }
+        }, [currentStockItem]);
 
         return(
 
@@ -272,11 +371,10 @@ const columns = [
                                                     value={source}
                                                     onChange={(event, newVlue) =>{
                                                         setSource(newVlue);
-                                                        console.log(newVlue.label); 
+                                                        console.log("destination...",newVlue.label); 
                                                         
                                                     }}
                                                     options={allSources}
-                                                    sx={{ width: 300 }}
                                                     renderInput={(params) => <TextField {...params} error={sourceError[0]}
                                                     helperText={sourceError[1]} fullWidth variant="standard" label="Destination" 
                                                     required/>}
@@ -319,16 +417,17 @@ const columns = [
                                             value={medicName}
                                             onChange={async (event, newVlue) =>{
                                                 setMedicName(newVlue);
-                                                console.log(newVlue.id);
+                                                console.log("medic...",newVlue);
 
-                                                const token = localStorage.getItem("auth_token");
-                                                setArrivageData(await getAllArrivageOfMedic(token, newVlue.id));
-  
-                                                
+                                                if (newVlue != null){
+                                                  const token = localStorage.getItem("auth_token");
+                                                  setArrivageData(await getAllArrivageOfMedic(token, newVlue.id));
+                                                }else{
+                                                  setAllArivage([]);
+                                                }                                                                                                
                                             }}
                                             id="combo-box-demo"
                                             options={allNames}
-                                            sx={{ width: 300 }}
                                             renderInput={(params) => <TextField {...params} error={medicNameError[0]}
                                             helperText={medicNameError[1]} fullWidth variant="standard" label="Médicaments" 
                                             required/>}
@@ -340,19 +439,22 @@ const columns = [
                                                     disablePortal
                                                     id="combo-box-demo"
                                                     value={arivage}
-                                                    onChange={(event, newVlue) =>{
+                                                    onChange={async (event, newVlue) =>{
                                                         setArivage(newVlue);
-                                                        console.log(newVlue.label); 
 
-                                                        if(newVlue.label == "Nouveau arrivage"){
-                                                          setDatePickersState(false);
+                                                        if(newVlue == null){
+                                                          console.log("arrivage...",newVlue);
+
                                                         }else{
-                                                          setDatePickersState(true);
+                                                          console.log("arrivage...",newVlue.label);
+                                                          const token = localStorage.getItem("auth_token");
+                                                          setCurrentStockItem(await getSelectedStock(token, newVlue.id));
+
                                                         }
-                                                        
+                                                         
+
                                                     }}
                                                     options={allArivage}
-                                                    sx={{ width: 300 }}
                                                     renderInput={(params) => <TextField {...params} error={arivageError[0]}
                                                     helperText={arivageError[1]} fullWidth variant="standard" label="Arrivage" 
                                                     required/>}

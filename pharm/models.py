@@ -13,6 +13,8 @@ class Source(models.Model):
 
     def __str__(self):
         return self.name
+    def desrination(self):
+        return str(self.name) +" "+ str(self.service)
 
 
 

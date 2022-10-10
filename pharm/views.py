@@ -31,6 +31,19 @@ def getAllSources(request):
                 
     
     else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)  
+
+@api_view(['GET'])
+def getAllDestinations(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Source.objects.all()
+
+        source_serial = SourceSelectSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
         return Response(status=status.HTTP_401_UNAUTHORIZED)    
 
 

@@ -46,6 +46,12 @@ class SourceSerializer(serializers.ModelSerializer):
         model = Source
         fields = ['id', 'name', 'service']
 
+class SourceSelectSerializer(serializers.ModelSerializer):
+    label = serializers.CharField(source = 'desrination') 
+    class Meta:
+        model = Stock
+        fields = ['id', 'label']
+
 
 class BonSortieSerializer(serializers.ModelSerializer):
     source = SourceSerializer()

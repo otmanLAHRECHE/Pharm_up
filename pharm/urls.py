@@ -7,6 +7,7 @@ from pharm import views
 
 urlpatterns = [
     path('api/get_all_sources/', views.getAllSources),
+    path('api/get_destinations/', views.getAllDestinations),
     path('api/get_selected_sources/<int:id>', views.getSelectedSources),
     path('api/create_new_source/', views.createNewSource),
     path('api/update_source/<int:id>', views.updateSource),
