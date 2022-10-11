@@ -114,6 +114,8 @@ const columns = [
     const [rowData, setRowData] = React.useState("");
     const [loadingSortieItem, setLoadingSortieItem] = React.useState(false);
 
+    const [dataError, setDataError] = React.useState(false);
+
 
     const theme = useTheme
 
@@ -149,10 +151,16 @@ const columns = [
           setMedicName(null);
           setArivage(null);
           setQnt("");
+          setDate("");
+          setSource(null);
+
 
           setMedicNameError([false, ""]);
           setArivageError([false, ""]);
           setQntError([false, ""]);
+          setDateError([false, ""]);
+          setBonNbrError([false, ""]);
+          setSourceError([false, ""]);
 
 
           const token = localStorage.getItem("auth_token");
@@ -186,6 +194,45 @@ const columns = [
         }
 
         const addBonSortieSave = async () =>{
+          var test = true;
+
+          setMedicNameError([false, ""]);
+          setArivageError([false, ""]);
+          setQntError([false, ""]);
+          setDateError([false, ""]);
+          setBonNbrError([false, ""]);
+          setSourceError([false, ""]);
+
+          if (bonNbr == ""){
+            test = false;
+            setBonNbrError([true, "champ est obligatoire"]);
+          }
+
+          if(source == null || source == ""){
+            test = false;
+            setSource([true, "champ est obligatoire"]);
+          }
+
+          if(date == null || date == ""){
+            test = false;
+            setDate([true, "champ est obligatoire"]);
+          }else if(date.isValid() == false){
+            test = false;
+            setDate([true, "date n est pas valide"]);
+          }
+          if(sortieItemsTableData.length == 0){
+            test = false;
+            setDataError(true);
+          }
+
+          if(test){
+            console.log("good to go");
+          }else{
+            console.log("error");
+            setLoadError(true);
+
+          }
+
 
         }
 
@@ -323,8 +370,8 @@ const columns = [
           { field: 'id_medic', headerName: 'Id_medic', width: 60, hide: true },
           { field: 'medic_name', headerName: 'nom de medicament', width: 280},
           { field: 'arrivage', headerName: 'Arrivage', width: 220},
-          { field: 'qnt', headerName: 'Qnt de stock', width: 150},
-          { field: 'sortie_qnt', headerName: 'Qnt de sortie', width: 150},
+          { field: 'qnt', headerName: 'Qnt de stock', width: 100},
+          { field: 'sortie_qnt', headerName: 'Qnt de sortie', width: 100},
          
         ];
 
@@ -581,6 +628,7 @@ const columns = [
             {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
             {selectionError ? <Alt type='error' message='Selectioner un item' onClose={()=> setSelectionError(false)} /> : null}
             {sortieQntError ? <Alt type='error' message='la quantité remplie n est pas desponible' onClose={()=> setSortieQntError(false)} /> : null}
+            {dataError ? <Alt type='error' message='La liste des items de bon de sorte est vide!!' onClose={()=> setDataError(false)} /> : null}
           
             sortieQntError
         </React.Fragment>

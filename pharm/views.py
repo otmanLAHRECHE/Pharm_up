@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
+from calendar import monthrange
 
 # Create your views here.
 
@@ -341,15 +342,25 @@ def deleteStock(request, id):
 
 
 @api_view(['GET'])
-def getAllBonSorties(request):
+def getAllBonSorties(request, month, year):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = Bon_sortie.objects.all()
+
+        range = monthrange(year, month)
+
+        print(range[1])
+
+        date_start = datetime.date(year , month, 1)
+        date_end = datetime.date( year, month, range[1])
+
+        print(date_start)
+        print(date_end)
+
+        queryset = Bon_sortie.objects.filter(date__gte=date_start, date__lte=date_end)
 
         source_serial = BonSortieSerializer(queryset, many=True)
 
         return Response(status=status.HTTP_200_OK,data=source_serial.data)
                 
-    
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED)  
 
