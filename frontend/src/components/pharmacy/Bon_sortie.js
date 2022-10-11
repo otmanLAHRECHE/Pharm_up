@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar, GridActionsCellItem,GridToolbarContainer,GridToolbarFilterButton,} from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -42,6 +42,8 @@ import { internal_processStyles } from '@mui/styled-engine';
 
 
 
+
+
 const columns = [
     { field: 'id', headerName: 'Id', width: 60 },
     { field: 'bon_sortie_nbr', headerName: 'Nbr de bon', width: 100},
@@ -76,6 +78,8 @@ const columns = [
     const [medicNameError, setMedicNameError] = React.useState([false, ""]);
     const [arivageError, setArivageError] = React.useState([false, ""]);
     const [qntError, setQntError] = React.useState([false, ""]);
+
+    const [callBack, setCallBack] = React.useState("");
     
 
     const [bonNbrError, setBonNbrError] = React.useState([false, ""]);
@@ -95,11 +99,6 @@ const columns = [
     const [allArivage, setAllArivage] = React.useState([]);
 
     const [currentStockItem, setCurrentStockItem] = React.useState([]);
-    const [datePickersState,setDatePickersState] = React.useState(false);
-    const [medicNameState, setMedicNameState] = React.useState(false);
-    const [arrivageState, setArrivageState] = React.useState(true);
-    const [cancelItemState, setCancelItemState] = React.useState(true);
-    const [mode, setMode] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [dataSortie, setDataSortie] = React.useState([]);
     const [namesData, setNamesData] = React.useState([]);
@@ -117,6 +116,17 @@ const columns = [
 
 
     const theme = useTheme
+
+    function CustomToolbar() {
+      return (
+        <GridToolbarContainer>
+          <GridToolbarFilterButton />
+          <Button startIcon={<DeleteForeverIcon />} onClick={deleteItem}>
+            Supprimer
+          </Button>
+        </GridToolbarContainer>
+      );
+    }
 
       function Copyright(props) {
           return (
@@ -179,56 +189,6 @@ const columns = [
 
         }
 
-        const editSortieItem = async () =>{
-
-          var test = true;
-
-          setMedicNameError([false, ""]);
-          setArivageError([false, ""]);
-          setQntError([false, ""]);
-
-          if(qnt == null || qnt == "" || qnt == "0"){
-            test = false;
-            setQntError([true, "champ est obligatoire"]);
-          }
-
-          
-          if(arivage == null || arivage == ""){
-            test = false;
-          setArivageError([true, "champ est obligatoire"]);
-
-          }
-
-
-          if(test){
-            console.log("good to go");
-
-            if (Number(currentStockItem.stock_qte)< Number(qnt)){
-                setSortieQntError(true);
-
-            }else{
-              var data = {
-                "id": Math.random(),
-                "id_stock": currentStockItem.id,
-                "medic_name": currentStockItem.medicament.medic_name,
-                "arrivage":currentStockItem.date_arrived + " au "+currentStockItem.date_expired,
-                "qnt":currentStockItem.stock_qte,
-                "sortie_qnt":qnt,
-              }
-              sortieItemsTableData = Object.assign([], sortieItemsTableData);
-              sortieItemsTableData.push(data);
-              setDataSortie(sortieItemsTableData);
-              setMedicName(null);
-              setArivage(null);
-              setQnt("");
-              console.log(sortieItemsTableData);
-            }
-
-          }
-          
-          
-        }
-
         const addSortieIem = async () =>{
           var test = true;
 
@@ -236,7 +196,6 @@ const columns = [
           setArivageError([false, ""]);
           setQntError([false, ""]);
 
-          console.log("mode...",mode);
 
           if(qnt == null || qnt == "" || qnt == "0"){
             test = false;
@@ -264,8 +223,8 @@ const columns = [
               var data = {
                 "id": Math.random(),
                 "id_stock": currentStockItem.id,
-                "medic_name": currentStockItem.medicament.medic_name,
-                "arrivage":currentStockItem.date_arrived + " au "+currentStockItem.date_expired,
+                "medic_name": medicName.label,
+                "arrivage":arivage.label,
                 "qnt":currentStockItem.stock_qte,
                 "sortie_qnt":qnt,
               }
@@ -339,54 +298,23 @@ const columns = [
         }, [currentStockItem]);
 
 
-        const deleteItem = (id) =>{
+        const deleteItem = () =>{
           var index = null;
+          var table = [];
           for (var i =0; i< sortieItemsTableData.length; i++){
-            if (sortieItemsTableData[i].id == id){
+            if (sortieItemsTableData[i].id == selectionModelItems[0]){
               index = i; 
+            }else{
+              table.push(sortieItemsTableData[i])
             }
           }
           if (index != null){
-            sortieItemsTableData.splice(i, 1);
+            sortieItemsTableData = table;
             setDataSortie(sortieItemsTableData);
           }
         }
 
-        const editItem = async (id) =>{
-          var index = null;
-          for (var i =0; i< sortieItemsTableData.length; i++){
-            if (sortieItemsTableData[i].id == id){
-              index = i; 
-            }
-          }
-          if (index != null){
-            setCancelItemState(false);
-            setMode(true);
-            
-
-            setMedicName(sortieItemsTableData[index].medic_name);
-            setMedicNameState(true);
-            setArivage(sortieItemsTableData[index].arrivage)
-            const token = localStorage.getItem("auth_token");
-            setCurrentStockItem(await getSelectedStock(token, sortieItemsTableData[index].arrivage.id));
-            setQnt(sortieItemsTableData[index].sortie_qnt)
-          }
-
-        }
-
-
-        const cancelSortieItem = () =>{
-          setMedicName(null);
-          setArivage(null);
-          setQnt("");
-          setMode(false);
-          setCancelItemState(true);
-
-          setMedicNameError([false, ""]);
-          setArivageError([false, ""]);
-          setQntError([false, ""]);
-
-        }
+        
 
 
         const columnsSortie = [
@@ -397,24 +325,6 @@ const columns = [
           { field: 'arrivage', headerName: 'Arrivage', width: 220},
           { field: 'qnt', headerName: 'Qnt de stock', width: 150},
           { field: 'sortie_qnt', headerName: 'Qnt de sortie', width: 150},
-          {
-            field: 'actions',
-            type: 'actions',
-            width: 80,
-            getActions: (params) => [
-              <GridActionsCellItem
-                icon={<EditAttributesIcon />}
-                label="Edter"
-                onClick={editItem(params.id)}
-              />,
-              <GridActionsCellItem
-                icon={<DeleteIcon />}
-                label="Suprimer"
-                onClick={deleteItem(params.id)}
-              />,
-              
-            ],
-          },
          
         ];
 
@@ -560,7 +470,6 @@ const columns = [
                                     <Autocomplete
                                             disablePortal
                                             value={medicName}
-                                            disabled={medicNameState}
                                             onChange={async (event, newVlue) =>{
                                                 setMedicName(newVlue);
 
@@ -586,6 +495,7 @@ const columns = [
                                                     value={arivage}
                                                     onChange={async (event, newVlue) =>{
                                                         setArivage(newVlue);
+                                                        console.log("arrivage...",newVlue);
 
                                                         if(newVlue == null){
                                                           console.log("arrivage...",newVlue);
@@ -621,10 +531,7 @@ const columns = [
                                     </Grid>
                                     <Grid item xs={12}>
                                     <ButtonGroup variant="text" aria-label="text button group"> 
-                                    
-                                        <Button startIcon={<CancelIcon />} onClick={cancelSortieItem} disabled={cancelItemState}>Anuller</Button> 
-                                        {mode[0] ?  <Button startIcon={<EditAttributesIcon />} onClick={editSortieItem}>Modifier</Button> : <Button startIcon={<AddCircleOutlineIcon />} onClick={addSortieIem}>Ajouter au liste</Button> }                                    
-                                        
+                                    <Button startIcon={<AddCircleOutlineIcon />} onClick={addSortieIem}>Ajouter au liste</Button>                                                                      
                                                                                
                                     </ButtonGroup>
                                     </Grid>
@@ -637,7 +544,7 @@ const columns = [
                                 <div style={{ height: 400, width: '100%' }}>
                                           <DataGrid
                                             components={{
-                                              Toolbar: GridToolbar,
+                                              Toolbar: CustomToolbar,
                                             }}
                                               rows={dataSortie}
                                               columns={columnsSortie}
