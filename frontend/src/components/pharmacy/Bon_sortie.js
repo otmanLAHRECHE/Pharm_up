@@ -215,15 +215,15 @@ const columns = [
 
           if(source == null || source == ""){
             test = false;
-            setSource([true, "champ est obligatoire"]);
+            setSourceError([true, "champ est obligatoire"]);
           }
 
           if(date == null || date == ""){
             test = false;
-            setDate([true, "champ est obligatoire"]);
+            setDateError([true, "champ est obligatoire"]);
           }else if(date.isValid() == false){
             test = false;
-            setDate([true, "date n est pas valide"]);
+            setDateError([true, "date n est pas valide"]);
           }
           if(sortieItemsTableData.length == 0){
             test = false;
