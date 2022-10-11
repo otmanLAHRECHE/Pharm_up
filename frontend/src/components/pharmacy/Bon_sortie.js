@@ -39,6 +39,7 @@ import { getAllDestinataireForSelect } from '../../actions/fournisseur_source_da
 import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
 import { getSelectedStock } from '../../actions/stock_data';
 import { internal_processStyles } from '@mui/styled-engine';
+import { getAllBonSortieOfMonth } from '../../actions/bon_sortie_data';
 
 
 
@@ -50,7 +51,7 @@ const columns = [
     { field: 'source', headerName: 'Destination', width: 200, valueGetter: (params) =>
     `${params.row.source.name || ''} ${params.row.source.service || ''}` },
     { field: 'date', headerName: 'Date', width: 140 },
-    { field: 'sortie_items', headerName: 'Les items de sortie',width: 580 , renderCell: () => (
+    { field: 'sort', headerName: 'Les items de sortie',width: 580 , renderCell: () => (
       <SortieItemsTable rows={params.row.sortie_items}/>
     ),
    },
@@ -69,7 +70,7 @@ const columns = [
     const [bonNbr, setBonNbr] = React.useState("");
     const [source, setSource] = React.useState(null);
     const [date, setDate] = React.useState("");
-    const [dateFilter, setDateFilter] = React.useState("");
+    const [dateFilter, setDateFilter] = React.useState(dayjs());
 
     const [medicName, setMedicName] = React.useState(null);
     const [arivage, setArivage] = React.useState(null);
@@ -80,6 +81,8 @@ const columns = [
     const [qntError, setQntError] = React.useState([false, ""]);
 
     const [callBack, setCallBack] = React.useState("");
+
+    const [dateFilterNotErr, setDateFilterNotErr] = React.useState(false);
     
 
     const [bonNbrError, setBonNbrError] = React.useState([false, ""]);
@@ -190,6 +193,8 @@ const columns = [
 
         const handleChangeFilterDate = (newValue) =>{
           setDateFilter(newValue);
+
+          console.log("filter date...", newValue);
 
         }
 
@@ -343,6 +348,48 @@ const columns = [
             console.log(e);
           }
         }, [currentStockItem]);
+
+        React.useEffect(() => {
+
+          console.log(response);
+    
+          if (response == "error"){
+            setResponseErrorSignal(true);
+          } else if(response != "") {
+            setResponseSuccesSignal(true);
+          }
+    
+        }, [response]);
+
+        React.useEffect(() => {
+
+          setLoading(true);
+          setDateFilterError([false, ""]);
+
+          const fetchData = async () => {
+            try {
+              const token = localStorage.getItem("auth_token");
+              var month = dateFilter.get("month")+1
+              var year = dateFilter.get('year')
+              setData(await getAllBonSortieOfMonth(token, month, year));
+              setLoading(false);
+            } catch (error) {
+              console.log("error", error);
+            }
+          };
+      
+          
+
+          if (dateFilter.isValid() == false || dateFilter ==""){
+            setDateFilterError([true, "une erreur sur le champ de date"]);
+            setDateFilterNotErr(true);
+          }else{
+            fetchData();
+          }
+    
+          
+    
+        }, [response, dateFilter]);
 
 
         const deleteItem = () =>{
@@ -629,6 +676,7 @@ const columns = [
             {selectionError ? <Alt type='error' message='Selectioner un item' onClose={()=> setSelectionError(false)} /> : null}
             {sortieQntError ? <Alt type='error' message='la quantité remplie n est pas desponible' onClose={()=> setSortieQntError(false)} /> : null}
             {dataError ? <Alt type='error' message='La liste des items de bon de sorte est vide!!' onClose={()=> setDataError(false)} /> : null}
+            {dateFilterNotErr ? <Alt type='error' message='La liste des items de bon de sorte est vide!!' onClose={()=> setDateFilterNotErr(false)} /> : null}
           
             sortieQntError
         </React.Fragment>
