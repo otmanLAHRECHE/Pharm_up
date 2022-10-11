@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { DataGrid, GridToolbar} from '@mui/x-data-grid';
+import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -16,7 +16,9 @@ import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Box from '@mui/material/Box';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
+import CancelIcon from '@mui/icons-material/Cancel';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -52,16 +54,7 @@ const columns = [
    },
   ];
 
-  const columnsSortie = [
-    { field: 'id', headerName: 'Id', width: 60, hide: true },
-    { field: 'id_stock', headerName: 'Id_stock', width: 60, hide: true },
-    { field: 'id_medic', headerName: 'Id_medic', width: 60, hide: true },
-    { field: 'medic_name', headerName: 'nom de medicament', width: 280},
-    { field: 'arrivage', headerName: 'Arrivage', width: 180},
-    { field: 'qnt', headerName: 'Qnt de stock', width: 150},
-    { field: 'sortie_qnt', headerName: 'Qnt de sortie', width: 150},
-   
-  ];
+  
 
   
   var sortieItemsTableData = [];
@@ -103,7 +96,10 @@ const columns = [
 
     const [currentStockItem, setCurrentStockItem] = React.useState([]);
     const [datePickersState,setDatePickersState] = React.useState(false);
+    const [medicNameState, setMedicNameState] = React.useState(false);
     const [arrivageState, setArrivageState] = React.useState(true);
+    const [cancelItemState, setCancelItemState] = React.useState(true);
+    const [mode, setMode] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [dataSortie, setDataSortie] = React.useState([]);
     const [namesData, setNamesData] = React.useState([]);
@@ -115,6 +111,7 @@ const columns = [
     const [openDelete, setOpenDelete] = React.useState(false);
     const [selectionModel, setSelectionModel] = React.useState([]);
     const [selectionError, setSelectionError] = React.useState(false);
+    const [selectionModelItems, setSelectionModelItems] = React.useState([]);
     const [rowData, setRowData] = React.useState("");
     const [loadingSortieItem, setLoadingSortieItem] = React.useState(false);
 
@@ -135,6 +132,8 @@ const columns = [
         }
 
         const addBonSortieOpen = async () =>{
+
+          sortieItemsTableData = [];
           setBonNbr("");
           setMedicName(null);
           setArivage(null);
@@ -179,8 +178,54 @@ const columns = [
 
         }
 
-        const editSortieItem = () =>{
+        const editSortieItem = async () =>{
 
+          var test = true;
+
+          setMedicNameError([false, ""]);
+          setArivageError([false, ""]);
+          setQntError([false, ""]);
+
+          if(qnt == null || qnt == "" || qnt == "0"){
+            test = false;
+            setQntError([true, "champ est obligatoire"]);
+          }
+
+          
+          if(arivage == null || arivage == ""){
+            test = false;
+          setArivageError([true, "champ est obligatoire"]);
+
+          }
+
+
+          if(test){
+            console.log("good to go");
+
+            if (Number(currentStockItem.stock_qte)< Number(qnt)){
+                setSortieQntError(true);
+
+            }else{
+              var data = {
+                "id": Math.random(),
+                "id_stock": currentStockItem.id,
+                "medic_name": currentStockItem.medicament.medic_name,
+                "arrivage":currentStockItem.date_arrived + " au "+currentStockItem.date_expired,
+                "qnt":currentStockItem.stock_qte,
+                "sortie_qnt":qnt,
+              }
+              sortieItemsTableData = Object.assign([], sortieItemsTableData);
+              sortieItemsTableData.push(data);
+              setDataSortie(sortieItemsTableData);
+              setMedicName(null);
+              setArivage(null);
+              setQnt("");
+              console.log(sortieItemsTableData);
+            }
+
+          }
+          
+          
         }
 
         const addSortieIem = async () =>{
@@ -221,19 +266,17 @@ const columns = [
                 "qnt":currentStockItem.stock_qte,
                 "sortie_qnt":qnt,
               }
+              sortieItemsTableData = Object.assign([], sortieItemsTableData);
               sortieItemsTableData.push(data);
               setDataSortie(sortieItemsTableData);
               setMedicName(null);
               setArivage(null);
               setQnt("");
+              console.log(sortieItemsTableData);
             }
 
             
 
-
-          }else{
-            
-            console.log("problem");
 
           }
 
@@ -242,7 +285,6 @@ const columns = [
 
 
         React.useEffect(() =>{
-          console.log(sourceData);
           try{
             if (sourceData == "no data"){
               setResponseErrorSignal(true);
@@ -255,7 +297,6 @@ const columns = [
         }, [sourceData]);
 
         React.useEffect(() =>{
-          console.log(namesData);
           try{
             if (namesData == "no data"){
               setResponseErrorSignal(true);
@@ -269,7 +310,6 @@ const columns = [
         }, [namesData]);
 
         React.useEffect(() =>{
-          console.log(arrivageData);
           try{
             if (arrivageData == "no data"){
               setResponseErrorSignal(true);
@@ -294,6 +334,86 @@ const columns = [
             console.log(e);
           }
         }, [currentStockItem]);
+
+
+        const deleteItem = (id) =>{
+          var index = null;
+          for (var i =0; i< sortieItemsTableData.length; i++){
+            if (sortieItemsTableData[i].id == id){
+              index = i; 
+            }
+          }
+          if (index != null){
+            sortieItemsTableData.splice(i, 1);
+            setDataSortie(sortieItemsTableData);
+          }
+        }
+
+        const editItem = async (id) =>{
+          var index = null;
+          for (var i =0; i< sortieItemsTableData.length; i++){
+            if (sortieItemsTableData[i].id == id){
+              index = i; 
+            }
+          }
+          if (index != null){
+            setCancelItemState(false);
+            setMode(true);
+            
+
+            setMedicName(sortieItemsTableData[index].medic_name);
+            setMedicNameState(true);
+            setArivage(sortieItemsTableData[index].arrivage)
+            const token = localStorage.getItem("auth_token");
+            setCurrentStockItem(await getSelectedStock(token, sortieItemsTableData[index].arrivage.id));
+            setQnt(sortieItemsTableData[index].sortie_qnt)
+          }
+
+        }
+
+
+        const cancelSortieItem = () =>{
+          setMedicName(null);
+          setArivage(null);
+          setQnt("");
+          setMode(false);
+          setCancelItemState(true);
+
+          setMedicNameError([false, ""]);
+          setArivageError([false, ""]);
+          setQntError([false, ""]);
+
+        }
+
+
+        const columnsSortie = [
+          { field: 'id', headerName: 'Id', width: 60, hide: true },
+          { field: 'id_stock', headerName: 'Id_stock', width: 60, hide: true },
+          { field: 'id_medic', headerName: 'Id_medic', width: 60, hide: true },
+          { field: 'medic_name', headerName: 'nom de medicament', width: 280},
+          { field: 'arrivage', headerName: 'Arrivage', width: 220},
+          { field: 'qnt', headerName: 'Qnt de stock', width: 150},
+          { field: 'sortie_qnt', headerName: 'Qnt de sortie', width: 150},
+          {
+            field: 'actions',
+            type: 'actions',
+            width: 80,
+            getActions: (params) => [
+              <GridActionsCellItem
+                icon={<EditAttributesIcon />}
+                label="Edter"
+                onClick={editItem(params.id)}
+              />,
+              <GridActionsCellItem
+                icon={<DeleteIcon />}
+                label="Suprimer"
+                onClick={deleteItem(params.id)}
+              />,
+              
+            ],
+          },
+         
+        ];
 
         return(
 
@@ -394,7 +514,6 @@ const columns = [
                                                     value={source}
                                                     onChange={(event, newVlue) =>{
                                                         setSource(newVlue);
-                                                        console.log("destination...",newVlue.label); 
                                                         
                                                     }}
                                                     options={allSources}
@@ -438,9 +557,9 @@ const columns = [
                                     <Autocomplete
                                             disablePortal
                                             value={medicName}
+                                            disabled={medicNameState}
                                             onChange={async (event, newVlue) =>{
                                                 setMedicName(newVlue);
-                                                console.log("medic...",newVlue);
 
                                                 if (newVlue != null){
                                                   const token = localStorage.getItem("auth_token");
@@ -469,7 +588,6 @@ const columns = [
                                                           console.log("arrivage...",newVlue);
 
                                                         }else{
-                                                          console.log("arrivage...",newVlue.label);
                                                           const token = localStorage.getItem("auth_token");
                                                           setCurrentStockItem(await getSelectedStock(token, newVlue.id));
 
@@ -499,9 +617,12 @@ const columns = [
 
                                     </Grid>
                                     <Grid item xs={12}>
-                                    <ButtonGroup variant="text" aria-label="text button group">                                      
-                                        <Button startIcon={<EditAttributesIcon />} onClick={editSortieItem}>Modifier</Button>
-                                        <Button startIcon={<AddCircleOutlineIcon />} onClick={addSortieIem}>Ajouter au liste</Button>                                        
+                                    <ButtonGroup variant="text" aria-label="text button group"> 
+                                    
+                                        <Button startIcon={<CancelIcon />} onClick={cancelSortieItem} disabled={cancelItemState}>Anuller</Button> 
+                                        {mode[0] ?  <Button startIcon={<EditAttributesIcon />} onClick={editSortieItem}>Modifier</Button> : <Button startIcon={<AddCircleOutlineIcon />} onClick={addSortieIem}>Ajouter au liste</Button> }                                    
+                                        
+                                                                               
                                     </ButtonGroup>
                                     </Grid>
 
@@ -522,9 +643,9 @@ const columns = [
                                               loading={loading}
                                               disableMultipleSelection={true}
                                               onSelectionModelChange={(newSelectionModel) => {
-                                                setSelectionModel(newSelectionModel);
+                                                setSelectionModelItems(newSelectionModel);
                                               }}
-                                              selectionModel={selectionModel}
+                                              selectionModel={selectionModelItems}
                                               
                                           />
                                     </div>   
@@ -548,7 +669,7 @@ const columns = [
             {loadError ? <Alt type='error' message='Des erruers sur les données' onClose={()=> setLoadError(false)}/> : null}
             {responseSuccesSignal ? <Alt type='success' message='Opération réussie' onClose={()=> setResponseSuccesSignal(false)}/> : null}
             {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
-            {selectionError ? <Alt type='error' message='Selectioner un bon de sortie' onClose={()=> setSelectionError(false)} /> : null}
+            {selectionError ? <Alt type='error' message='Selectioner un item' onClose={()=> setSelectionError(false)} /> : null}
             {sortieQntError ? <Alt type='error' message='la quantité remplie n est pas desponible' onClose={()=> setSortieQntError(false)} /> : null}
           
             sortieQntError
