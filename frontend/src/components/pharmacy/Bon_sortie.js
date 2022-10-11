@@ -134,6 +134,7 @@ const columns = [
         const addBonSortieOpen = async () =>{
 
           sortieItemsTableData = [];
+          setDataSortie(sortieItemsTableData);
           setBonNbr("");
           setMedicName(null);
           setArivage(null);
@@ -234,6 +235,8 @@ const columns = [
           setMedicNameError([false, ""]);
           setArivageError([false, ""]);
           setQntError([false, ""]);
+
+          console.log("mode...",mode);
 
           if(qnt == null || qnt == "" || qnt == "0"){
             test = false;
