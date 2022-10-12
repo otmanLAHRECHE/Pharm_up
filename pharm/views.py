@@ -378,8 +378,7 @@ def addBonSortie(request):
         bon_sortie = Bon_sortie.objects.create(bon_sortie_nbr=bon_sortie_nbr, source=source, date=date)
 
         if bon_sortie.id is not None:
-            return Response(status=status.HTTP_201_CREATED, data={"status": "Bon sortie created sucsusfully"}) 
-        
+            return Response(status=status.HTTP_201_CREATED, data={"id_bon_sortie": bon_sortie.id}) 
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

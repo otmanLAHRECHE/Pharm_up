@@ -39,7 +39,7 @@ import { getAllDestinataireForSelect } from '../../actions/fournisseur_source_da
 import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
 import { getSelectedStock } from '../../actions/stock_data';
 import { internal_processStyles } from '@mui/styled-engine';
-import { getAllBonSortieOfMonth } from '../../actions/bon_sortie_data';
+import { addBonSortie, addBonSortieItem, getAllBonSortieOfMonth } from '../../actions/bon_sortie_data';
 
 
 
@@ -231,7 +231,18 @@ const columns = [
           }
 
           if(test){
-            console.log("good to go");
+            var m = date.get('month')+1;
+            const d = 1 +"/"+m +"/"+date.get('year');
+
+            const data = {
+              "bon_sortie_nbr":Number(bonNbr),
+              "id":source.id,
+              "date":d,
+            }
+
+            const token = localStorage.getItem("auth_token");
+            setCallBack(await addBonSortie(token, JSON.stringify(data)));                        
+
           }else{
             console.log("error");
             setLoadError(true);
@@ -390,6 +401,42 @@ const columns = [
           
     
         }, [response, dateFilter]);
+
+        React.useEffect(async () => {
+
+    
+          if (callBack == ""){
+
+          } else{
+
+            for(var i=0; i<sortieItemsTableData.length; i++){
+
+              if(i = sortieItemsTableData.length - 1){
+                const data = {
+                  "id_bon_sortie":callBack.id,
+                  "id_stock_med":sortieItemsTableData[i].id_stock,
+                  "sortie_qte":sortieItemsTableData[i].sortie_qnt
+                };
+  
+              const token = localStorage.getItem("auth_token");           
+              setResponse(await addBonSortieItem(token, JSON.stringify(data)));
+
+              }else{
+                const data = {
+                  "id_bon_sortie":callBack.id,
+                  "id_stock_med":sortieItemsTableData[i].id_stock,
+                  "sortie_qte":sortieItemsTableData[i].sortie_qnt
+                };
+  
+              const token = localStorage.getItem("auth_token");
+              await addBonSortieItem(token, JSON.stringify(data));  
+
+              }                    
+            }
+            setResponseSuccesSignal(true);
+          }
+    
+        }, [callBack]);
 
 
         const deleteItem = () =>{
