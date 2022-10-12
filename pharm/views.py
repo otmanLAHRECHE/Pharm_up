@@ -364,6 +364,20 @@ def getAllBonSorties(request, month, year):
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED)  
 
+@api_view(['GET'])
+def getSelectedBonSortie(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Bon_sortie.objects.get(id= id)
+
+        source_serial = BonSortieSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)   
+
+
 @api_view(['POST'])
 def addBonSortie(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -372,7 +386,7 @@ def addBonSortie(request):
         id_source = request.data.pop("id")
         date = request.data.pop("date")
         date = date.split("/")
-        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+        date = datetime.date(int(date[2]), int(date[1]), int(date[0]))
         source = Source.objects.get(id=id_source)
 
         bon_sortie = Bon_sortie.objects.create(bon_sortie_nbr=bon_sortie_nbr, source=source, date=date)
@@ -384,11 +398,10 @@ def addBonSortie(request):
 
 
 @api_view(['POST'])
-def updateBonSortie(request):
+def updateBonSortie(request, id):
     if request.method == 'POST' and request.user.is_authenticated:
         
         bon_sortie_nbr = request.data.pop("bon_sortie_nbr")
-        id = request.data.pop("id")
         date = request.data.pop("date")
 
         date = date.split("/")
@@ -407,9 +420,8 @@ def updateBonSortie(request):
 
 
 @api_view(['DELETE'])
-def deleteBonSortie(request):
+def deleteBonSortie(request, id):
     if request.method == 'DELETE' and request.user.is_authenticated:
-        id = request.data.pop("id")
         Bon_sortie.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Bon sortie deleted"})
 
@@ -445,7 +457,7 @@ def addBonSortieItem(request):
         bon_sortie_item = Sortie_items.objects.create(bon_sortie=bon_sortie, med_sortie=med_sortie, sortie_qte=sortie_qte)
 
         if bon_sortie_item.id is not None:
-            return Response(status=status.HTTP_201_CREATED, data={"status": "Bon sortie item created sucsusfully for bon sortie of nbr:"+ bon_sortie.bon_sortie_nbr}) 
+            return Response(status=status.HTTP_201_CREATED, data={"status": "Bon sortie item created sucsusfully for bon sortie of nbr:"+ str(bon_sortie.bon_sortie_nbr)}) 
         
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

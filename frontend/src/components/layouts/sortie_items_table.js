@@ -6,11 +6,14 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Container from '@mui/material/Container';
 
 
 
 export default function SortieItemsTable(props) {
+
   return (
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 300 }} size="small" aria-label="a dense table">
         <TableHead>
@@ -23,18 +26,21 @@ export default function SortieItemsTable(props) {
         <TableBody>
           {props.rows.map((row) => (
             <TableRow
-              key={row.stock_item.medicament.medic_name}
+            key ={Math.random()}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                {row.name}
+                {row.med_sortie.medicament.medic_name}
               </TableCell>
-              <TableCell align="right">{row.stock_item.date_arrived +" au "+row.stock_item.date_expired}</TableCell>
+              <TableCell align="right">{row.med_sortie.date_arrived +" au "+row.med_sortie.date_expired}</TableCell>
               <TableCell align="right">{row.sortie_qte}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
+    </Container>
+   
+
   );
 }

@@ -23,6 +23,7 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -39,20 +40,22 @@ import { getAllDestinataireForSelect } from '../../actions/fournisseur_source_da
 import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
 import { getSelectedStock } from '../../actions/stock_data';
 import { internal_processStyles } from '@mui/styled-engine';
-import { addBonSortie, addBonSortieItem, getAllBonSortieOfMonth } from '../../actions/bon_sortie_data';
+import { addBonSortie, addBonSortieItem, deleteBonSortie, getAllBonSortieOfMonth } from '../../actions/bon_sortie_data';
 
 
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 
 const columns = [
-    { field: 'id', headerName: 'Id', width: 60 },
+    { field: 'id', headerName: 'Id', width: 60, hide: true },
     { field: 'bon_sortie_nbr', headerName: 'Nbr de bon', width: 100},
     { field: 'source', headerName: 'Destination', width: 200, valueGetter: (params) =>
     `${params.row.source.name || ''} ${params.row.source.service || ''}` },
     { field: 'date', headerName: 'Date', width: 140 },
-    { field: 'sort', headerName: 'Les items de sortie',width: 580 , renderCell: () => (
-      <SortieItemsTable rows={params.row.sortie_items}/>
+    { field: 'sort', headerName: 'Les items de sortie',width: 640 , renderCell: (params) => (
+      <SortieItemsTable rows={params.row.sortie_items_set}/>
     ),
    },
   ];
@@ -182,9 +185,6 @@ const columns = [
 
         };
 
-        const deleteBonSortieOpen = () =>{
-
-        };
 
         const handleChangeDate = (newValue) =>{
           setDate(newValue);
@@ -232,7 +232,7 @@ const columns = [
 
           if(test){
             var m = date.get('month')+1;
-            const d = 1 +"/"+m +"/"+date.get('year');
+            const d = date.get('date') +"/"+m +"/"+date.get('year');
 
             const data = {
               "bon_sortie_nbr":Number(bonNbr),
@@ -402,38 +402,55 @@ const columns = [
     
         }, [response, dateFilter]);
 
-        React.useEffect(async () => {
+        React.useEffect(() => {
+
+          const upload = async (da) =>{
+            const token = localStorage.getItem("auth_token");
+              await addBonSortieItem(token, JSON.stringify(da));
+          }
+
+          const upload2 = async (da) =>{
+            const token = localStorage.getItem("auth_token");           
+              setResponse(await addBonSortieItem(token, JSON.stringify(da)));
+          }
 
     
           if (callBack == ""){
 
           } else{
 
+            console.log("callback..........", callBack.id_bon_sortie);
+            console.log("length..........", sortieItemsTableData.length);
+
             for(var i=0; i<sortieItemsTableData.length; i++){
 
-              if(i = sortieItemsTableData.length - 1){
-                const data = {
-                  "id_bon_sortie":callBack.id,
+              if(i != sortieItemsTableData.length - 1){
+                const d = {
+                  "id_bon_sortie":Number(callBack.id_bon_sortie),
                   "id_stock_med":sortieItemsTableData[i].id_stock,
                   "sortie_qte":sortieItemsTableData[i].sortie_qnt
                 };
-  
-              const token = localStorage.getItem("auth_token");           
-              setResponse(await addBonSortieItem(token, JSON.stringify(data)));
 
+                upload(d);
+
+                
+
+  
               }else{
-                const data = {
-                  "id_bon_sortie":callBack.id,
+                const d = {
+                  "id_bon_sortie":Number(callBack.id_bon_sortie),
                   "id_stock_med":sortieItemsTableData[i].id_stock,
                   "sortie_qte":sortieItemsTableData[i].sortie_qnt
                 };
-  
-              const token = localStorage.getItem("auth_token");
-              await addBonSortieItem(token, JSON.stringify(data));  
+
+                upload2(d);
+                
 
               }                    
             }
             setResponseSuccesSignal(true);
+            setCallBack("");
+            setOpen(false);
           }
     
         }, [callBack]);
@@ -453,6 +470,27 @@ const columns = [
             sortieItemsTableData = table;
             setDataSortie(sortieItemsTableData);
           }
+        }
+
+        const deleteBonSortieOpen = () =>{
+
+          if(selectionModel.length == 0){
+            setSelectionError(true);
+          }else{   
+            setOpenDelete(true);
+          }
+          
+        }
+
+        const deleteBonSortieClose = () =>{
+          setOpenDelete(false);
+        }
+  
+        const deleteConfirmation = async () =>{
+  
+          setOpenDelete(false);
+          const token = localStorage.getItem("auth_token");
+          setResponse(await deleteBonSortie(token, selectionModel[0])); 
         }
 
         
@@ -530,6 +568,7 @@ const columns = [
                               pageSize={15}
                               checkboxSelection = {false}
                               loading={loading}
+                              getRowHeight={() => 'auto'}
                               disableMultipleSelection={true}
                               onSelectionModelChange={(newSelectionModel) => {
                                 setSelectionModel(newSelectionModel);
@@ -713,6 +752,24 @@ const columns = [
 
                     
             </Dialog>
+
+            <Dialog open={openDelete}
+                                    TransitionComponent={Transition}
+                                    keepMounted
+                                    onClose={deleteBonSortieClose}
+                                    aria-describedby="alert-dialog-slide-description"
+                                  >
+                                    <DialogTitle>{"Confirmer la suppression d'un bon de sortie"}</DialogTitle>
+                                    <DialogContent>
+                                      <DialogContentText id="alert-dialog-slide-description">
+                                      Êtes-vous sûr de la décision de supprimer le bon de sortie ?
+                                      </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                      <Button onClick={deleteBonSortieClose}>Anuller</Button>
+                                      <Button onClick={deleteConfirmation}>Supprimer</Button>
+                                    </DialogActions>
+                      </Dialog>
             
           </Container>
 

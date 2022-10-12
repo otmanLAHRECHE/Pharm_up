@@ -34,11 +34,7 @@ class StockArrivageMedicSerializer(serializers.ModelSerializer):
         fields = ['id', 'label']
 
 
-class SortieItemsSerializer(serializers.ModelSerializer):
-    stock_item = StockSerializer()
-    class Meta:
-        model = Sortie_items
-        fields = ['id', 'sortie_qte', 'stock_item']
+
 
 
 class SourceSerializer(serializers.ModelSerializer):
@@ -53,12 +49,18 @@ class SourceSelectSerializer(serializers.ModelSerializer):
         fields = ['id', 'label']
 
 
+class SortieItemsSerializer(serializers.ModelSerializer):
+    med_sortie = StockSerializer()
+    class Meta:
+        model = Sortie_items
+        fields = ['id', 'sortie_qte', 'med_sortie']
+
 class BonSortieSerializer(serializers.ModelSerializer):
     source = SourceSerializer()
-    sortie_items = SortieItemsSerializer(many=True)
+    sortie_items_set = SortieItemsSerializer(many=True)
     class Meta:
         model = Bon_sortie
-        fields = ['id', 'source', 'bon_sortie_nbr', 'date', 'sortie_items']
+        fields = ['id', 'source', 'bon_sortie_nbr', 'date', 'sortie_items_set']
 
 
 class FournisseurSerializer(serializers.ModelSerializer):
