@@ -40,7 +40,7 @@ import { getAllDestinataireForSelect } from '../../actions/fournisseur_source_da
 import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
 import { getSelectedStock } from '../../actions/stock_data';
 import { internal_processStyles } from '@mui/styled-engine';
-import { addBonSortie, addBonSortieItem, deleteBonSortie, getAllBonSortieOfMonth } from '../../actions/bon_sortie_data';
+import { addBonSortie, addBonSortieItem, deleteBonSortie, getAllBonSortieOfMonth, getSelectedBonSortie, updateBonSortie } from '../../actions/bon_sortie_data';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -181,9 +181,6 @@ const columns = [
           setOpen(false);
         }
 
-        const editBonSortieOpen = () =>{
-
-        };
 
 
         const handleChangeDate = (newValue) =>{
@@ -197,6 +194,18 @@ const columns = [
           console.log("filter date...", newValue);
 
         }
+
+        const editBonSortieOpen = async () =>{
+          if(selectionModel.length == 0){
+            setSelectionError(true);
+          }else{    
+            const token = localStorage.getItem("auth_token");
+    
+            setRowData(await getSelectedBonSortie(token, selectionModel[0])); 
+          }
+
+
+        };
 
         const addBonSortieSave = async () =>{
           var test = true;
@@ -308,6 +317,31 @@ const columns = [
 
         }
 
+
+        React.useEffect(() => {
+          console.log(rowData);
+          try{
+    
+            if (rowData == "no data"){
+              setResponseErrorSignal(true);
+            } else if(rowData != "") {
+      
+            setOpenUpdate(true);
+      
+            setBonNbr(rowData.bon_sortie_nbr);
+            setSource(rowData.source.name+ " "+rowData.source.service);
+            setDate(dayjs(rowData.date, 'YYYY-MM-DD'));
+    
+            setBonNbrError([false, ""]);
+            setSourceError([false, ""]);
+            setDateError([false, ""]);
+    
+            }
+          }catch(e){
+            console.log(e)
+          }
+    
+        }, [rowData]);
 
         React.useEffect(() =>{
           try{
@@ -493,7 +527,57 @@ const columns = [
           setResponse(await deleteBonSortie(token, selectionModel[0])); 
         }
 
-        
+        const editBonSortieClose = () =>{
+          setOpenUpdate(false);
+        }
+
+        const editBonSortieSave = async () =>{
+          var test = true;
+
+          setBonNbrError([false, ""]);
+          setSourceError([false, ""]);
+          setDateError([false, ""]);
+
+
+          if (bonNbr == ""){
+            test = false;
+            setBonNbrError([true, "champ est obligatoire"]);
+          }
+
+          if(source == null || source == ""){
+            test = false;
+            setSourceError([true, "champ est obligatoire"]);
+          }
+
+          if(date == null || date == ""){
+            test = false;
+            setDateError([true, "champ est obligatoire"]);
+          }else if(date.isValid() == false){
+            test = false;
+            setDateError([true, "date n est pas valide"]);
+          }
+
+          if(test){
+            setOpenUpdate(false);
+
+            var m = date.get('month')+1;
+            const d = date.get('date') +"/"+m +"/"+date.get('year');
+
+            const data = {
+              "bon_sortie_nbr":Number(bonNbr),
+              "id":source.id,
+              "date":d,
+            }
+
+            console.log("source...", source); 
+
+          }else{
+            console.log("error");
+          setLoadError(true)
+          }
+
+
+        }
 
 
         const columnsSortie = [
@@ -748,6 +832,70 @@ const columns = [
                               <DialogActions>
                                 <Button onClick={addBonSortieClose}>Anuller</Button>
                                 <Button onClick={addBonSortieSave}>Sauvgarder</Button>
+                              </DialogActions>   
+
+                    
+            </Dialog>
+
+            <Dialog open={openUpdate} onClose={editBonSortieClose}  maxWidth="lg" fullWidth={true}>
+                  <DialogTitle>Editer un bon de sortie</DialogTitle>
+                    <DialogContent>
+                      <Grid container spacing={2}>
+                                        <Grid item xs={4}>
+                                          <TextField
+                                                  error={bonNbrError[0]}
+                                                  helperText={bonNbrError[1]}
+                                                  value={bonNbr}
+                                                  margin="dense"
+                                                  id="bon_sortie_nbr"
+                                                  label="Bon de sortie Nbr"
+                                                  fullWidth
+                                                  variant="standard"
+                                                  type="number"
+                                                  onChange={(event) => {setBonNbr(event.target.value)}}
+                                          />
+
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                                <Autocomplete
+                                                    disablePortal
+                                                    value={source}
+                                                    onChange={(event, newVlue) =>{
+                                                        setSource(newVlue);
+                                                        
+                                                    }}
+                                                    options={allSources}
+                                                    renderInput={(params) => <TextField {...params} error={sourceError[0]}
+                                                    helperText={sourceError[1]} fullWidth variant="standard" label="Destination" 
+                                                    required/>}
+                                                />  
+                                        
+                                        </Grid>
+
+                                        <Grid item xs={4}>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DesktopDatePicker
+                                                        label="Date"
+                                                        inputFormat="DD/MM/YYYY"
+                                                        value={date}
+                                                        onChange={handleChangeDate}
+                                                        renderInput={(params) => <TextField {...params} error={dateError[0]}
+                                                        helperText={dateError[1]} 
+                                                        required/>}
+                                                />
+
+                                            </LocalizationProvider>
+                                                 
+                                        
+                                        </Grid>
+                        
+                      </Grid>
+                      <br></br> 
+
+                    </DialogContent>
+                              <DialogActions>
+                                <Button onClick={editBonSortieClose}>Anuller</Button>
+                                <Button onClick={editBonSortieSave}>Sauvgarder</Button>
                               </DialogActions>   
 
                     

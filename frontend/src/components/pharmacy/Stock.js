@@ -313,7 +313,7 @@ export default function Stock(){
         }
         else{
           console.log("error");
-          setLoadError(true)
+          setLoadError(true);
         }
 
       }
