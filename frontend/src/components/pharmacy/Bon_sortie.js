@@ -200,6 +200,8 @@ const columns = [
             setSelectionError(true);
           }else{    
             const token = localStorage.getItem("auth_token");
+
+            setSourceData(await getAllDestinataireForSelect(token));
     
             setRowData(await getSelectedBonSortie(token, selectionModel[0])); 
           }
@@ -329,7 +331,7 @@ const columns = [
             setOpenUpdate(true);
       
             setBonNbr(rowData.bon_sortie_nbr);
-            setSource(rowData.source.name+ " "+rowData.source.service);
+            setSource({"id":rowData.source.id, "label":rowData.source.name +" "+rowData.source.service});
             setDate(dayjs(rowData.date, 'YYYY-MM-DD'));
     
             setBonNbrError([false, ""]);
@@ -569,7 +571,8 @@ const columns = [
               "date":d,
             }
 
-            console.log("source...", source); 
+            const token = localStorage.getItem("auth_token");
+            setResponse(await updateBonSortie(token, JSON.stringify(data), rowData.id)); 
 
           }else{
             console.log("error");

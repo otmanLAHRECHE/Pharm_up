@@ -403,9 +403,12 @@ def updateBonSortie(request, id):
         
         bon_sortie_nbr = request.data.pop("bon_sortie_nbr")
         date = request.data.pop("date")
+        id_source = request.data.pop("id")
+
+        source = Source.objects.get(id= id_source)
 
         date = date.split("/")
-        date = datetime.date(int(date[0], int(date[1])), int(date[2]))
+        date = datetime.date(int(date[2]), int(date[1]), int(date[0]))
 
         bon_sortie_to_to_update = Bon_sortie.objects.get(id=id)
 
@@ -413,6 +416,8 @@ def updateBonSortie(request, id):
             bon_sortie_to_to_update.bon_sortie_nbr = bon_sortie_nbr
         if not bon_sortie_to_to_update.date == date:
             bon_sortie_to_to_update.date = date
+        if not bon_sortie_to_to_update.source == source:
+            bon_sortie_to_to_update.source = source
         
         bon_sortie_to_to_update.save()
         
