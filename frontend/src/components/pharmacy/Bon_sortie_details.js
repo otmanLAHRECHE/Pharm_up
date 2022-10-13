@@ -40,7 +40,7 @@ import { getAllDestinataireForSelect } from '../../actions/fournisseur_source_da
 import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
 import { getSelectedStock } from '../../actions/stock_data';
 import { internal_processStyles } from '@mui/styled-engine';
-import { addBonSortieItem, checkBonSortieId,  getAllBonSortieItems, getSelectedBonSortieItem } from '../../actions/bon_sortie_data';
+import { addBonSortieItem, checkBonSortieId,  deleteBonSortieItem,  getAllBonSortieItems, getSelectedBonSortieItem, updateBonSortieItem } from '../../actions/bon_sortie_data';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -222,10 +222,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
         
     }
 
-    const deleteBonSortieItemOpen = () =>{
-
-        
-    }
+    
 
     const editBonSortieItemClose = () =>{
         setOpenUpdate(false);
@@ -251,10 +248,18 @@ const Transition = React.forwardRef(function Transition(props, ref) {
                 "sortie_qte":qnt
             }
             const token = localStorage.getItem("auth_token");
-            setResponse(await updateStock(token, JSON.stringify(data), rowData.id));
+            setResponse(await updateBonSortieItem(token, JSON.stringify(data), rowData.id));
         }
 
 
+    }
+
+    const deleteBonSortieItemOpen = () =>{
+        if(selectionModel.length == 0){
+            setSelectionError(true);
+          }else{   
+            setOpenDelete(true);
+          }  
     }
 
     const deleteBonSortieItemClose = () =>{
@@ -262,7 +267,11 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
     }
 
-    const deleteConfirmation = () =>{
+    const deleteConfirmation = async () =>{
+
+        setOpenDelete(false);
+        const token = localStorage.getItem("auth_token");
+        setResponse(await deleteBonSortieItem(token, selectionModel[0]));
 
     }
 

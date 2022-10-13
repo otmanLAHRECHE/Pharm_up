@@ -497,7 +497,7 @@ def updateBonSortieItem(request, id):
     if request.method == 'POST' and request.user.is_authenticated:
         
 
-        bon_sortie_item_to_update = Sortie_items(id=id)
+        bon_sortie_item_to_update = Sortie_items.objects.get(id=id)
 
         sortie_qte = request.data.pop("sortie_qte")
 
@@ -512,7 +512,6 @@ def updateBonSortieItem(request, id):
 @api_view(['DELETE'])
 def deleteBonSortieItem(request, id):
     if request.method == 'DELETE' and request.user.is_authenticated:
-        id = request.data.pop("id")
         Sortie_items.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Bon sortie item deleted"})
 

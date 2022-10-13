@@ -237,7 +237,7 @@ export async function getAllBonSortieOfMonth(token, month, year){
   export async function updateBonSortieItem(token, data, id){
     console.log("inside methode", token)
     const response = await fetch(
-        '/pharm/api/update_bon_sortie/'+id,
+        '/pharm/api/update_bon_sortie_item/'+id,
         {
           method: 'POST',
           headers: {
@@ -246,6 +246,32 @@ export async function getAllBonSortieOfMonth(token, month, year){
             'Authorization': 'Token ' +token,
           },
           body: data
+        }
+    );
+    const text = await response.text();
+    if (response.status === 200) {
+      console.log("status 200, response: ", JSON.parse(text));
+      return JSON.parse(text);
+    } else {
+      console.log("failed", text);
+      return "error";
+    }
+  
+  };
+
+
+  export async function deleteBonSortieItem(token, id){
+    console.log("inside methode", token)
+    const response = await fetch(
+        '/pharm/api/delete_bon_sortie_item/'+id,
+        {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' +token,
+          },
+          body: JSON.stringify()
         }
     );
     const text = await response.text();
