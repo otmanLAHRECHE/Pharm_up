@@ -40,7 +40,7 @@ import { getAllDestinataireForSelect } from '../../actions/fournisseur_source_da
 import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
 import { getSelectedStock } from '../../actions/stock_data';
 import { internal_processStyles } from '@mui/styled-engine';
-import { addBonSortieItem, checkBonSortieId,  getAllBonSortieItems } from '../../actions/bon_sortie_data';
+import { addBonSortieItem, checkBonSortieId,  getAllBonSortieItems, getSelectedBonSortieItem } from '../../actions/bon_sortie_data';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -167,12 +167,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 
     }
-    const editBonSortieItemOpen = () =>{
-        
-    }
-    const deleteBonSortieItemOpen = () =>{
-        
-    }
 
     const addBonSortieClose = () =>{
         setOpen(false);
@@ -208,7 +202,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
                 setSortieQntError(true);
             }else{
                 const token = localStorage.getItem("auth_token");
-                console.log("checker...",idBonSortie);
                 setIdChecker(await checkBonSortieId(token, Number(idBonSortie)));
             }
 
@@ -217,11 +210,55 @@ const Transition = React.forwardRef(function Transition(props, ref) {
         }
     }
 
+    const editBonSortieItemOpen = async() =>{
+
+        if(selectionModel.length == 0){
+            setSelectionError(true);
+          }else{    
+            const token = localStorage.getItem("auth_token");
+    
+            setRowData(await getSelectedBonSortieItem(token, selectionModel[0])); 
+          }
+        
+    }
+
+    const deleteBonSortieItemOpen = () =>{
+
+        
+    }
+
     const editBonSortieItemClose = () =>{
+        setOpenUpdate(false);
+
+    }
+
+    const editBonSortieItemSave = async () =>{
+        var test = true;
+
+        setQntError([false, ""]);
+
+
+        if(qnt == null || qnt == "" || qnt == "0"){
+            test = false;
+            setQntError([true, "champ est obligatoire"]);
+        }
+
+        if(test){
+
+            setOpenUpdate(false);
+
+            const data={
+                "sortie_qte":qnt
+            }
+            const token = localStorage.getItem("auth_token");
+            setResponse(await updateStock(token, JSON.stringify(data), rowData.id));
+        }
+
 
     }
 
     const deleteBonSortieItemClose = () =>{
+        setOpenDelete(false);
 
     }
 
@@ -231,7 +268,24 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 
 
+    React.useEffect(() => {
+        console.log(rowData);
+        try{
+  
+          if (rowData == "no data"){
+            setResponseErrorSignal(true);
+          } else if(rowData != "") {
+    
+          setOpenUpdate(true);
 
+          setQnt(rowData.sortie_qte);
+  
+          }
+        }catch(e){
+          console.log(e)
+        }
+  
+      }, [rowData]);
 
     React.useEffect(() =>{
         try{
@@ -246,9 +300,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
         }
       }, [namesData]);
 
-
     React.useEffect(() =>{
-        console.log(arrivageData);
         try{
           if (arrivageData == "no data"){
             setResponseErrorSignal(true);
@@ -292,7 +344,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
       React.useEffect(() => {
 
-        console.log(response);
   
         if (response == "error"){
           setResponseErrorSignal(true);
@@ -473,7 +524,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
                                                             value={arivage}
                                                             onChange={async (event, newVlue) =>{
                                                                 setArivage(newVlue);
-                                                                console.log("arrivage...",newVlue);
 
                                                                 if(newVlue == null){
                                                                     console.log("arrivage...",newVlue);
@@ -517,7 +567,94 @@ const Transition = React.forwardRef(function Transition(props, ref) {
           </Dialog>
 
           <Dialog open={openUpdate} onClose={editBonSortieItemClose}  maxWidth="lg" fullWidth={true}>
-                  
+          <DialogTitle>Ajouter un bon de sortie item</DialogTitle>
+                  <DialogContent>
+                    <Grid container spacing={2}>
+                                      <Grid item xs={4}>
+                                        <TextField
+                                                error={idBonSortieError[0]}
+                                                helperText={idBonSortieError[1]}
+                                                disabled={true}
+                                                margin="dense"
+                                                id="bon_sortie_nbr"
+                                                label="Id de bon sortie"
+                                                fullWidth
+                                                variant="standard"
+                                                type="number"
+                                                onChange={(event) => {setIdBonSortie(event.target.value)}}
+                                        />
+
+                                      </Grid>
+                                      <Grid item xs={4}>
+                                            <Autocomplete
+                                                disablePortal
+                                                value={medicName}
+                                                disabled={true}
+                                                onChange={async (event, newVlue) =>{
+                                                    setMedicName(newVlue);
+
+                                                    if (newVlue != null){
+                                                        const token = localStorage.getItem("auth_token");
+                                                        setArrivageData(await getAllArrivageOfMedic(token, newVlue.id));
+                                                    }else{
+                                                        setAllArivage([]);
+                                                    }                                                                                                
+                                                }}
+                                                id="combo-box-demo"
+                                                options={allNames}
+                                                renderInput={(params) => <TextField {...params} error={medicNameError[0]}
+                                                helperText={medicNameError[1]} fullWidth variant="standard" label="Médicaments" 
+                                                required/>}
+                                            /> 
+                                      
+                                      </Grid>
+
+                                      <Grid item xs={4}>
+                                                <Autocomplete
+                                                            disablePortal
+                                                            id="combo-box-demo"
+                                                            value={arivage}
+                                                            disabled={true}
+                                                            onChange={async (event, newVlue) =>{
+                                                                setArivage(newVlue);
+
+                                                                if(newVlue == null){
+                                                                    console.log("arrivage...",newVlue);
+
+                                                                }else{
+                                                                    const token = localStorage.getItem("auth_token");
+                                                                    setCurrentStockItem(await getSelectedStock(token, newVlue.id));
+
+                                                                }                                                                
+
+                                                            }}
+                                                            options={allArivage}
+                                                            renderInput={(params) => <TextField {...params} error={arivageError[0]}
+                                                            helperText={arivageError[1]} fullWidth variant="standard" label="Arrivage" 
+                                                            required/>}
+                                                        />                                                                                      
+                                      </Grid>
+
+                                      <Grid item xs={6}>
+                                            <TextField
+                                                error={qntError[0]}
+                                                helperText={qntError[1]}
+                                                required
+                                                margin="dense"
+                                                label="Qnt"
+                                                fullWidth
+                                                variant="standard"
+                                                value = {qnt}
+                                                onChange={(event) => {setQnt(event.target.value)}}
+                                            />
+
+                                      </Grid>                
+                    </Grid>
+                  </DialogContent>
+                            <DialogActions>
+                              <Button onClick={editBonSortieItemClose}>Anuller</Button>
+                              <Button onClick={editBonSortieItemSave}>Sauvgarder</Button>
+                            </DialogActions> 
 
                   
           </Dialog>

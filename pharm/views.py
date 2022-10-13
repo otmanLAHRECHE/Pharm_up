@@ -362,13 +362,11 @@ def getAllBonSorties(request, month, year):
 @api_view(['GET'])
 def getSelectedBonSortie(request, id):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = Bon_sortie.objects.filter(id= id)
+        queryset = Bon_sortie.objects.get(id= id)
 
-        source_serial = BonSortieTestSerializer(queryset)
+        source_serial = BonSortieSerializer(queryset)
 
         return Response(status=status.HTTP_200_OK,data=source_serial.data)
-                
-    
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED)   
 
@@ -442,6 +440,16 @@ def deleteBonSortie(request, id):
         Bon_sortie.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Bon sortie deleted"})
 
+@api_view(['GET'])
+def getSelectedBonSortieItem(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Sortie_items.objects.get(id= id)
+
+        source_serial = SortieItemsSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)   
 
 
 @api_view(['GET'])
@@ -462,6 +470,7 @@ def getAllBonSortieItems(request, month, year):
                 
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED)  
+
 
 @api_view(['POST'])
 def addBonSortieItem(request):
@@ -484,10 +493,9 @@ def addBonSortieItem(request):
 
 
 @api_view(['POST'])
-def updateBonSortieItem(request):
+def updateBonSortieItem(request, id):
     if request.method == 'POST' and request.user.is_authenticated:
         
-        id = request.data.pop("id")
 
         bon_sortie_item_to_update = Sortie_items(id=id)
 
@@ -502,7 +510,7 @@ def updateBonSortieItem(request):
 
 
 @api_view(['DELETE'])
-def deleteBonSortieItem(request):
+def deleteBonSortieItem(request, id):
     if request.method == 'DELETE' and request.user.is_authenticated:
         id = request.data.pop("id")
         Sortie_items.objects.filter(id=id).delete()
