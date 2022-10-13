@@ -189,7 +189,6 @@ export default function Stock(){
         
         if(test){
           
-          console.log("good to go");
           setOpen(false);
 
           if(mode ==0){
@@ -220,17 +219,12 @@ export default function Stock(){
             setResponse(await addStockToArrivage(token, JSON.stringify(data)));
 
           }
-          
-   
-          
 
         }
         else{
           console.log("error");
           setLoadError(true)
-        }
-        
-
+        }      
         
       }
 
@@ -295,7 +289,6 @@ export default function Stock(){
             test = false
           }                
         if(test){          
-          console.log("good to go");
           setOpenUpdate(false);
             var m = dateArived.get('month')+1;
             const date_a = dateArived.get('date') +"/"+m +"/"+dateArived.get('year');
@@ -340,7 +333,6 @@ export default function Stock(){
       }
 
       React.useEffect(() => {
-        console.log(rowData);
         try{
   
           if (rowData == "no data"){
@@ -348,12 +340,9 @@ export default function Stock(){
           } else if(rowData != "") {
     
           setOpenUpdate(true);
-          console.log(rowData.id)
     
           setMedicName(rowData.medicament.medic_name);
           setArrivageState(true);
-          console.log(rowData.date_arrived);
-          console.log(rowData.date_expired);
           setDateArived(dayjs(rowData.date_arrived, 'YYYY-MM-DD'));
           setDateExpired(dayjs(rowData.date_expired, 'YYYY-MM-DD'));
           setQnt(rowData.stock_qte);
@@ -372,7 +361,6 @@ export default function Stock(){
       }, [rowData]);
 
       React.useEffect(() =>{
-        console.log(namesData);
         try{
           if (namesData == "no data"){
             setResponseErrorSignal(true);
@@ -386,12 +374,10 @@ export default function Stock(){
       }, [namesData]);
 
       React.useEffect(() =>{
-        console.log(arrivageData);
         try{
           if (arrivageData == "no data"){
             setResponseErrorSignal(true);
           } else if(arrivageData != "") {
-            console.log("inside else if ",arrivageData);
             arrivageData.push({"label":"Nouveau arrivage"})
             setAllArivage(arrivageData);
           }
@@ -402,7 +388,6 @@ export default function Stock(){
 
       React.useEffect(() => {
 
-        console.log(response);
   
         if (response == "error"){
           setResponseErrorSignal(true);

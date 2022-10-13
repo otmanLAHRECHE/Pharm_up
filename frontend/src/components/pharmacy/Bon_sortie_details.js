@@ -145,7 +145,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     const handleChangeFilterDate = (newValue) =>{
         setDateFilter(newValue);
 
-        console.log("filter date...", newValue);
 
     }
 

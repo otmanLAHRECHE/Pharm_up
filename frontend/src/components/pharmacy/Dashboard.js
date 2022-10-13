@@ -27,7 +27,8 @@ import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import Groups3Icon from '@mui/icons-material/Groups3';
 import EventIcon from '@mui/icons-material/Event';
 import OutputIcon from '@mui/icons-material/Output';
-import InputIcon from '@mui/icons-material/Input';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+
 
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -39,6 +40,7 @@ import Destinataire from './Destinataire';
 import Stock from './Stock';
 import Bon_sortie from './Bon_sortie';
 import Bon_sortie_details from './Bon_sortie_details';
+import Statestiques from './Statistiques';
 
 
 
@@ -96,12 +98,12 @@ function DashboardContent() {
     setOpen(!open);
   };
 
-  const [toolBar,setToolBar] = React.useState("Dashboard")
+  const [toolBar,setToolBar] = React.useState("Tableau de bord et statestiques")
 
   const clickDashboard = () =>{
     
       setPage([true,false,false,false,false,false,false,false])
-      setToolBar("Tableau de bord")
+      setToolBar("Tableau de bord et statestiques")
   };
 
   const clickSortie= () =>{
@@ -211,7 +213,7 @@ function DashboardContent() {
                   <ListItemIcon>
                     <DashboardIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Dashboard"/>
+                  <ListItemText primary="Tableau de bord"/>
                 </ListItemButton>
                 <ListItemButton selected={page[1]} onClick={clickSortie}>
                   <ListItemIcon>
@@ -277,7 +279,7 @@ function DashboardContent() {
         <Toolbar />
 
         
-        {page[0] ? <Dashboard_app/> : null}
+        {page[0] ? <Statestiques/> : null}
         {page[1] ? <Bon_sortie/> : null}
         {page[2] ? <Bon_sortie_details/> : null}
         {page[3] ? <Stock/> : null}

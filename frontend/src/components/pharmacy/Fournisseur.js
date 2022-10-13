@@ -7,6 +7,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
+import Paper from '@mui/material/Paper';
+
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -302,6 +304,7 @@ export default function Fournisseur(){
 
                 <Grid container spacing={1.5}>
                   <Grid item xs={9}>
+                  <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ height: 700, width: '100%' }}>
                           <DataGrid
                             components={{
@@ -320,6 +323,7 @@ export default function Fournisseur(){
                               
                           />
                     </div>   
+                    </Paper>
                   </Grid>
                   <Grid item xs={3}>
                      <List
