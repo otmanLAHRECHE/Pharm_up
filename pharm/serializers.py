@@ -55,12 +55,32 @@ class SortieItemsSerializer(serializers.ModelSerializer):
         model = Sortie_items
         fields = ['id', 'sortie_qte', 'med_sortie']
 
+class BonSortieCustomSerializer(serializers.ModelSerializer):
+    source = SourceSerializer()
+    class Meta:
+        model = Bon_sortie
+        fields = ['id', 'source', 'bon_sortie_nbr', 'date']
+
+class SortieItemsCustomSerializer(serializers.ModelSerializer):
+    med_sortie = StockSerializer()
+    bon_sortie = BonSortieCustomSerializer()
+    class Meta:
+        model = Sortie_items
+        fields = ['id', 'sortie_qte', 'med_sortie', 'bon_sortie']
+
 class BonSortieSerializer(serializers.ModelSerializer):
     source = SourceSerializer()
     sortie_items_set = SortieItemsSerializer(many=True)
     class Meta:
         model = Bon_sortie
         fields = ['id', 'source', 'bon_sortie_nbr', 'date', 'sortie_items_set']
+
+class BonSortieTestSerializer(serializers.ModelSerializer):
+    source_set = SourceSerializer()
+    sortie_items_set = SortieItemsSerializer(many=True)
+    class Meta:
+        model = Bon_sortie
+        fields = ['id', 'source_set', 'bon_sortie_nbr', 'date', 'sortie_items_set']
 
 
 class FournisseurSerializer(serializers.ModelSerializer):

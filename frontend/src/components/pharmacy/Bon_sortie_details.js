@@ -40,7 +40,7 @@ import { getAllDestinataireForSelect } from '../../actions/fournisseur_source_da
 import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
 import { getSelectedStock } from '../../actions/stock_data';
 import { internal_processStyles } from '@mui/styled-engine';
-import { addBonSortie, addBonSortieItem, deleteBonSortie, getAllBonSortieOfMonth, getSelectedBonSortie, updateBonSortie } from '../../actions/bon_sortie_data';
+import { addBonSortieItem, checkBonSortieId,  getAllBonSortieItems } from '../../actions/bon_sortie_data';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -51,14 +51,21 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
   const columns = [
     { field: 'id', headerName: 'Id', width: 60, hide: true },
-    { field: 'bon_sortie_nbr', headerName: 'Nbr de bon', width: 100},
-    { field: 'source', headerName: 'Destination', width: 200, valueGetter: (params) =>
-    `${params.row.source.name || ''} ${params.row.source.service || ''}` },
-    { field: 'date', headerName: 'Date', width: 140 },
-    { field: 'sort', headerName: 'Les items de sortie',width: 640 , renderCell: (params) => (
-      <SortieItemsTable rows={params.row.sortie_items_set}/>
-    ),
-   },
+    { field: 'bon_sortie_nbr', headerName: 'Nbr de bon', width: 100, valueGetter: (params) =>
+    `${params.row.bon_sortie.bon_sortie_nbr || ''}` },
+    { field: 'date', headerName: 'Date', width: 140, valueGetter: (params) =>
+    `${params.row.bon_sortie.date || ''}`  },
+    { field: 'source', headerName: 'Destinataire', width: 200, valueGetter: (params) =>
+    `${params.row.bon_sortie.source.name || ''} ${params.row.bon_sortie.source.service || ''}` },
+    { field: 'medic_name', headerName: 'Médicament', width: 200, valueGetter: (params) =>
+    `${params.row.med_sortie.medicament.medic_name || ''}` },
+    { field: 'date_arrived', headerName: 'Date d arrivation', width: 140, valueGetter: (params) =>
+    `${params.row.med_sortie.date_arrived || ''}` },
+    { field: 'date_expired', headerName: 'Date d expiration', width: 140, valueGetter: (params) =>
+    `${params.row.med_sortie.date_expired || ''}` },
+    { field: 'sortie_qnt', headerName: 'Qnt de sortie', width: 140, valueGetter: (params) =>
+    `${params.row.sortie_qte || ''}` },
+    
   ];
 
 
@@ -103,7 +110,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     const [data, setData] = React.useState([]);
     const [dataSortie, setDataSortie] = React.useState([]);
     const [namesData, setNamesData] = React.useState([]);
-    const [idChecker, setIdChecker] = React.useState([]);
+    const [idChecker, setIdChecker] = React.useState("");
     const [sourceData, setSourceData] = React.useState([]);
     const [arrivageData, setArrivageData] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
@@ -197,6 +204,16 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
         if (test){
 
+            if (Number(currentStockItem.stock_qte)< Number(qnt)){
+                setSortieQntError(true);
+            }else{
+                const token = localStorage.getItem("auth_token");
+                console.log("checker...",idBonSortie);
+                setIdChecker(await checkBonSortieId(token, Number(idBonSortie)));
+            }
+
+            
+
         }
     }
 
@@ -237,13 +254,95 @@ const Transition = React.forwardRef(function Transition(props, ref) {
             setResponseErrorSignal(true);
           } else if(arrivageData != "") {
             console.log("inside else if ",arrivageData);
-            arrivageData.push({"label":"Nouveau arrivage"})
             setAllArivage(arrivageData);
           }
         }catch(e){
           console.log(e);
         }
     }, [arrivageData]);
+
+    React.useEffect(() => {
+        const upload = async (da) =>{
+          const token = localStorage.getItem("auth_token");
+            await addBonSortieItem(token, JSON.stringify(da));
+        }
+        if (idChecker == ""){
+
+        } else{
+            if(idChecker.st == true){
+                const d = {
+                    "id_bon_sortie":Number(idBonSortie),
+                    "id_stock_med":arivage.id,
+                    "sortie_qte":qnt
+                };
+                  upload(d);
+                  setResponseSuccesSignal(true);
+                
+
+            }else{
+                setDataError(true);
+            }
+                      
+            setIdChecker("");
+            setOpen(false);
+           
+        }
+  
+      }, [idChecker]);
+
+      React.useEffect(() => {
+
+        console.log(response);
+  
+        if (response == "error"){
+          setResponseErrorSignal(true);
+        } else if(response != "") {
+          setResponseSuccesSignal(true);
+        }
+  
+      }, [response]);
+
+      React.useEffect(() => {
+
+        setLoading(true);
+        setDateFilterError([false, ""]);
+
+        const fetchData = async () => {
+          try {
+            const token = localStorage.getItem("auth_token");
+            var month = dateFilter.get("month")+1
+            var year = dateFilter.get('year')
+            setData(await getAllBonSortieItems(token, month, year));
+            setLoading(false);
+          } catch (error) {
+            console.log("error", error);
+          }
+        };
+    
+        
+
+        if (dateFilter.isValid() == false || dateFilter ==""){
+          setDateFilterError([true, "une erreur sur le champ de date"]);
+          setDateFilterNotErr(true);
+        }else{
+          fetchData();
+        }
+  
+        
+  
+      }, [response, dateFilter]);
+
+      React.useEffect(() =>{
+          
+        try{
+          if (currentStockItem == "no data"){
+            setResponseErrorSignal(true);
+          } else if(currentStockItem != "") {
+          }
+        }catch(e){
+          console.log(e);
+        }
+      }, [currentStockItem]);
 
 
 
@@ -340,7 +439,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
                                                 fullWidth
                                                 variant="standard"
                                                 type="number"
-                                                onChange={(event) => {setBonNbr(event.target.value)}}
+                                                onChange={(event) => {setIdBonSortie(event.target.value)}}
                                         />
 
                                       </Grid>
@@ -449,10 +548,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
           {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
           {selectionError ? <Alt type='error' message='Selectioner un item' onClose={()=> setSelectionError(false)} /> : null}
           {sortieQntError ? <Alt type='error' message='la quantité remplie n est pas desponible' onClose={()=> setSortieQntError(false)} /> : null}
-          {dataError ? <Alt type='error' message='La liste des items de bon de sorte est vide!!' onClose={()=> setDataError(false)} /> : null}
+          {dataError ? <Alt type='error' message='Invalide id de bon sortie' onClose={()=> setDataError(false)} /> : null}
           {dateFilterNotErr ? <Alt type='error' message='La liste des items de bon de sorte est vide!!' onClose={()=> setDateFilterNotErr(false)} /> : null}
         
-          sortieQntError
+          
       </React.Fragment>
 
 

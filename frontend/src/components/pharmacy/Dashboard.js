@@ -38,6 +38,7 @@ import Fournisseur from './Fournisseur';
 import Destinataire from './Destinataire';
 import Stock from './Stock';
 import Bon_sortie from './Bon_sortie';
+import Bon_sortie_details from './Bon_sortie_details';
 
 
 
@@ -114,7 +115,7 @@ function DashboardContent() {
   const clickCommande = () =>{
   
     setPage([false,false,true,false,false,false,false,false])
-    setToolBar("Bons de commande")
+    setToolBar("Details des bons sortie")
   
   };
   const clickStock= () =>{
@@ -278,7 +279,7 @@ function DashboardContent() {
         
         {page[0] ? <Dashboard_app/> : null}
         {page[1] ? <Bon_sortie/> : null}
-        {page[2] ? <Dashboard_app/> : null}
+        {page[2] ? <Bon_sortie_details/> : null}
         {page[3] ? <Stock/> : null}
         {page[4] ? <Medicaments/> : null}
         {page[5] ? <Fournisseur/> : null}

@@ -347,13 +347,8 @@ def getAllBonSorties(request, month, year):
 
         range = monthrange(year, month)
 
-        print(range[1])
-
         date_start = datetime.date(year , month, 1)
         date_end = datetime.date( year, month, range[1])
-
-        print(date_start)
-        print(date_end)
 
         queryset = Bon_sortie.objects.filter(date__gte=date_start, date__lte=date_end)
 
@@ -367,9 +362,9 @@ def getAllBonSorties(request, month, year):
 @api_view(['GET'])
 def getSelectedBonSortie(request, id):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = Bon_sortie.objects.get(id= id)
+        queryset = Bon_sortie.objects.filter(id= id)
 
-        source_serial = BonSortieSerializer(queryset)
+        source_serial = BonSortieTestSerializer(queryset)
 
         return Response(status=status.HTTP_200_OK,data=source_serial.data)
                 
@@ -381,12 +376,11 @@ def getSelectedBonSortie(request, id):
 @api_view(['GET'])
 def checkBonSortieId(request, id):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = Bon_sortie.objects.get(id= id)
+        count = Bon_sortie.objects.filter(id= id).count()
 
-        source_serial = BonSortieSerializer(queryset)
         p = False
 
-        if len(source_serial.data)>0:
+        if count>0:
             p = True
 
 
@@ -451,15 +445,18 @@ def deleteBonSortie(request, id):
 
 
 @api_view(['GET'])
-def getAllBonSortieItemsForMedicament(request):
+def getAllBonSortieItems(request, month, year):
     if request.method == 'GET' and request.user.is_authenticated:
-        
-        id = request.data.pop("id")
-        medicament = Medicament.objects.get(id=id)
-        stock = Stock.objects.get(medicament=medicament)
-        queryset = Bon_sortie.objects.filter(med_sortie=stock)
 
-        source_serial = BonSortieSerializer(queryset, many=True)
+        range = monthrange(year, month)
+
+        date_start = datetime.date(year , month, 1)
+        date_end = datetime.date( year, month, range[1])
+        
+        bon_sortie = Bon_sortie.objects.filter(date__gte=date_start, date__lte=date_end)
+        queryset = Sortie_items.objects.filter(bon_sortie__in=bon_sortie)
+
+        source_serial = SortieItemsCustomSerializer(queryset, many=True)
 
         return Response(status=status.HTTP_200_OK,data=source_serial.data)
                 

@@ -31,7 +31,7 @@ urlpatterns = [
     path('api/add_bon_sortie/', views.addBonSortie),
     path('api/update_bon_sortie/<int:id>', views.updateBonSortie),
     path('api/delete_bon_sortie/<int:id>', views.deleteBonSortie),
-    path('api/get_all_bon_sortie_items_for_medic/', views.getAllBonSortieItemsForMedicament),
+    path('api/get_all_bon_sortie_items/<int:month>/<int:year>', views.getAllBonSortieItems),
     path('api/add_bon_sortie_item/', views.addBonSortieItem),
     path('api/update_bon_sortie_item/', views.updateBonSortieItem),
     path('api/delete_bon_sortie_item/', views.deleteBonSortieItem),
