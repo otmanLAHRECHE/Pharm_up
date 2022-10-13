@@ -23,6 +23,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import Groups3Icon from '@mui/icons-material/Groups3';
 import EventIcon from '@mui/icons-material/Event';
 import OutputIcon from '@mui/icons-material/Output';
@@ -219,9 +220,9 @@ function DashboardContent() {
                 </ListItemButton>
                 <ListItemButton selected={page[2]} onClick={clickCommande}>
                   <ListItemIcon>
-                    <InputIcon />
+                    <TextSnippetIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Bon de commande" />
+                  <ListItemText primary="Bon de sortie details" />
                 </ListItemButton>
                 <ListItemButton selected={page[3]} onClick={clickStock}>
                   <ListItemIcon>

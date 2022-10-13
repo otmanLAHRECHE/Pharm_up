@@ -378,6 +378,24 @@ def getSelectedBonSortie(request, id):
         return Response(status=status.HTTP_401_UNAUTHORIZED)   
 
 
+@api_view(['GET'])
+def checkBonSortieId(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Bon_sortie.objects.get(id= id)
+
+        source_serial = BonSortieSerializer(queryset)
+        p = False
+
+        if len(source_serial.data)>0:
+            p = True
+
+
+        return Response(status=status.HTTP_200_OK,data={"st":p})
+                
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
+
+
 @api_view(['POST'])
 def addBonSortie(request):
     if request.method == 'POST' and request.user.is_authenticated:

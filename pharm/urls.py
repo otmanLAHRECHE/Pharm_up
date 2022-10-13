@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/delete_stock/<int:id>', views.deleteStock),
     path('api/get_all_bon_sortie/<int:month>/<int:year>', views.getAllBonSorties),
     path('api/get_selected_bon_sortie/<int:id>', views.getSelectedBonSortie),
+    path('api/check_bon_sortie_id/<int:id>', views.checkBonSortieId),
     path('api/add_bon_sortie/', views.addBonSortie),
     path('api/update_bon_sortie/<int:id>', views.updateBonSortie),
     path('api/delete_bon_sortie/<int:id>', views.deleteBonSortie),
