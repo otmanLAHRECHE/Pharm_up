@@ -402,6 +402,7 @@ def addBonSortie(request):
         bon_sortie = Bon_sortie.objects.create(bon_sortie_nbr=bon_sortie_nbr, source=source, date=date)
 
         if bon_sortie.id is not None:
+
             return Response(status=status.HTTP_201_CREATED, data={"id_bon_sortie": bon_sortie.id}) 
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -482,10 +483,16 @@ def addBonSortieItem(request):
 
         bon_sortie = Bon_sortie.objects.get(id=id_bon_sortie)
         med_sortie = Stock.objects.get(id=id_stock_med)
-        
-        bon_sortie_item = Sortie_items.objects.create(bon_sortie=bon_sortie, med_sortie=med_sortie, sortie_qte=sortie_qte)
 
-        if bon_sortie_item.id is not None:
+        ps = False
+
+        if med_sortie.stock_qte >= int(sortie_qte) :
+            bon_sortie_item = Sortie_items.objects.create(bon_sortie=bon_sortie, med_sortie=med_sortie, sortie_qte=sortie_qte)
+            ps = True
+
+        if bon_sortie_item.id is not None and ps == True:
+            med_sortie.stock_qte = med_sortie.stock_qte - int(sortie_qte)
+            med_sortie.save()
             return Response(status=status.HTTP_201_CREATED, data={"status": "Bon sortie item created sucsusfully for bon sortie of nbr:"+ str(bon_sortie.bon_sortie_nbr)}) 
         
         else:
@@ -501,8 +508,24 @@ def updateBonSortieItem(request, id):
 
         sortie_qte = request.data.pop("sortie_qte")
 
+        old_value = bon_sortie_item_to_update.sortie_qte
+
+
+        
+
         if not bon_sortie_item_to_update.sortie_qte == sortie_qte:
+            if old_value < int(sortie_qte):
+                new_value = int(sortie_qte) - old_value
+                med_stock = Stock.objects.get(id= bon_sortie_item_to_update.med_sortie.id)
+                med_stock.stock_qte = med_stock.stock_qte - new_value
+            elif old_value > int(sortie_qte):
+                new_value = old_value - int(sortie_qte)
+                med_stock = Stock.objects.get(id= bon_sortie_item_to_update.med_sortie.id)
+                med_stock.stock_qte = med_stock.stock_qte + new_value
+
+
             bon_sortie_item_to_update.sortie_qte = sortie_qte
+            med_stock.save()
         
         bon_sortie_item_to_update.save()
         
