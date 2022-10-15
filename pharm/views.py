@@ -628,13 +628,12 @@ def getAllStocksExpired(request):
 
         date_next = date_now + relativedelta(months=6)
 
-        queryset = Stock.objects.filter(date_expired__lte=date_next)
+        queryset = Stock.objects.filter(date_expired__lte=date_next).order_by('-date_expired')
 
         source_serial = StockSerializer(queryset, many=True)
 
         return Response(status=status.HTTP_200_OK,data=source_serial.data)
-                
-    
+                 
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED)  
 

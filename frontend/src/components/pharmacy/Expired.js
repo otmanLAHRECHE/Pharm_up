@@ -132,7 +132,7 @@ export default function Expired_stock(){
             const fetchData = async () => {
               try {
                 const token = localStorage.getItem("auth_token");
-                setData(await getAllStocks(token));
+                setData(await getAllStocksExpired(token));
                 setLoading(false);
               } catch (error) {
                 console.log("error", error);

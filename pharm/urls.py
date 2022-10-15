@@ -19,6 +19,7 @@ urlpatterns = [
     path('api/update_medicament/<int:id>', views.updateMedicament),
     path('api/delete_medicament/<int:id>', views.deleteMedicament),
     path('api/get_all_stocks/', views.getAllStocks),
+    path('api/get_all_stocks_expired/', views.getAllStocksExpired),
     path('api/get_all_arivage_of_medic/<int:id>', views.getAllArivageOfMedic),
     path('api/get_selected_stock/<int:id>', views.getSelectedStock),
     path('api/add_stock/', views.addStock),
