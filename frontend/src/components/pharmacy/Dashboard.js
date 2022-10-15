@@ -41,6 +41,7 @@ import Stock from './Stock';
 import Bon_sortie from './Bon_sortie';
 import Bon_sortie_details from './Bon_sortie_details';
 import Statestiques from './Statistiques';
+import Expired_stock from './expired';
 
 
 
@@ -286,7 +287,7 @@ function DashboardContent() {
         {page[4] ? <Medicaments/> : null}
         {page[5] ? <Fournisseur/> : null}
         {page[6] ? <Destinataire/> : null}
-        {page[7] ? <Dashboard_app/> : null}
+        {page[7] ? <Expired_stock/> : null}
         
 
         

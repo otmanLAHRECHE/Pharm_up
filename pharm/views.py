@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
 from calendar import monthrange
+from dateutil.relativedelta import relativedelta
 
 # Create your views here.
 
@@ -199,7 +200,12 @@ def deleteMedicament(request, id):
 @api_view(['GET'])
 def getAllStocks(request):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = Stock.objects.all()
+
+        
+        date_now = datetime.datetime.now().date()
+
+        queryset = Stock.objects.filter(date_expired__gte=date_now)
+
 
         source_serial = StockSerializer(queryset, many=True)
 
@@ -611,6 +617,39 @@ def deleteFournisseur(request, id):
     if request.method == 'DELETE' and request.user.is_authenticated:
         Fournisseur.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"Fournisseur deleted"})
+
+
+
+@api_view(['GET'])
+def getAllStocksExpired(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+
+        date_now = datetime.datetime.now().date()
+
+        date_next = date_now + relativedelta(months=6)
+
+        queryset = Stock.objects.filter(date_expired__lte=date_next)
+
+        source_serial = StockSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)  
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
