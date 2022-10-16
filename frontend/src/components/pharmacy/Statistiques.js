@@ -44,7 +44,7 @@ const columns = [
 
 const columns1 = [
   { field: 'id', headerName: 'Id', width: 60 },
-  { field: 'medic_code', headerName: 'Code PCH', width: 100, valueGetter: (params) =>
+  { field: 'medic_code', headerName: 'Code', width: 100, valueGetter: (params) =>
   `${params.row.medicament.medic_code || ''}`},
   { field: 'medic_name', headerName: 'Medicament', width: 400, valueGetter: (params) =>
   `${params.row.medicament.medic_name || ''}` },
@@ -55,7 +55,7 @@ const columns1 = [
 
 const columns2 = [
   { field: 'id', headerName: 'Id', width: 60 },
-  { field: 'medic_code', headerName: 'Code PCH', width: 100, valueGetter: (params) =>
+  { field: 'medic_code', headerName: 'Code', width: 100, valueGetter: (params) =>
   `${params.row.medicament.medic_code || ''}`},
   { field: 'medic_name', headerName: 'Medicament', width: 400, valueGetter: (params) =>
   `${params.row.medicament.medic_name || ''}` },

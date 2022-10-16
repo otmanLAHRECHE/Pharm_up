@@ -24,10 +24,9 @@ function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        EPSP Djanet, Otman LAHRECHE
-      </Link>{' '}
-      {new Date().getFullYear()}
+      <Link color="inherit" href="https://github.com/otmanLAHRECHE">
+         EPSP Djanet Pharm_Up V1.0 
+      </Link>{' '}-- created by otman LAHRECHE 
       {'.'}
     </Typography>
   );
@@ -132,7 +131,7 @@ export default function SignInSide() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Log In 
+              Pharm_Up authentification
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField

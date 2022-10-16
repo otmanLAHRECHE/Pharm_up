@@ -43,7 +43,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const columns = [
     { field: 'id', headerName: 'Id', width: 60 },
-    { field: 'medic_code', headerName: 'Code PCH', width: 100, valueGetter: (params) =>
+    { field: 'medic_code', headerName: 'Code', width: 100, valueGetter: (params) =>
     `${params.row.medicament.medic_code || ''}`},
     { field: 'medic_name', headerName: 'Medicament', width: 400, valueGetter: (params) =>
     `${params.row.medicament.medic_name || ''}` },

@@ -188,11 +188,6 @@ function DashboardContent() {
             >
               {toolBar}
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={20} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -261,7 +256,7 @@ function DashboardContent() {
                       <ListItemIcon>
                         <EventIcon />
                       </ListItemIcon>
-                      <ListItemText primary="rappel d'expiration" />
+                      <ListItemText primary="Rappel d'expiration" />
                     </ListItemButton>
           </List>
         </Drawer>

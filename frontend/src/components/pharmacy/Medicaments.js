@@ -36,7 +36,7 @@ import Alt from '../layouts/alert';
 
 const columns = [
     { field: 'id', headerName: 'Id', width: 70 },
-    { field: 'medic_code', headerName: 'Code PCH', width: 100 },
+    { field: 'medic_code', headerName: 'Code', width: 100 },
     { field: 'medic_name', headerName: 'Médicament', width: 400 },
     {
       field: 'Dose de médicament',
