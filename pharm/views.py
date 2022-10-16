@@ -479,6 +479,22 @@ def getAllBonSortieItems(request, month, year):
         return Response(status=status.HTTP_401_UNAUTHORIZED)  
 
 
+@api_view(['GET'])
+def getFirstBonSortieItems(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+
+        
+        bon_sortie = Bon_sortie.objects.all().order_by('-date')[:10]
+        queryset = Sortie_items.objects.filter(bon_sortie__in=bon_sortie)
+
+        source_serial = SortieItemsCustomSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)  
+
+
 @api_view(['POST'])
 def addBonSortieItem(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -629,6 +645,41 @@ def getAllStocksExpired(request):
         date_next = date_now + relativedelta(months=6)
 
         queryset = Stock.objects.filter(date_expired__lte=date_next).order_by('-date_expired')
+
+        source_serial = StockSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                 
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)  
+
+
+@api_view(['GET'])
+def getAllStocksExpiredAlredy(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+
+        date_now = datetime.datetime.now().date()
+
+
+        queryset = Stock.objects.filter(date_expired__lte=date_now).order_by('-date_expired')[:10]
+
+        source_serial = StockSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                 
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)  
+
+
+@api_view(['GET'])
+def getAllStocksExpiredNotYet(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+
+        date_now = datetime.datetime.now().date()
+
+        date_next = date_now + relativedelta(months=6)
+
+        queryset = Stock.objects.filter(date_expired__lte=date_next, date_expired__gte=date_now).order_by('-date_expired')[:10]
 
         source_serial = StockSerializer(queryset, many=True)
 

@@ -29,9 +29,14 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 
 import Alt from '../layouts/alert';
-import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
-import { addStock, addStockToArrivage, deleteStock, getAllStocks, getSelectedStock, updateStock } from '../../actions/stock_data';
+import { deleteStock, getAllStocksExpired } from '../../actions/stock_data';
 
+
+
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
 
 
@@ -162,6 +167,7 @@ export default function Expired_stock(){
                         '& > *': {
                         m: 1,
                         },
+                        
                     }}
                 >
       <ButtonGroup variant="outlined" aria-label="outlined button group">
@@ -172,13 +178,40 @@ export default function Expired_stock(){
               </Grid>
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ height: 700, width: '100%' }}>
+                <Box
+                            sx={{
+                                height: 700,
+                                width: '100%',
+                                '& .notyet': {
+                                backgroundColor: '#ffff1a',
+                                color: '#1a1a00',
+                                },
+                                '& .expired': {
+                                backgroundColor: '#ff3300',
+                                color: '#000000',
+                                },
+                            }}
+                            >
+               
+                                        
                           <DataGrid
                             components={{
                               Toolbar: GridToolbar,
                             }}
                               rows={data}
                               columns={columns}
+                              getCellClassName={(params) => {
+                                if (params.field != 'date_expired') {
+                                  return '';
+                                }else if(dayjs(params.value, 'YYYY-MM-DD') > dayjs(new Date())){
+                                   return 'notyet';
+
+                                }else{
+                                    console.log("expired");
+                                    return 'expired';
+
+                                }
+                              }}
                               pageSize={15}
                               checkboxSelection = {false}
                               loading={loading}
@@ -189,7 +222,8 @@ export default function Expired_stock(){
                               selectionModel={selectionModel}
                               
                           />
-                    </div>   
+
+                    </Box>  
                 </Paper>
               </Grid>
             </Grid>
