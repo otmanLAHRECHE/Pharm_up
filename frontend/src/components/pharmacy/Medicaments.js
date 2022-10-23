@@ -109,15 +109,6 @@ export default function Medicaments(){
         setMedicCodeError([true,"Ce champ est obligatoire"])
         test = false;
       }
-      if (medicDose == "" && unite!=0){
-        setMedicDoseError([true, "Ce champ est obligatoire quand l'unité de dose est définé!"])
-        test = false;
-      }
-
-      if (medicDose != "" && unite==0){
-        setUnitDoseError([true, "Ce champ est obligatoire"])
-        test = false;
-      }
       if (medicType == ""){
         setMedicTypeError([true, "Ce champ est obligatoire"])
         test = false;
@@ -131,7 +122,6 @@ export default function Medicaments(){
           medic_name:medicName,
           medic_code:medicCode,
           medic_dose:medicDose,
-          dose_unit:unitDose,
           medic_place:medicPlace,
           medic_type:medicType,
         }
@@ -172,15 +162,6 @@ export default function Medicaments(){
         setMedicCodeError([true,"Ce champ est obligatoire"])
         test = false;
       }
-      if (medicDose == "" && unite!=0){
-        setMedicDoseError([true, "Ce champ est obligatoire quand l'unité de dose est définé!"])
-        test = false;
-      }
-
-      if (medicDose != "" && unite==0){
-        setUnitDoseError([true, "Ce champ est obligatoire"])
-        test = false;
-      }
       if (medicType == ""){
         setMedicTypeError([true, "Ce champ est obligatoire"])
         test = false;
@@ -194,7 +175,6 @@ export default function Medicaments(){
           medic_name:medicName,
           medic_code:medicCode,
           medic_dose:medicDose,
-          dose_unit:unitDose,
           medic_place:medicPlace,
           medic_type:medicType,
         }
@@ -290,25 +270,12 @@ export default function Medicaments(){
           setMedicType("INSTRUMENTATION")
         }else if (event.target.value == 37){
           setMedicType("DENTAIRES CHIMIQUES ET LABO")
+        }else if (event.target.value == 38){
+          setMedicType("Autre medicaments")
         }
 
     };
-    const change_dose = (event) => {
-      setUnite(event.target.value);
-      if (event.target.value == 0){
-        setUnitDose("None")
 
-      }else if (event.target.value == 1){
-        setUnitDose("mg")
-
-      }else if (event.target.value == 2){
-        setUnitDose("ml")
-
-      }else if (event.target.value == 3){
-        setUnitDose("l")
-
-      }
-    };
     const addMedicOpen = () => {
 
       
@@ -629,35 +596,11 @@ export default function Medicaments(){
                                       label="Dose de médicament"
                                       fullWidth
                                       variant="standard"
-                                      type="number"
-                                      InputLabelProps={{
-                                        shrink: true,
-                                      }}
                                       onChange={(event) => {setMedicDose(event.target.value)}}
                                 />
 
                               </Grid>
-                              <Grid item xs={4}>
-                                      <FormControl variant="standard" sx={{ m: 1, minWidth: 100 }}>
-                                        <InputLabel id="demo-simple-select-standard-label"
-                                        error={unitDoseError[0]}
-                                        helperText={unitDoseError[1]}>Unité de dose</InputLabel>
-                                        <Select                            
-                                            
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={unite}
-                                            label="Unité de Dose"
-                                            onChange={change_dose}
-                                        >
-                                              <MenuItem value={0}>none</MenuItem>
-                                              <MenuItem value={1}>mg</MenuItem>
-                                              <MenuItem value={2}>ml</MenuItem>
-                                              <MenuItem value={3}>l</MenuItem>
-                                        </Select>
-
-                                    </FormControl>
-                              </Grid>
+                              
                             </Grid>
                             
                             <TextField           
@@ -723,6 +666,11 @@ export default function Medicaments(){
 
                                       <ListSubheader>Dentaire</ListSubheader>
                                       <MenuItem value={37}>DENTAIRES CHIMIQUES ET LABO</MenuItem>
+
+                                      
+                                    <ListSubheader>Autres</ListSubheader>
+                                    <MenuItem value={38}>Autre medicaments</MenuItem>
+
                                     </Select>
                                 </FormControl>
                           </DialogContent>
@@ -773,35 +721,10 @@ export default function Medicaments(){
                                     label="Dose de médicament"
                                     fullWidth
                                     variant="standard"
-                                    type="number"
                                     value={medicDose}
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
                                     onChange={(event) => {setMedicDose(event.target.value)}}
                               />
 
-                            </Grid>
-                            <Grid item xs={4}>
-                                    <FormControl variant="standard" sx={{ m: 1, minWidth: 100 }}>
-                                      <InputLabel id="demo-simple-select-standard-label"
-                                      error={unitDoseError[0]}
-                                      helperText={unitDoseError[1]}>Unité de dose</InputLabel>
-                                      <Select                            
-                                          
-                                          labelId="demo-simple-select-label"
-                                          id="demo-simple-select"
-                                          value={unite}
-                                          label="Unité de Dose"
-                                          onChange={change_dose}
-                                      >
-                                            <MenuItem value={0}>none</MenuItem>
-                                            <MenuItem value={1}>mg</MenuItem>
-                                            <MenuItem value={2}>ml</MenuItem>
-                                            <MenuItem value={3}>l</MenuItem>
-                                      </Select>
-
-                                   </FormControl>
                             </Grid>
                           </Grid>
                           
@@ -870,6 +793,9 @@ export default function Medicaments(){
 
                                     <ListSubheader>Dentaire</ListSubheader>
                                     <MenuItem value={37}>DENTAIRES CHIMIQUES ET LABO</MenuItem>
+
+                                    <ListSubheader>Autres</ListSubheader>
+                                    <MenuItem value={38}>Autre medicaments</MenuItem>
                                   </Select>
                               </FormControl>
                         </DialogContent>

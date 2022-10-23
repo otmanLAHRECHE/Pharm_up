@@ -146,11 +146,10 @@ def addMedicament(request):
         medic_code = request.data.pop("medic_code")
         medic_name = request.data.pop("medic_name")
         medic_dose = request.data.pop("medic_dose")
-        dose_unit = request.data.pop("dose_unit")
         medic_place = request.data.pop("medic_place")
         medic_type = request.data.pop("medic_type")
 
-        medicament = Medicament.objects.create(medic_code=medic_code, medic_name=medic_name, medic_dose=medic_dose, dose_unit=dose_unit, medic_place=medic_place, medic_type=medic_type)
+        medicament = Medicament.objects.create(medic_code=medic_code, medic_name=medic_name, medic_dose=medic_dose, medic_place=medic_place, medic_type=medic_type)
 
         if medicament.id is not None:
             return Response(status=status.HTTP_201_CREATED, data={"status": "medicament created sucsusfully"}) 
@@ -165,7 +164,6 @@ def updateMedicament(request, id):
         medic_code = request.data.pop("medic_code")
         medic_name = request.data.pop("medic_name")
         medic_dose = request.data.pop("medic_dose")
-        dose_unit = request.data.pop("dose_unit")
         medic_place = request.data.pop("medic_place")
         medic_type = request.data.pop("medic_type")
 
@@ -176,8 +174,6 @@ def updateMedicament(request, id):
             medicament_to_update.medic_name = medic_name
         if not medicament_to_update.medic_dose == medic_dose:
             medicament_to_update.medic_dose = medic_dose
-        if not medicament_to_update.dose_unit == dose_unit:
-            medicament_to_update.dose_unit = dose_unit
         if not medicament_to_update.medic_place == medic_place:
             medicament_to_update.medic_place = medic_place
         if not medicament_to_update.medic_type == medic_type:
