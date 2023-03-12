@@ -28,8 +28,20 @@ import Groups3Icon from '@mui/icons-material/Groups3';
 import EventIcon from '@mui/icons-material/Event';
 import OutputIcon from '@mui/icons-material/Output';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContentText from '@mui/material/DialogContentText';
 
+import ThreePRoundedIcon from '@mui/icons-material/ThreePRounded';
+import Button from '@mui/material/Button';
+import LogoutIcon from '@mui/icons-material/Logout';
 
+import Slide from '@mui/material/Slide';
+import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
+
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -44,8 +56,13 @@ import Statestiques from './Statistiques';
 import Expired_stock from './expired';
 
 
-
 const drawerWidth = 240;
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -101,6 +118,26 @@ function DashboardContent() {
 
   const [toolBar,setToolBar] = React.useState("Tableau de bord et statestiques")
 
+
+  const [logOut, setLogOut] = React.useState(false);
+
+  const [openLogOut, setOpenLogOut] = React.useState(false);
+
+  const LogOutClose = () =>{
+    setOpenLogOut(false);
+  }
+
+  const LogOutConfirmation = async () =>{
+    await localStorage.removeItem("auth_token");
+    setLogOut(true);
+  }
+  
+  const handleLogOut = () =>{
+
+    setOpenLogOut(true);
+    
+  }
+
   const clickDashboard = () =>{
     
       setPage([true,false,false,false,false,false,false,false])
@@ -155,6 +192,9 @@ function DashboardContent() {
 
   const [page, setPage] = React.useState([true,false,false,false,false,false,false,false]);
   
+  if(localStorage.getItem("auth_token")==null && logOut == true){
+    window.location.reload();
+  }
   
 
   return (
@@ -188,6 +228,27 @@ function DashboardContent() {
             >
               {toolBar}
             </Typography>
+
+            <Button color="inherit" startIcon={<ThreePRoundedIcon />}>Pharmacie utilisateur</Button>
+            <FiberManualRecordIcon
+                fontSize="small"
+                  sx={{
+                    mr: 1,
+                    color: '#4caf50',
+                  }}
+            />      
+            
+            <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                color="secondary"
+                onClick={handleLogOut}
+              >
+                <LogoutIcon />
+              </IconButton>
+
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -289,6 +350,24 @@ function DashboardContent() {
           
         </Box>
       </Box>
+
+      <Dialog open={openLogOut}
+                                TransitionComponent={Transition}
+                                keepMounted
+                                onClose={LogOutClose}
+                                aria-describedby="alert-dialog-slide-description"
+                              >
+                                <DialogTitle>{"Confirmer la déconnection"}</DialogTitle>
+                                <DialogContent>
+                                  <DialogContentText id="alert-dialog-slide-description">
+                                  Êtes-vous sûr ?
+                                  </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                  <Button onClick={LogOutClose}>Anuller</Button>
+                                  <Button onClick={LogOutConfirmation}>Log out</Button>
+                                </DialogActions>
+                  </Dialog>
     </ThemeProvider>
   );
 }
