@@ -1,5 +1,7 @@
 Pharm_up web application for managing the pharmacie of a hospital (Django python framework and React js frontend): 
 
+  1- Authentification.
+
   1- Medicaments stock management.
   
   2- Outgoing medicament to the services.
